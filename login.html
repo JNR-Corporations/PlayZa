@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayZa - Play & Learn</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        playzaOrange: '#FF6B00',
+                        playzaOrangeDark: '#D95B00',
+                        playzaPurple: '#8A2BE2',
+                        playzaPurpleDark: '#6A1B9A',
+                        playzaGreen: '#58CC02',
+                        playzaGreenDark: '#46A302',
+                        playzaBlue: '#1CB0F6',
+                        playzaBlueDark: '#1899D6',
+                        playzaYellow: '#FFC800',
+                        playzaYellowDark: '#E5B200',
+                        playzaBg: '#FFF9F2',
+                        playzaCard: '#FFFFFF',
+                        playzaText: '#3C3C3C',
+                        playzaSubtext: '#777777',
+                        playzaGray: '#E5E5E5',
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        nunito: ['Nunito', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #FFF9F2;
+            color: #3C3C3C;
+            user-select: none;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(#FFD8B0 1.5px, transparent 1.5px), 
+                radial-gradient(#FFD8B0 1.5px, #FFF9F2 1.5px);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+        }
+
+        /* 3D Tactile Buttons */
+        .btn-3d {
+            transition: all 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        .btn-3d:active {
+            transform: translateY(4px) !important;
+            box-shadow: 0 0 0 transparent !important;
+        }
+
+        .btn-orange {
+            background-color: #FF6B00;
+            box-shadow: 0 5px 0 #D95B00;
+            color: #FFFFFF;
+        }
+        .btn-orange:hover {
+            background-color: #FF7A1A;
+        }
+
+        .btn-green {
+            background-color: #58CC02;
+            box-shadow: 0 5px 0 #46A302;
+            color: #FFFFFF;
+        }
+        .btn-green:hover {
+            background-color: #61E002;
+        }
+
+        .btn-blue {
+            background-color: #1CB0F6;
+            box-shadow: 0 5px 0 #1899D6;
+            color: #FFFFFF;
+        }
+        .btn-blue:hover {
+            background-color: #2BD0FF;
+        }
+
+        .btn-yellow {
+            background-color: #FFC800;
+            box-shadow: 0 5px 0 #E5B200;
+            color: #3C3C3C;
+        }
+        .btn-yellow:hover {
+            background-color: #FFD426;
+        }
+
+        .btn-white {
+            background-color: #FFFFFF;
+            border: 2px solid #E5E5E5;
+            box-shadow: 0 5px 0 #E5E5E5;
+            color: #4B4B4B;
+        }
+        .btn-white:hover {
+            background-color: #F7F7F7;
+        }
+
+        /* Input Styling */
+        .playza-input {
+            border: 2.5px solid #E5E5E5;
+            border-bottom: 5px solid #E5E5E5;
+            border-radius: 18px;
+            transition: all 0.2s ease;
+            background-color: #FAFAFA;
+        }
+        .playza-input:focus {
+            outline: none;
+            border-color: #FF6B00;
+            border-bottom-color: #D95B00;
+            background-color: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.12);
+        }
+
+        /* Floating background decoration animation */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(3deg); }
+        }
+        .floating-element {
+            animation: floatSlow 5s ease-in-out infinite;
+        }
+
+        /* Mascot SVGs animation transitions */
+        .fox-eye {
+            transition: transform 0.15s ease-out;
+            transform-origin: center;
+        }
+        .fox-ear-left, .fox-ear-right {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-origin: center bottom;
+        }
+        .fox-head {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-origin: center center;
+        }
+
+        /* Toast animation */
+        .toast-pop {
+            animation: toastIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes toastIn {
+            0% { transform: translateY(-30px) scale(0.85); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 relative">
+
+    <!-- Floating Background Decorative Elements -->
+    <div class="fixed top-12 left-8 text-4xl floating-element opacity-40 pointer-events-none hidden md:block">⚡</div>
+    <div class="fixed top-24 right-12 text-5xl floating-element opacity-40 pointer-events-none hidden md:block" style="animation-delay: 1.5s;">🔥</div>
+    <div class="fixed bottom-12 left-16 text-5xl floating-element opacity-40 pointer-events-none hidden md:block" style="animation-delay: 2.5s;">💎</div>
+    <div class="fixed bottom-20 right-20 text-4xl floating-element opacity-40 pointer-events-none hidden md:block" style="animation-delay: 0.8s;">🏆</div>
+
+    <!-- PLAYZA BRAND HEADER -->
+    <header class="mb-5 flex items-center justify-center gap-3 cursor-pointer" onclick="playSound('click')">
+        <div class="relative group">
+            <div class="w-14 h-14 rounded-2xl bg-playzaOrange flex items-center justify-center border-b-4 border-playzaOrangeDark text-white shadow-md transform group-hover:scale-105 transition-transform">
+                <span class="text-3xl">🦊</span>
+            </div>
+            <div class="absolute -top-2 -right-2 bg-playzaYellow text-xs font-black px-1.5 py-0.5 rounded-full border border-white font-fredoka shadow-sm text-playzaText">
+                NEW
+            </div>
+        </div>
+        <div class="text-left">
+            <h1 class="font-fredoka text-4xl font-extrabold tracking-wide text-playzaOrange flex items-center gap-1">
+                PlayZa <span class="text-xs bg-playzaPurple text-white px-2 py-0.5 rounded-full uppercase tracking-widest font-bold">V2.0</span>
+            </h1>
+            <p class="font-fredoka text-xs font-bold text-playzaSubtext uppercase tracking-widest -mt-1">Play • Learn • Win</p>
+        </div>
+    </header>
+
+    <!-- MAIN APPLICATION CARD -->
+    <div class="w-full max-w-md bg-playzaCard rounded-3xl p-6 md:p-8 border-2 border-playzaGray shadow-2xl relative overflow-hidden">
+        
+        <!-- SOUND TOGGLE BUTTON -->
+        <button onclick="toggleAudio()" id="btn-sound" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-orange-50 border-2 border-orange-200 text-playzaOrange flex items-center justify-center hover:bg-orange-100 transition-colors z-20">
+            <i class="fa-solid fa-volume-high text-sm"></i>
+        </button>
+
+        <!-- ZIPPY THE FOX - ANIMATED SVG MASCOT -->
+        <div class="flex flex-col items-center justify-center mb-2 relative">
+            <div class="relative">
+                <svg id="zippy-svg" class="w-36 h-36 cursor-pointer drop-shadow-md" viewBox="0 0 200 200" onclick="triggerMascotTrick()">
+                    <!-- Headset Band -->
+                    <path d="M 45 85 C 45 25, 155 25, 155 85" stroke="#1CB0F6" stroke-width="12" stroke-linecap="round" fill="none" />
+                    <path d="M 45 85 C 45 25, 155 25, 155 85" stroke="#1899D6" stroke-width="6" stroke-linecap="round" fill="none" />
+                    
+                    <!-- Hero Purple Cape Back -->
+                    <path d="M 50 145 Q 100 185 150 145 L 165 190 Q 100 200 35 190 Z" fill="#8A2BE2" />
+
+                    <!-- Fox Main Head Group -->
+                    <g id="fox-head" class="fox-head">
+                        <!-- Left Ear -->
+                        <g id="fox-ear-left" class="fox-ear-left">
+                            <polygon points="50,85 15,25 80,60" fill="#FF6B00" stroke="#D95B00" stroke-width="3" stroke-linejoin="round"/>
+                            <polygon points="48,78 26,36 70,62" fill="#FFF2E6" />
+                        </g>
+
+                        <!-- Right Ear -->
+                        <g id="fox-ear-right" class="fox-ear-right">
+                            <polygon points="150,85 185,25 120,60" fill="#FF6B00" stroke="#D95B00" stroke-width="3" stroke-linejoin="round"/>
+                            <polygon points="152,78 174,36 130,62" fill="#FFF2E6" />
+                        </g>
+
+                        <!-- Head Base Base -->
+                        <path d="M 40 100 C 40 45, 160 45, 160 100 C 160 145, 130 160, 100 160 C 70 160, 40 145, 40 100 Z" fill="#FF6B00" />
+                        
+                        <!-- Fluffy White Snout / Cheeks -->
+                        <path d="M 42 108 Q 20 120, 60 142 C 80 152, 120 152, 140 142 Q 180 120, 158 108 C 145 130, 55 130, 42 108 Z" fill="#FFFFFF" />
+
+                        <!-- Headset Earcups -->
+                        <rect x="30" y="70" width="18" height="32" rx="9" fill="#1CB0F6" stroke="#1899D6" stroke-width="3"/>
+                        <rect x="152" y="70" width="18" height="32" rx="9" fill="#1CB0F6" stroke="#1899D6" stroke-width="3"/>
+                        <circle cx="39" cy="86" r="4" fill="#FFFFFF" />
+                        <circle cx="161" cy="86" r="4" fill="#FFFFFF" />
+
+                        <!-- Left Eye Base -->
+                        <circle cx="72" cy="92" r="16" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="2"/>
+                        <!-- Right Eye Base -->
+                        <circle cx="128" cy="92" r="16" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="2"/>
+
+                        <!-- Left Pupil -->
+                        <g id="fox-pupil-left" class="fox-eye">
+                            <circle cx="74" cy="92" r="8" fill="#3C3C3C"/>
+                            <circle cx="71" cy="89" r="3" fill="#FFFFFF"/>
+                        </g>
+
+                        <!-- Right Pupil -->
+                        <g id="fox-pupil-right" class="fox-eye">
+                            <circle cx="126" cy="92" r="8" fill="#3C3C3C"/>
+                            <circle cx="123" cy="89" r="3" fill="#FFFFFF"/>
+                        </g>
+
+                        <!-- Cute Cute Blushing Cheeks -->
+                        <ellipse cx="55" cy="115" rx="8" ry="4" fill="#FF9E9E" opacity="0.7"/>
+                        <ellipse cx="145" cy="115" rx="8" ry="4" fill="#FF9E9E" opacity="0.7"/>
+
+                        <!-- Cute Black Nose -->
+                        <path d="M 92 112 Q 100 108 108 112 Q 100 124 92 112 Z" fill="#2C2C2C" />
+                        <circle cx="98" cy="112" r="1.5" fill="#FFFFFF" />
+
+                        <!-- W-Shaped Cute Mouth -->
+                        <path id="fox-mouth" d="M 90 124 Q 100 130 100 125 Q 100 130 110 124" stroke="#3C3C3C" stroke-width="3" stroke-linecap="round" fill="none" />
+                    </g>
+                </svg>
+            </div>
+            
+            <div id="mascot-speech" class="bg-orange-100 border-2 border-playzaOrange text-playzaOrange font-fredoka font-bold text-xs px-3 py-1 rounded-full shadow-sm -mt-1 transform transition-all duration-300">
+                Hi! I'm Zippy! 🦊
+            </div>
+        </div>
+
+        <!-- AUTHENTICATION FORM BOX -->
+        <div id="auth-box">
+            <!-- Navigation Tabs (LOG IN / SIGN UP) -->
+            <div class="flex bg-gray-100 p-1.5 rounded-2xl mb-5 border-2 border-playzaGray">
+                <button id="tab-login" onclick="switchTab('login')" class="flex-1 py-2.5 rounded-xl font-fredoka font-bold text-sm tracking-wide transition-all bg-white text-playzaOrange shadow-sm">
+                    LOG IN
+                </button>
+                <button id="tab-signup" onclick="switchTab('signup')" class="flex-1 py-2.5 rounded-xl font-fredoka font-bold text-sm tracking-wide text-playzaSubtext hover:text-playzaText transition-all">
+                    SIGN UP
+                </button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="form-login" onsubmit="handleAuth(event, 'login')" class="space-y-3.5">
+                <div>
+                    <label class="block font-fredoka text-xs uppercase font-bold text-playzaSubtext mb-1 tracking-wider">Email Address</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-playzaSubtext text-sm"></i>
+                        <input type="email" id="login-email" required placeholder="player@playza.com" onfocus="mascotFocus('email')" oninput="mascotLookTrack(this)" onblur="mascotReset()" class="w-full pl-11 pr-4 py-3 playza-input font-bold text-playzaText placeholder-gray-300 text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block font-fredoka text-xs uppercase font-bold text-playzaSubtext tracking-wider">Password</label>
+                        <button type="button" onclick="openForgotModal()" class="font-fredoka text-xs font-bold text-playzaBlue hover:underline">Forgot?</button>
+                    </div>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-playzaSubtext text-sm"></i>
+                        <input type="password" id="login-pass" required placeholder="••••••••" onfocus="mascotFocus('pass')" onblur="mascotReset()" class="w-full pl-11 pr-12 py-3 playza-input font-bold text-playzaText placeholder-gray-300 text-sm">
+                        <button type="button" onclick="togglePassword('login-pass', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-playzaSubtext hover:text-playzaOrange">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-login-submit" class="w-full py-3.5 rounded-2xl btn-3d btn-orange font-fredoka font-bold text-lg tracking-wider uppercase">
+                    LOG IN
+                </button>
+            </form>
+
+            <!-- SIGNUP FORM (Hidden initially) -->
+            <form id="form-signup" onsubmit="handleAuth(event, 'signup')" class="space-y-3.5 hidden">
+                <div>
+                    <label class="block font-fredoka text-xs uppercase font-bold text-playzaSubtext mb-1 tracking-wider">Full Name</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-playzaSubtext text-sm"></i>
+                        <input type="text" id="signup-name" required placeholder="Zippy Gamer" onfocus="mascotFocus('name')" onblur="mascotReset()" class="w-full pl-11 pr-4 py-3 playza-input font-bold text-playzaText placeholder-gray-300 text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-fredoka text-xs uppercase font-bold text-playzaSubtext mb-1 tracking-wider">Email Address</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-playzaSubtext text-sm"></i>
+                        <input type="email" id="signup-email" required placeholder="player@playza.com" onfocus="mascotFocus('email')" oninput="mascotLookTrack(this)" onblur="mascotReset()" class="w-full pl-11 pr-4 py-3 playza-input font-bold text-playzaText placeholder-gray-300 text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-fredoka text-xs uppercase font-bold text-playzaSubtext mb-1 tracking-wider">Password</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-playzaSubtext text-sm"></i>
+                        <input type="password" id="signup-pass" required minlength="6" placeholder="Min 6 characters" onfocus="mascotFocus('pass')" onblur="mascotReset()" class="w-full pl-11 pr-12 py-3 playza-input font-bold text-playzaText placeholder-gray-300 text-sm">
+                        <button type="button" onclick="togglePassword('signup-pass', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-playzaSubtext hover:text-playzaOrange">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-signup-submit" class="w-full py-3.5 rounded-2xl btn-3d btn-green font-fredoka font-bold text-lg tracking-wider uppercase">
+                    CREATE ACCOUNT
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="my-4 flex items-center justify-center gap-3">
+                <div class="h-0.5 bg-playzaGray flex-1"></div>
+                <span class="font-fredoka text-xs font-bold text-playzaSubtext uppercase tracking-widest">OR</span>
+                <div class="h-0.5 bg-playzaGray flex-1"></div>
+            </div>
+
+            <!-- Social & Guest Login Options -->
+            <div class="space-y-2.5">
+                <button type="button" onclick="handleGoogleSignIn()" class="w-full py-3 rounded-2xl btn-3d btn-white font-fredoka font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-3">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    CONTINUE WITH GOOGLE
+                </button>
+
+                <button type="button" onclick="enterGuestMode()" class="w-full py-2.5 rounded-2xl border-2 border-dashed border-orange-300 text-playzaOrange font-fredoka font-bold text-xs tracking-wider uppercase hover:bg-orange-50 transition-colors flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bolt"></i> TRY DEMO / GUEST MODE
+                </button>
+            </div>
+        </div>
+
+        <!-- USER GAMIFIED DASHBOARD (Hidden by default) -->
+        <div id="dashboard-box" class="hidden text-center space-y-5 py-1">
+            <!-- User Profile Avatar & Level Badge -->
+            <div class="flex flex-col items-center">
+                <div class="relative">
+                    <img id="user-avatar" src="https://placehold.co/100x100/FF6B00/ffffff?text=ZAP" alt="Avatar" class="w-24 h-24 rounded-full border-4 border-playzaOrange shadow-md object-cover">
+                    <span class="absolute -bottom-1 -right-1 bg-playzaYellow text-xs font-black font-fredoka px-2.5 py-0.5 rounded-full border-2 border-white shadow text-playzaText flex items-center gap-1">
+                        ⭐ Lvl 12
+                    </span>
+                </div>
+                <h2 id="user-display-name" class="font-fredoka text-2xl font-extrabold text-playzaText mt-2">Welcome Back!</h2>
+                <p id="user-email-text" class="text-xs font-bold text-playzaSubtext"></p>
+            </div>
+
+            <!-- Gamified Stats Counters -->
+            <div class="grid grid-cols-3 gap-2">
+                <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-2.5 flex flex-col items-center justify-center">
+                    <span class="text-2xl animate-bounce">🔥</span>
+                    <span class="font-fredoka text-base font-bold text-amber-600 leading-tight">7 Days</span>
+                    <span class="text-[10px] font-black text-amber-500 uppercase tracking-wider">Streak</span>
+                </div>
+
+                <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-2.5 flex flex-col items-center justify-center">
+                    <span class="text-2xl">⚡</span>
+                    <span class="font-fredoka text-base font-bold text-playzaBlue leading-tight">850 XP</span>
+                    <span class="text-[10px] font-black text-sky-500 uppercase tracking-wider">Total XP</span>
+                </div>
+
+                <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-2.5 flex flex-col items-center justify-center">
+                    <span class="text-2xl">💎</span>
+                    <span class="font-fredoka text-base font-bold text-playzaGreen leading-tight">120 Gems</span>
+                    <span class="text-[10px] font-black text-emerald-500 uppercase tracking-wider">Wallet</span>
+                </div>
+            </div>
+
+            <!-- Daily Quest Card -->
+            <div class="bg-orange-50 border-2 border-orange-200 rounded-2xl p-3 text-left relative overflow-hidden">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="font-fredoka text-xs font-bold text-playzaOrange uppercase tracking-wide">Daily Quest</span>
+                    <span class="font-fredoka text-xs font-bold text-playzaSubtext">2/3 Complete</span>
+                </div>
+                <div class="w-full bg-orange-200 h-3 rounded-full overflow-hidden">
+                    <div class="bg-playzaOrange h-full rounded-full w-2/3"></div>
+                </div>
+            </div>
+
+            <!-- Logout Button -->
+            <button onclick="handleSignOut()" class="w-full py-3 rounded-2xl btn-3d btn-yellow font-fredoka font-bold text-playzaText text-sm tracking-wider uppercase flex items-center justify-center gap-2">
+                <i class="fa-solid fa-right-from-bracket"></i> LOG OUT
+            </button>
+        </div>
+
+        <!-- Custom Toast Banner -->
+        <div id="toast-banner" class="hidden absolute top-4 left-4 right-4 p-3 rounded-2xl text-white font-fredoka font-bold text-xs text-center shadow-xl toast-pop z-50"></div>
+    </div>
+
+    <!-- FORGOT PASSWORD MODAL -->
+    <div id="forgot-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm border-2 border-playzaGray shadow-2xl relative">
+            <button onclick="closeForgotModal()" class="absolute top-4 right-4 text-playzaSubtext hover:text-playzaText">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="text-center mb-4">
+                <div class="text-4xl mb-1">🔑</div>
+                <h3 class="font-fredoka text-xl font-bold text-playzaText">Reset Password</h3>
+                <p class="text-xs font-bold text-playzaSubtext mt-1">We will send a reset link to your email!</p>
+            </div>
+            <form onsubmit="handleResetPassword(event)" class="space-y-3">
+                <input type="email" id="reset-email" required placeholder="Enter registered email" class="w-full px-4 py-3 playza-input font-bold text-sm">
+                <button type="submit" class="w-full py-3 rounded-2xl btn-3d btn-orange font-fredoka font-bold text-sm uppercase">
+                    SEND RESET LINK
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            onAuthStateChanged, 
+            signOut,
+            updateProfile,
+            sendPasswordResetEmail
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Provided Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7bEYtEIk4DN3edQKievh-ek89tWS4awc",
+            authDomain: "playza-87102.firebaseapp.com",
+            projectId: "playza-87102",
+            storageBucket: "playza-87102.firebasestorage.app",
+            messagingSenderId: "695215345584",
+            appId: "1:695215345584:web:14fc00081f035046979075",
+            measurementId: "G-PTR7E4D8VT"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        const authBox = document.getElementById('auth-box');
+        const dashboardBox = document.getElementById('dashboard-box');
+        const userAvatar = document.getElementById('user-avatar');
+        const userDisplayName = document.getElementById('user-display-name');
+        const userEmailText = document.getElementById('user-email-text');
+
+        // Observer for Auth State
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authBox.classList.add('hidden');
+                dashboardBox.classList.remove('hidden');
+
+                userDisplayName.textContent = user.displayName || 'PlayZa Champion';
+                userEmailText.textContent = user.email || 'guest@playza.com';
+                if (user.photoURL) {
+                    userAvatar.src = user.photoURL;
+                } else {
+                    userAvatar.src = `https://placehold.co/100x100/FF6B00/ffffff?text=${encodeURIComponent(user.displayName ? user.displayName[0] : 'Z')}`;
+                }
+
+                setMascotSpeech("YAY! You are in! 🎉");
+                mascotCelebrate();
+            } else {
+                authBox.classList.remove('hidden');
+                dashboardBox.classList.add('hidden');
+            }
+        });
+
+        // Email / Password Form Submission
+        window.handleAuth = async function(event, type) {
+            event.preventDefault();
+            playSound('click');
+            const submitBtn = document.getElementById(type === 'login' ? 'btn-login-submit' : 'btn-signup-submit');
+            const originalText = submitBtn.innerText;
+            submitBtn.innerText = "LOADING...";
+            submitBtn.disabled = true;
+
+            try {
+                if (type === 'login') {
+                    const email = document.getElementById('login-email').value;
+                    const pass = document.getElementById('login-pass').value;
+                    await signInWithEmailAndPassword(auth, email, pass);
+                    playSound('success');
+                    showToast("Awesome! Welcome back 🎉", "bg-playzaGreen");
+                    triggerConfetti();
+                } else {
+                    const name = document.getElementById('signup-name').value;
+                    const email = document.getElementById('signup-email').value;
+                    const pass = document.getElementById('signup-pass').value;
+                    
+                    const res = await createUserWithEmailAndPassword(auth, email, pass);
+                    await updateProfile(res.user, { displayName: name });
+                    playSound('success');
+                    showToast("Account Created! High Five! 🦊", "bg-playzaGreen");
+                    triggerConfetti();
+                }
+            } catch (err) {
+                console.error(err);
+                playSound('error');
+                let msg = err.message.replace("Firebase: ", "");
+                if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                    msg = "Oops! Wrong email or password.";
+                } else if (err.code === 'auth/email-already-in-use') {
+                    msg = "That email is already registered!";
+                } else if (err.code === 'auth/weak-password') {
+                    msg = "Password must be at least 6 characters!";
+                }
+                showToast(msg, "bg-red-500");
+                setMascotSpeech("Oops! Try again! 😯");
+                mascotSad();
+            } finally {
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+            }
+        };
+
+        // Google Authentication
+        window.handleGoogleSignIn = async function() {
+            playSound('click');
+            try {
+                await signInWithPopup(auth, googleProvider);
+                playSound('success');
+                showToast("Connected with Google! 🚀", "bg-playzaGreen");
+                triggerConfetti();
+            } catch (err) {
+                console.error(err);
+                playSound('error');
+                showToast("Google Sign-In failed or closed.", "bg-red-500");
+            }
+        };
+
+        // Sign Out
+        window.handleSignOut = async function() {
+            playSound('click');
+            try {
+                await signOut(auth);
+                setMascotSpeech("See you soon! 👋");
+                showToast("Logged out successfully!", "bg-playzaBlue");
+            } catch (err) {
+                showToast("Error signing out", "bg-red-500");
+            }
+        };
+
+        // Password Reset Email
+        window.handleResetPassword = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('reset-email').value;
+            try {
+                await sendPasswordResetEmail(auth, email);
+                playSound('success');
+                closeForgotModal();
+                showToast("Reset email sent! Check inbox 📩", "bg-playzaBlue");
+            } catch (err) {
+                playSound('error');
+                showToast("Failed to send reset email.", "bg-red-500");
+            }
+        }
+
+        // Demo Guest Mode
+        window.enterGuestMode = function() {
+            playSound('success');
+            authBox.classList.add('hidden');
+            dashboardBox.classList.remove('hidden');
+            userDisplayName.textContent = "Guest Explorer 🚀";
+            userEmailText.textContent = "guest.demo@playza.com";
+            userAvatar.src = "https://placehold.co/100x100/FFC800/3c3c3c?text=GUEST";
+            setMascotSpeech("Welcome Guest Hero! 🦊");
+            showToast("Logged in as Guest!", "bg-playzaOrange");
+            triggerConfetti();
+        };
+
+        // Toast Helper
+        function showToast(message, bgColorClass) {
+            const toast = document.getElementById('toast-banner');
+            toast.className = `absolute top-4 left-4 right-4 p-3 rounded-2xl text-white font-fredoka font-bold text-xs text-center shadow-xl toast-pop z-50 ${bgColorClass}`;
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+
+        // Confetti Helper
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 90,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+    </script>
+
+    <script>
+        // Web Audio Synthesizer for Playful Sound Effects
+        let audioEnabled = true;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            const btn = document.getElementById('btn-sound');
+            if (audioEnabled) {
+                btn.innerHTML = '<i class="fa-solid fa-volume-high text-sm"></i>';
+                btn.className = 'absolute top-4 right-4 w-9 h-9 rounded-full bg-orange-50 border-2 border-orange-200 text-playzaOrange flex items-center justify-center hover:bg-orange-100 transition-colors z-20';
+                playSound('click');
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-volume-xmark text-sm"></i>';
+                btn.className = 'absolute top-4 right-4 w-9 h-9 rounded-full bg-gray-100 border-2 border-gray-300 text-gray-400 flex items-center justify-center transition-colors z-20';
+            }
+        }
+
+        function playSound(type) {
+            if (!audioEnabled) return;
+            initAudio();
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+                osc.start(now);
+                osc.stop(now + 0.08);
+            } else if (type === 'focus') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(300, now);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } else if (type === 'success') {
+                // Arpeggio
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.type = 'sine';
+                    o.frequency.setValueAtTime(freq, now + idx * 0.08);
+                    g.gain.setValueAtTime(0.12, now + idx * 0.08);
+                    g.gain.linearRampToValueAtTime(0.01, now + idx * 0.08 + 0.15);
+                    o.start(now + idx * 0.08);
+                    o.stop(now + idx * 0.08 + 0.15);
+                });
+            } else if (type === 'error') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.linearRampToValueAtTime(140, now + 0.2);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            }
+        }
+
+        // Tab Switching Handler
+        function switchTab(tab) {
+            playSound('click');
+            const loginForm = document.getElementById('form-login');
+            const signupForm = document.getElementById('form-signup');
+            const tabLogin = document.getElementById('tab-login');
+            const tabSignup = document.getElementById('tab-signup');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                tabLogin.className = "flex-1 py-2.5 rounded-xl font-fredoka font-bold text-sm tracking-wide transition-all bg-white text-playzaOrange shadow-sm";
+                tabSignup.className = "flex-1 py-2.5 rounded-xl font-fredoka font-bold text-sm tracking-wide text-playzaSubtext hover:text-playzaText transition-all";
+                setMascotSpeech("Welcome back! 🦊");
+            } else {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                tabSignup.className = "flex-1 py-2.5 rounded-xl font-fredoka font-bold text-sm tracking-wide transition-all bg-white text-playzaOrange shadow-sm";
+                tabLogin.className = "flex-1 py-2.5 rounded-xl font-fredoka font-bold text-sm tracking-wide text-playzaSubtext hover:text-playzaText transition-all";
+                setMascotSpeech("Join PlayZa today! 🚀");
+            }
+        }
+
+        // Toggle Password Input Visibility
+        function togglePassword(inputId, btn) {
+            playSound('click');
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        }
+
+        // Forgot Modal Controls
+        function openForgotModal() {
+            playSound('click');
+            document.getElementById('forgot-modal').classList.remove('hidden');
+        }
+        function closeForgotModal() {
+            document.getElementById('forgot-modal').classList.add('hidden');
+        }
+
+        // Mascot Animations Logic
+        const foxHead = document.getElementById('fox-head');
+        const pupilLeft = document.getElementById('fox-pupil-left');
+        const pupilRight = document.getElementById('fox-pupil-right');
+        const earLeft = document.getElementById('fox-ear-left');
+        const earRight = document.getElementById('fox-ear-right');
+        const mascotSpeech = document.getElementById('mascot-speech');
+
+        function setMascotSpeech(text) {
+            mascotSpeech.textContent = text;
+        }
+
+        function mascotFocus(fieldType) {
+            playSound('focus');
+            if (fieldType === 'pass') {
+                // Cover eyes by rotating ears inward & blushing look
+                earLeft.style.transform = 'rotate(45deg) translate(25px, 20px)';
+                earRight.style.transform = 'rotate(-45deg) translate(-25px, 20px)';
+                pupilLeft.style.transform = 'translate(0px, -8px)';
+                pupilRight.style.transform = 'translate(0px, -8px)';
+                setMascotSpeech("I'm not looking! 🙈");
+            } else {
+                setMascotSpeech(fieldType === 'name' ? "Great name! 🌟" : "Type email! 📧");
+            }
+        }
+
+        function mascotLookTrack(inputElem) {
+            const length = Math.min(inputElem.value.length, 25);
+            const xOffset = (length - 12) * 0.4;
+            pupilLeft.style.transform = `translate(${xOffset}px, 3px)`;
+            pupilRight.style.transform = `translate(${xOffset}px, 3px)`;
+        }
+
+        function mascotReset() {
+            pupilLeft.style.transform = 'translate(0, 0)';
+            pupilRight.style.transform = 'translate(0, 0)';
+            earLeft.style.transform = 'rotate(0deg)';
+            earRight.style.transform = 'rotate(0deg)';
+            foxHead.style.transform = 'rotate(0deg) translateY(0px)';
+        }
+
+        function mascotCelebrate() {
+            foxHead.style.transform = 'translateY(-8px)';
+            earLeft.style.transform = 'rotate(-15deg)';
+            earRight.style.transform = 'rotate(15deg)';
+            pupilLeft.style.transform = 'scale(1.2)';
+            pupilRight.style.transform = 'scale(1.2)';
+            setTimeout(mascotReset, 2000);
+        }
+
+        function mascotSad() {
+            foxHead.style.transform = 'rotate(-8deg) translateY(5px)';
+            pupilLeft.style.transform = 'translate(0px, 5px)';
+            pupilRight.style.transform = 'translate(0px, 5px)';
+            setTimeout(mascotReset, 1800);
+        }
+
+        function triggerMascotTrick() {
+            playSound('click');
+            foxHead.style.transform = 'rotate(360deg)';
+            foxHead.style.transition = 'transform 0.6s ease';
+            setMascotSpeech("Wheee! PlayZa Fox! 🦊");
+            setTimeout(() => {
+                foxHead.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                mascotReset();
+            }, 700);
+        }
+    </script>
+</body>
+</html>
