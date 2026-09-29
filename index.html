@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+[cite: 2]<!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-950">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>PlayZa - Ultimate Quiz & Battle Platform</title>
+  <title>PlayZa - Ultimate Quiz & Battle Platform Pro</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -13,9 +13,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <!-- <head> section mein link karein -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#000000">
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
@@ -128,6 +125,23 @@
       box-shadow: 0 4px 0 #D43333 !important;
     }
 
+    /* Glowing Avatar Animations */
+    @keyframes pulseGlowNeon {
+      0% { box-shadow: 0 0 8px #1CB0F6, 0 0 16px rgba(147, 51, 234, 0.8); }
+      100% { box-shadow: 0 0 22px #9333EA, 0 0 35px rgba(28, 176, 246, 0.9); }
+    }
+    @keyframes pulseGlowFire {
+      0% { box-shadow: 0 0 8px #FF5B00, 0 0 16px rgba(244, 63, 94, 0.8); }
+      100% { box-shadow: 0 0 22px #F43F5E, 0 0 35px rgba(255, 208, 0, 0.9); }
+    }
+    @keyframes pulseGlowGod {
+      0% { box-shadow: 0 0 12px #A855F7, 0 0 25px rgba(234, 179, 8, 0.9); }
+      100% { box-shadow: 0 0 28px #EC4899, 0 0 45px rgba(168, 85, 247, 1); }
+    }
+    .glow-neon { animation: pulseGlowNeon 1.5s infinite alternate; border-color: #1CB0F6 !important; }
+    .glow-fire { animation: pulseGlowFire 1.5s infinite alternate; border-color: #FF5B00 !important; }
+    .glow-god { animation: pulseGlowGod 1.5s infinite alternate; border-color: #A855F7 !important; }
+
     /* Badges Style */
     .badge-card-unlocked {
       background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
@@ -137,15 +151,15 @@
     .badge-card-locked {
       background: #F8FAFC;
       border: 2px solid #E2E8F0;
-      opacity: 0.6;
+      opacity: 0.65;
     }
 
-    /* Edge-to-Edge Mobile Frame Container */
+    /* Mobile Frame */
     .mobile-frame {
-      max-width: 440px;
+      max-width: 450px;
       width: 100%;
       height: 100vh;
-      max-height: 930px;
+      max-height: 940px;
       border-radius: 36px;
       overflow: hidden;
       box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 0 12px #1e293b;
@@ -162,7 +176,6 @@
       }
     }
 
-    /* Custom Scrollbar */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -171,7 +184,6 @@
       scrollbar-width: none;
     }
 
-    /* Floating Mascot Animation */
     @keyframes float {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
       50% { transform: translateY(-8px) rotate(2deg); }
@@ -188,73 +200,115 @@
     .animate-celebrate {
       animation: celebrate 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
+
+    /* Click Ripple Effect */
+    .ripple-effect {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple 0.4s linear;
+      background-color: rgba(255, 255, 255, 0.4);
+      pointer-events: none;
+    }
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    /* Ticker animation */
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    .animate-marquee {
+      display: inline-block;
+      white-space: nowrap;
+      animation: marquee 18s linear infinite;
+    }
+
+    /* Spin Wheel Canvas Style */
+    #wheel-canvas {
+      transition: transform 4s cubic-bezier(0.15, 0.9, 0.15, 1);
+    }
   </style>
 </head>
 
 <body class="h-full flex items-center justify-center p-0 sm:p-4 bg-slate-950">
 
+  <!-- FLOATING TOAST CONTAINER -->
+  <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center pointer-events-none space-y-2 w-11/12 max-w-xs"></div>
+
   <div class="mobile-frame bg-[#F4F7FB] flex flex-col relative w-full h-full text-slate-800">
 
-    <!-- App Header Bar (Sync Stats & Profile) -->
+    <!-- App Header Bar -->
     <div id="app-header" class="bg-white/95 backdrop-blur-md px-4 py-3 flex items-center justify-between shadow-sm z-20 border-b border-slate-200">
-      <!-- Profile / Auth Trigger -->
-      <div id="btn-auth-profile" onclick="openAuthModal()" class="flex items-center gap-2.5 cursor-pointer active:scale-95 transition-transform">
-        <div id="header-avatar" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-100 to-orange-100 border-2 border-brand-orange flex items-center justify-center text-2xl shadow-sm overflow-hidden">
+      <div id="btn-auth-profile" onclick="switchTab('profile')" class="flex items-center gap-2.5 cursor-pointer active:scale-95 transition-transform">
+        <div id="header-avatar" class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-100 to-orange-100 border-2 border-brand-orange flex items-center justify-center text-2xl shadow-sm overflow-hidden p-0.5">
           🦊
         </div>
         <div>
           <div class="flex items-center gap-1.5">
             <span id="header-username" class="font-fredoka text-sm font-bold text-slate-800 max-w-[95px] truncate">Explorer</span>
             <span id="guest-badge" class="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md uppercase">Guest</span>
+            <span id="vip-header-badge" class="hidden bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase shadow-xs">VIP</span>
           </div>
           <div class="flex items-center gap-1.5 text-xs text-slate-500 font-bold mt-0.5">
             <span class="text-brand-orange">Lvl <span id="header-level">1</span></span>
-            <div class="w-14 h-2 bg-slate-200 rounded-full overflow-hidden">
+            <div class="w-16 h-2 bg-slate-200 rounded-full overflow-hidden relative">
               <div id="header-xp-bar" class="h-full bg-gradient-to-r from-brand-mint to-emerald-400 transition-all duration-300" style="width: 0%"></div>
             </div>
+            <span id="header-xp-text" class="text-[10px] text-slate-400">0/100</span>
           </div>
         </div>
       </div>
 
-      <!-- Streaks, Gems & Sound Toggle -->
       <div class="flex items-center gap-2 font-fredoka">
-        <!-- Daily Streak -->
         <div class="flex items-center gap-1 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full text-amber-600 font-bold text-xs shadow-xs">
           <i class="fa-solid fa-fire text-brand-orange text-sm animate-pulse"></i>
           <span id="header-streak">1</span>
         </div>
 
-        <!-- Diamonds / Gems -->
-        <div class="flex items-center gap-1 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-full text-brand-blue font-bold text-xs shadow-xs">
+        <div onclick="switchTab('shop')" class="flex items-center gap-1 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-full text-brand-blue font-bold text-xs shadow-xs cursor-pointer active:scale-95 transition-transform">
           <i class="fa-solid fa-gem text-brand-blue text-sm"></i>
-          <span id="header-gems">50</span>
+          <span id="header-gems">100</span>
         </div>
 
-        <!-- Sound Toggle -->
-        <button id="sound-toggle" onclick="toggleSound()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center text-xs transition">
-          <i id="sound-icon" class="fa-solid fa-volume-high text-brand-mint"></i>
+        <button onclick="switchTab('settings')" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center text-xs transition">
+          <i class="fa-solid fa-gear text-slate-600"></i>
         </button>
       </div>
     </div>
 
-    <!-- MAIN SCREEN CONTAINER -->
+    <!-- MAIN CONTAINER -->
     <main id="screen-container" class="flex-1 overflow-y-auto no-scrollbar pb-24 relative">
 
       <!-- SCREEN 1: HOME TAB -->
       <section id="tab-home" class="p-4 space-y-4">
+
+        <!-- LIVE TICKER TAPE BANNER -->
+        <div class="bg-slate-900 rounded-2xl py-1.5 px-3 overflow-hidden text-white border border-slate-800 shadow-inner flex items-center gap-2 text-[11px] font-bold">
+          <span class="bg-brand-orange text-white text-[9px] px-2 py-0.5 rounded-md uppercase font-black shrink-0">LIVE</span>
+          <div class="overflow-hidden w-full relative">
+            <div class="animate-marquee text-amber-300">
+              ⚡ Welcome to PlayZa Pro! Spin Daily Lucky Wheel • Cloud Sync Active • Unlocked Unlimited AI Quizzes • Earn 💎 Gems & Level Up! 🚀
+            </div>
+          </div>
+        </div>
+
         <!-- Hero Card -->
         <div class="bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500 rounded-3xl p-4 text-white shadow-lg relative overflow-hidden flex items-center justify-between">
           <div class="z-10 max-w-[65%]">
             <span class="bg-white/20 backdrop-blur-md text-white text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full tracking-wide">Daily Bonus Active</span>
-            <h2 class="font-fredoka text-xl font-bold mt-1.5 leading-tight">Ready for a Quiz Battle?</h2>
-            <p class="text-xs text-orange-100 mt-1 font-semibold">Play now to extend your 1-day streak & win 💎 Gems!</p>
+            <h2 class="font-fredoka text-xl font-bold mt-1.5 leading-tight">Ready for Endless Quiz Battles?</h2>
+            <p class="text-xs text-orange-100 mt-1 font-semibold">Play unlimited subject quizzes to win 💎 Gems & Level Up!</p>
             <button onclick="switchTab('quizzes')" class="mt-3.5 btn-3d btn-yellow px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 uppercase">
-              <span>Start Quiz</span>
+              <span>Start Endless Quiz</span>
               <i class="fa-solid fa-play text-xs"></i>
             </button>
           </div>
           
-          <!-- Animated Fox Mascot -->
           <div id="mascot-home" class="w-24 h-24 z-10 animate-float flex-shrink-0">
             <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-lg">
               <circle cx="50" cy="50" r="45" fill="#FF5B00"/>
@@ -274,40 +328,141 @@
           </div>
         </div>
 
-        <!-- Banners Slider -->
-        <div class="relative overflow-hidden rounded-2xl shadow-xs bg-white border border-slate-200">
-          <div id="banner-slider" class="flex transition-transform duration-500 ease-out">
-            <!-- Banner 1 -->
-            <div class="min-w-full p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex justify-between items-center">
-              <div>
-                <span class="bg-yellow-400 text-slate-900 font-extrabold text-[10px] px-2 py-0.5 rounded-full uppercase">Cloud Sync Active</span>
-                <h3 class="font-fredoka text-lg font-bold mt-1">Full Firebase Sync</h3>
-                <p class="text-xs text-blue-100 mt-0.5">Your Gems, Streak & Avatars save across all devices!</p>
-              </div>
-              <div class="text-3xl text-yellow-300">☁️</div>
+        <!-- MID-QUIZ RESUME BANNER (DYNAMIC & SAVED TO FIREBASE/LOCAL) -->
+        <div id="home-resume-banner" class="hidden bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-3.5 text-white flex justify-between items-center shadow-md border-2 border-purple-300">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-2xl animate-pulse">⏸️</div>
+            <div>
+              <h4 class="font-fredoka text-sm font-bold">Quiz In Progress!</h4>
+              <p id="resume-banner-desc" class="text-[11px] text-purple-100">Resume from Question #1</p>
             </div>
-            <!-- Banner 2 -->
-            <div class="min-w-full p-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white flex justify-between items-center">
+          </div>
+          <button onclick="resumeSavedQuiz()" class="btn-3d btn-yellow px-3.5 py-1.5 rounded-xl text-xs font-extrabold uppercase">
+            Resume
+          </button>
+        </div>
+
+        <!-- NEW HORIZONTALLY SCROLLABLE BANNERS CAROUSEL -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between text-xs font-extrabold text-slate-500 uppercase px-1">
+            <span>Featured Banners</span>
+            <span class="text-brand-blue text-[10px]">Swipe 👉</span>
+          </div>
+
+          <div class="flex overflow-x-auto space-x-3 snap-x snap-mandatory no-scrollbar pb-1">
+            <!-- Slide 1: Firebase Sync -->
+            <div class="snap-center min-w-[85%] sm:min-w-[80%] p-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl text-white shadow-sm border border-blue-400/30 flex justify-between items-center shrink-0">
               <div>
-                <span class="bg-emerald-400 text-slate-900 font-extrabold text-[10px] px-2 py-0.5 rounded-full uppercase">Avatar Expansion</span>
-                <h3 class="font-fredoka text-lg font-bold mt-1">24 Animated Avatars</h3>
-                <p class="text-xs text-pink-100 mt-0.5">Unlock Ninja Cat, Dragon & Cyber Samurai!</p>
+                <span class="bg-yellow-400 text-slate-900 font-black text-[9px] px-2 py-0.5 rounded-full uppercase">Realtime Cloud Sync</span>
+                <h3 class="font-fredoka text-base font-bold mt-1">Full Firebase Sync ☁️</h3>
+                <p class="text-[11px] text-blue-100 mt-0.5">Your Gems, Level & Badges sync live across devices!</p>
               </div>
-              <div class="text-3xl">🐱‍👤</div>
+              <div class="text-3xl text-yellow-300 shrink-0">☁️</div>
             </div>
-            <!-- Banner 3 -->
-            <div class="min-w-full p-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex justify-between items-center">
+
+            <!-- Slide 2: Diamond Exchange -->
+            <div class="snap-center min-w-[85%] sm:min-w-[80%] p-4 bg-gradient-to-r from-purple-700 to-indigo-800 rounded-2xl text-white shadow-sm border border-purple-400/30 flex justify-between items-center shrink-0">
               <div>
-                <span class="bg-white text-emerald-800 font-extrabold text-[10px] px-2 py-0.5 rounded-full uppercase">Badges Collection</span>
-                <h3 class="font-fredoka text-lg font-bold mt-1">16 Achievement Badges</h3>
-                <p class="text-xs text-emerald-100 mt-0.5">Rank up & unlock 3D Glass Badges!</p>
+                <span class="bg-purple-300 text-purple-950 font-black text-[9px] px-2 py-0.5 rounded-full uppercase">Vault Store</span>
+                <h3 class="font-fredoka text-base font-bold mt-1">Diamond Exchange 💎</h3>
+                <p class="text-[11px] text-purple-100 mt-0.5">Exchange Gems for Streak Shields & 2X XP Booster!</p>
               </div>
-              <div class="text-3xl">🏆</div>
+              <button onclick="switchTab('shop')" class="btn-3d btn-purple px-3 py-1.5 rounded-xl text-[11px] font-black uppercase shrink-0">
+                Open
+              </button>
+            </div>
+
+            <!-- Slide 3: Unlimited AI Quizzes -->
+            <div class="snap-center min-w-[85%] sm:min-w-[80%] p-4 bg-gradient-to-r from-emerald-600 to-teal-700 rounded-2xl text-white shadow-sm border border-emerald-400/30 flex justify-between items-center shrink-0">
+              <div>
+                <span class="bg-emerald-300 text-emerald-950 font-black text-[9px] px-2 py-0.5 rounded-full uppercase">Infinite Mode</span>
+                <h3 class="font-fredoka text-base font-bold mt-1">Endless AI Quizzes 🧠</h3>
+                <p class="text-[11px] text-emerald-100 mt-0.5">Never run out of questions across 6 subject arenas!</p>
+              </div>
+              <button onclick="switchTab('quizzes')" class="btn-3d btn-mint px-3 py-1.5 rounded-xl text-[11px] font-black uppercase shrink-0">
+                Play
+              </button>
+            </div>
+
+            <!-- Slide 4: Raid Boss -->
+            <div class="snap-center min-w-[85%] sm:min-w-[80%] p-4 bg-gradient-to-r from-rose-600 to-red-700 rounded-2xl text-white shadow-sm border border-rose-400/30 flex justify-between items-center shrink-0">
+              <div>
+                <span class="bg-rose-300 text-rose-950 font-black text-[9px] px-2 py-0.5 rounded-full uppercase">Weekly Raid</span>
+                <h3 class="font-fredoka text-base font-bold mt-1">Cyber Dragon Boss 🐲</h3>
+                <p class="text-[11px] text-rose-100 mt-0.5">Attack the Boss to claim +150 Gems bonus rewards!</p>
+              </div>
+              <button onclick="switchTab('battle')" class="btn-3d btn-rose px-3 py-1.5 rounded-xl text-[11px] font-black uppercase shrink-0">
+                Fight
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Daily Quests Section -->
+        <!-- DAILY MYSTERY CHEST CARD (NEW FEATURE) -->
+        <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 rounded-2xl p-3.5 text-white flex justify-between items-center shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center text-2xl animate-bounce">🎁</div>
+            <div>
+              <h4 class="font-fredoka text-sm font-bold">Daily Mystery Chest</h4>
+              <p class="text-[11px] text-amber-100">Tap to unlock instant Gems & XP!</p>
+            </div>
+          </div>
+          <button id="btn-claim-mystery" onclick="openMysteryChest()" class="btn-3d btn-yellow px-3.5 py-1.5 rounded-xl text-xs font-extrabold uppercase">
+            Open Chest
+          </button>
+        </div>
+
+        <!-- LUCKY WHEEL SECTION -->
+        <div class="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm relative overflow-hidden">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-2xl">🎰</span>
+              <div>
+                <h3 class="font-fredoka text-base font-bold text-slate-800">Daily Lucky Wheel</h3>
+                <p class="text-[11px] text-slate-400 font-semibold">Spin daily to win Gems & XP! Refreshes 24h.</p>
+              </div>
+            </div>
+            <span id="spin-counter-badge" class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-2.5 py-1 rounded-full">
+              3/3 Spins
+            </span>
+          </div>
+
+          <div class="flex flex-col items-center justify-center relative py-2">
+            <!-- Pointer Arrow -->
+            <div class="absolute -top-1 left-1/2 -translate-x-1/2 text-2xl font-black text-rose-600 z-10 filter drop-shadow">
+              ▼
+            </div>
+
+            <!-- Canvas Wheel -->
+            <div class="relative w-56 h-56 flex items-center justify-center">
+              <canvas id="wheel-canvas" width="220" height="220" class="rounded-full shadow-md border-4 border-amber-300"></canvas>
+              <!-- Center Cap -->
+              <div class="absolute w-12 h-12 rounded-full bg-slate-900 border-4 border-amber-400 flex items-center justify-center text-amber-300 text-xs font-black shadow-inner z-10">
+                PLAY
+              </div>
+            </div>
+
+            <button id="btn-spin-wheel" onclick="spinWheelAction()" class="mt-4 w-full btn-3d btn-mint py-2.5 rounded-2xl font-fredoka font-bold text-xs uppercase tracking-wider">
+              Spin Wheel Now 🎡
+            </button>
+          </div>
+        </div>
+
+        <!-- Daily Bonus Claim Banner -->
+        <div id="daily-claim-banner" class="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-3.5 text-white flex justify-between items-center shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-2xl">🌟</div>
+            <div>
+              <h4 class="font-fredoka text-sm font-bold">Daily Streak Bonus</h4>
+              <p class="text-[11px] text-amber-100">Claim +100 XP & +50 Gems today!</p>
+            </div>
+          </div>
+          <button id="btn-claim-daily" onclick="claimDailyBonus()" class="btn-3d btn-yellow px-3 py-1.5 rounded-xl text-xs font-extrabold uppercase">
+            Claim
+          </button>
+        </div>
+
+        <!-- Daily Quests -->
         <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -318,12 +473,9 @@
           </div>
 
           <div class="space-y-2.5">
-            <!-- Quest 1 -->
             <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-lg">
-                  🎯
-                </div>
+                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-lg">🎯</div>
                 <div>
                   <h4 class="font-bold text-xs text-slate-800">Complete 2 Quizzes</h4>
                   <p class="text-[11px] text-slate-500 font-semibold"><span id="quest1-progress">0</span> / 2 Completed</p>
@@ -334,48 +486,45 @@
               </div>
             </div>
 
-            <!-- Quest 2 -->
             <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-blue-100 text-brand-blue flex items-center justify-center font-bold text-lg">
-                  🧠
-                </div>
+                <div class="w-10 h-10 rounded-xl bg-blue-100 text-brand-blue flex items-center justify-center font-bold text-lg">🧠</div>
                 <div>
                   <h4 class="font-bold text-xs text-slate-800">Score 100% on Any Quiz</h4>
                   <p class="text-[11px] text-slate-500 font-semibold"><span id="quest2-progress">0</span> / 1 Perfect</p>
                 </div>
               </div>
               <div id="quest2-action">
-                <span class="text-xs font-extrabold text-brand-blue bg-blue-50 px-2.5 py-1 rounded-xl border border-blue-100">+20 💎</span>
+                <span class="text-xs font-extrabold text-brand-blue bg-blue-50 px-2.5 py-1 rounded-xl border border-blue-100">+30 💎</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Quick Categories Grid Header -->
         <div class="flex items-center justify-between pt-1">
-          <h3 class="font-fredoka text-base font-bold text-slate-800">Featured Quiz Arenas</h3>
-          <button onclick="switchTab('quizzes')" class="text-xs font-bold text-brand-blue hover:underline">View All</button>
+          <h3 class="font-fredoka text-base font-bold text-slate-800">Subject Arenas (Endless)</h3>
+          <button onclick="switchTab('quizzes')" class="text-xs font-bold text-brand-blue hover:underline">View All (6)</button>
         </div>
 
-        <div id="home-categories-grid" class="grid grid-cols-2 gap-3">
-          <!-- Dynamically populated -->
-        </div>
+        <div id="home-categories-grid" class="grid grid-cols-2 gap-3"></div>
       </section>
 
-      <!-- SCREEN 2: QUIZZES TAB -->
+      <!-- SCREEN 2: QUIZZES TAB (SUBJECT WISE & ENDLESS) -->
       <section id="tab-quizzes" class="p-4 space-y-4 hidden">
         <div class="bg-gradient-to-r from-blue-600 to-cyan-500 rounded-3xl p-4 text-white shadow-md flex justify-between items-center">
           <div>
-            <h2 class="font-fredoka text-xl font-bold">Quiz Categories 🎯</h2>
-            <p class="text-xs text-blue-100 mt-1 font-semibold">Test your knowledge, gain XP & earn Gems!</p>
+            <h2 class="font-fredoka text-xl font-bold">Unlimited Subject Quizzes 🎯</h2>
+            <p class="text-xs text-blue-100 mt-1 font-semibold">Endless Questions • Auto generator algorithm!</p>
           </div>
-          <div class="text-4xl">⚡</div>
+          <div class="text-4xl">📐</div>
         </div>
 
-        <div id="all-categories-grid" class="grid grid-cols-1 gap-3">
-          <!-- Dynamically populated -->
+        <!-- Live Search Filter -->
+        <div class="relative">
+          <input type="text" id="search-subject-input" oninput="filterSubjects()" placeholder="🔍 Search subjects..." class="w-full px-4 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-brand-blue shadow-xs" />
         </div>
+
+        <div id="all-categories-grid" class="grid grid-cols-1 gap-3"></div>
       </section>
 
       <!-- SCREEN 3: BATTLE ARENA TAB -->
@@ -386,20 +535,16 @@
           <p class="text-xs text-rose-100 mt-0.5 font-semibold">Beat bosses & climb global leaderboards!</p>
         </div>
 
-        <!-- Boss Challenge Card -->
         <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs relative overflow-hidden">
           <div class="flex items-start justify-between">
             <div class="max-w-[70%]">
               <span class="bg-rose-100 text-rose-600 font-extrabold text-[10px] px-2 py-0.5 rounded-md uppercase">Weekly Raid Boss</span>
               <h3 class="font-fredoka text-base font-bold text-slate-800 mt-1">Mecha Cyber Dragon 🐲</h3>
-              <p class="text-xs text-slate-500 mt-0.5 font-semibold">Deal 100 HP damage to unlock +100 Gems bonus!</p>
+              <p class="text-xs text-slate-500 mt-0.5 font-semibold">Deal damage to unlock +150 Gems bonus!</p>
             </div>
-            <div class="w-14 h-14 bg-rose-50 rounded-2xl border border-rose-200 flex items-center justify-center text-3xl shadow-inner">
-              🤖
-            </div>
+            <div class="w-14 h-14 bg-rose-50 rounded-2xl border border-rose-200 flex items-center justify-center text-3xl shadow-inner">🤖</div>
           </div>
 
-          <!-- Boss Health Bar -->
           <div class="mt-3">
             <div class="flex justify-between text-[11px] font-bold text-slate-600 mb-1">
               <span>Boss Health</span>
@@ -411,106 +556,302 @@
           </div>
 
           <button onclick="attackBoss()" id="btn-boss-attack" class="mt-3.5 w-full btn-3d btn-rose py-2.5 rounded-xl font-fredoka font-bold text-xs uppercase tracking-wider">
-            Attack Boss (Play Quiz Challenge)
+            Attack Boss (Math Challenge)
           </button>
         </div>
 
-        <!-- Dynamic Leaderboards -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
           <div class="p-3 bg-slate-50 border-b border-slate-200 font-fredoka text-xs font-bold text-slate-600 flex justify-between items-center">
             <span>🏆 Diamond League Leaderboard</span>
             <span class="text-brand-orange font-extrabold text-[10px]">SYNCED LIVE</span>
           </div>
-          <div id="battle-leaderboard-list" class="divide-y divide-slate-100 text-sm font-semibold">
-            <!-- Dynamically populated -->
-          </div>
+          <div id="battle-leaderboard-list" class="divide-y divide-slate-100 text-sm font-semibold"></div>
         </div>
       </section>
 
-      <!-- SCREEN 4: AVATAR SHOP TAB -->
+      <!-- SCREEN 4: SHOP & DIAMOND EXCHANGE TAB -->
       <section id="tab-shop" class="p-4 space-y-4 hidden">
         <div class="bg-gradient-to-r from-emerald-600 to-teal-500 rounded-3xl p-4 text-white shadow-md flex justify-between items-center">
           <div>
-            <h2 class="font-fredoka text-xl font-bold">Avatar Vault 🦊</h2>
-            <p class="text-xs text-emerald-100 mt-0.5 font-semibold">Unlock & Equip 24 cute cartoon avatars!</p>
+            <h2 class="font-fredoka text-xl font-bold">Shop & Diamond Vault 💎</h2>
+            <p class="text-xs text-emerald-100 mt-0.5 font-semibold">Exchange Diamonds & Unlock Glowing Avatars!</p>
           </div>
           <div class="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full font-fredoka font-bold text-sm">
             <i class="fa-solid fa-gem text-yellow-300"></i>
-            <span id="shop-gems-balance">50</span>
+            <span id="shop-gems-balance">100</span>
           </div>
         </div>
 
-        <div id="avatar-grid" class="grid grid-cols-2 gap-3">
-          <!-- Dynamically populated 24 avatars -->
+        <!-- DIAMOND EXCHANGE SECTION -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <h3 class="font-fredoka text-base font-bold text-slate-800 flex items-center gap-2">
+              <span class="text-xl">🔁</span> Diamond Exchange Center
+            </h3>
+            <span class="text-[10px] font-extrabold text-brand-purple bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-100">Live Exchange</span>
+          </div>
+
+          <div id="diamond-exchange-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
         </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <h3 class="font-fredoka text-base font-bold text-slate-800">Avatar Vault</h3>
+          <span class="text-xs font-bold text-brand-blue">Unlockable & Buyable</span>
+        </div>
+
+        <div id="avatar-grid" class="grid grid-cols-2 gap-3"></div>
       </section>
 
-      <!-- SCREEN 5: PROFILE & BADGES TAB -->
+      <!-- SCREEN 5: PROFILE PAGE -->
       <section id="tab-profile" class="p-4 space-y-4 hidden">
-        <div class="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs text-center relative overflow-hidden">
-          <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-amber-100 to-orange-100 border-4 border-brand-orange flex items-center justify-center text-4xl shadow-md">
-            <span id="profile-avatar-icon">🦊</span>
-          </div>
-          <h2 id="profile-name" class="font-fredoka text-xl font-bold text-slate-800 mt-2">Explorer</h2>
-          <p id="profile-email-text" class="text-xs text-slate-400 font-semibold">Guest User (Tap below to sync)</p>
+        <div class="bg-gradient-to-b from-slate-900 via-slate-850 to-slate-800 rounded-3xl p-5 text-white shadow-xl relative overflow-hidden border border-slate-700">
+          <div class="flex flex-col items-center text-center relative z-10">
+            <div class="relative">
+              <div id="profile-avatar-icon" class="w-24 h-24 rounded-3xl bg-gradient-to-tr from-amber-400 to-orange-500 border-4 border-white/20 flex items-center justify-center text-5xl shadow-2xl p-1">
+                🦊
+              </div>
+              <span id="profile-rank-title" class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-900 text-[10px] font-extrabold px-3 py-0.5 rounded-full shadow-md whitespace-nowrap uppercase tracking-wider">
+                Trivia Scholar
+              </span>
+            </div>
 
-          <div class="mt-3 flex justify-center items-center gap-2">
-            <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
-              <i class="fa-solid fa-crown text-amber-500"></i>
-              Level <span id="profile-level">1</span>
-            </span>
-            <span class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
-              <i class="fa-solid fa-bolt text-brand-blue"></i>
-              <span id="profile-xp">0</span> XP
-            </span>
+            <h2 id="profile-name" class="font-fredoka text-2xl font-bold mt-4 text-white">Explorer</h2>
+            <p id="profile-email-text" class="text-xs text-slate-400 font-semibold mt-0.5">Guest User (Not Synced)</p>
+
+            <div class="mt-3 flex items-center gap-2">
+              <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+                <i class="fa-solid fa-crown text-amber-400"></i> Level <span id="profile-level">1</span>
+              </span>
+              <span class="bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+                <i class="fa-solid fa-bolt text-brand-blue"></i> <span id="profile-xp">0</span> XP
+              </span>
+            </div>
+
+            <div class="w-full mt-4">
+              <div class="flex justify-between text-[11px] text-slate-300 font-bold mb-1">
+                <span>XP Level Requirement</span>
+                <span><span id="profile-xp-current">0</span> / <span id="profile-xp-next">100</span> XP</span>
+              </div>
+              <div class="w-full bg-slate-700 h-3 rounded-full overflow-hidden p-0.5 border border-slate-600">
+                <div id="profile-xp-progress" class="bg-gradient-to-r from-brand-mint to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="w-full mt-4 flex gap-2">
+              <button onclick="openAuthModal()" class="flex-1 btn-3d btn-blue py-2.5 rounded-xl text-xs font-bold uppercase flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span id="profile-sync-btn-text">Sync Account</span>
+              </button>
+              <button onclick="switchTab('settings')" class="btn-3d btn-purple px-4 py-2.5 rounded-xl text-xs font-bold uppercase">
+                <i class="fa-solid fa-gear"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-orange-100 text-brand-orange flex items-center justify-center text-xl font-bold">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div>
+              <p class="font-fredoka text-lg font-bold text-slate-800" id="stat-accuracy">100%</p>
+              <p class="text-[10px] text-slate-400 font-extrabold uppercase">Overall Accuracy</p>
+            </div>
           </div>
 
-          <!-- XP Level Progress Bar -->
-          <div class="mt-4 bg-slate-100 rounded-full h-3 p-0.5 border border-slate-200 relative overflow-hidden">
-            <div id="profile-xp-progress" class="bg-gradient-to-r from-brand-mint to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-brand-mint flex items-center justify-center text-xl font-bold">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+              <p class="font-fredoka text-lg font-bold text-slate-800" id="stat-correct">0</p>
+              <p class="text-[10px] text-slate-400 font-extrabold uppercase">Correct Answers</p>
+            </div>
           </div>
-          <p class="text-[11px] text-slate-500 font-bold mt-1"><span id="profile-xp-current">0</span> / <span id="profile-xp-next">100</span> XP to next level</p>
 
-          <div class="mt-4 flex gap-2">
-            <button onclick="openAuthModal()" class="flex-1 btn-3d btn-blue py-2 rounded-xl text-xs font-bold uppercase">
-              <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Account Sync
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-100 text-brand-blue flex items-center justify-center text-xl font-bold">
+              <i class="fa-solid fa-gamepad"></i>
+            </div>
+            <div>
+              <p class="font-fredoka text-lg font-bold text-slate-800" id="stat-quizzes">0</p>
+              <p class="text-[10px] text-slate-400 font-extrabold uppercase">Quizzes Solved</p>
+            </div>
+          </div>
+
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-500 flex items-center justify-center text-xl font-bold">
+              <i class="fa-solid fa-fire"></i>
+            </div>
+            <div>
+              <p class="font-fredoka text-lg font-bold text-slate-800" id="stat-streak">1</p>
+              <p class="text-[10px] text-slate-400 font-extrabold uppercase">Daily Streak</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-fredoka text-base font-bold text-slate-800">Subject Progress</h3>
+            <span class="text-xs font-bold text-brand-blue">Saved Local & Cloud</span>
+          </div>
+          <div id="subject-accuracy-list" class="space-y-2.5"></div>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <h3 class="font-fredoka text-base font-bold text-slate-800">Achievement Badges</h3>
+          <span class="text-xs font-bold text-brand-purple bg-purple-50 px-2.5 py-0.5 rounded-full"><span id="unlocked-badge-count">1</span> / 25 Unlocked</span>
+        </div>
+
+        <div id="badges-grid" class="grid grid-cols-2 gap-3"></div>
+      </section>
+
+      <!-- SCREEN 6: SETTINGS PAGE -->
+      <section id="tab-settings" class="p-4 space-y-4 hidden">
+        <div class="bg-gradient-to-r from-slate-800 to-slate-900 rounded-3xl p-4 text-white shadow-md flex justify-between items-center">
+          <div>
+            <h2 class="font-fredoka text-xl font-bold">App Settings ⚙️</h2>
+            <p class="text-xs text-slate-300 mt-0.5 font-semibold">Customize sound, profile & cloud sync</p>
+          </div>
+          <div class="text-3xl text-amber-400">🔧</div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs divide-y divide-slate-100">
+          <div class="p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-emerald-100 text-brand-mint flex items-center justify-center text-lg font-bold">
+                <i class="fa-solid fa-volume-high"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-sm text-slate-800">Sound Effects</h4>
+                <p class="text-[11px] text-slate-400 font-semibold">In-game audio sound FX</p>
+              </div>
+            </div>
+            <button id="setting-sound-btn" onclick="toggleSound()" class="btn-3d btn-mint px-3.5 py-1.5 rounded-xl text-xs font-bold">
+              ON
+            </button>
+          </div>
+
+          <div class="p-4 space-y-2">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-100 text-brand-blue flex items-center justify-center text-lg font-bold">
+                <i class="fa-solid fa-user-pen"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-sm text-slate-800">Change Nickname</h4>
+                <p class="text-[11px] text-slate-400 font-semibold">Updates display name everywhere</p>
+              </div>
+            </div>
+            <div class="flex gap-2 pt-1">
+              <input type="text" id="setting-name-input" placeholder="New nickname..." class="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-brand-orange font-bold" />
+              <button onclick="saveNewNickname()" class="btn-3d btn-orange px-3.5 py-2 rounded-xl text-xs font-bold uppercase">Save</button>
+            </div>
+          </div>
+
+          <div class="p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-purple-100 text-brand-purple flex items-center justify-center text-lg font-bold">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-sm text-slate-800">Force Cloud Sync</h4>
+                <p class="text-[11px] text-slate-400 font-semibold">Sync local data to Firebase</p>
+              </div>
+            </div>
+            <button onclick="forceCloudSyncAction()" class="btn-3d btn-purple px-3.5 py-1.5 rounded-xl text-xs font-bold">
+              SYNC
+            </button>
+          </div>
+
+          <div class="p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg font-bold">
+                <i class="fa-solid fa-right-to-bracket"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-sm text-slate-800">Account Status</h4>
+                <p id="setting-account-type" class="text-[11px] text-slate-400 font-semibold">Guest User</p>
+              </div>
+            </div>
+            <button onclick="openAuthModal()" class="btn-3d btn-yellow px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase">
+              Manage
+            </button>
+          </div>
+
+          <div class="p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-rose-100 text-brand-rose flex items-center justify-center text-lg font-bold">
+                <i class="fa-solid fa-trash-can"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-sm text-slate-800">Reset Local Cache</h4>
+                <p class="text-[11px] text-slate-400 font-semibold">Clears local cache data</p>
+              </div>
+            </div>
+            <button onclick="resetLocalCache()" class="btn-3d btn-rose px-3.5 py-1.5 rounded-xl text-xs font-bold">
+              RESET
             </button>
           </div>
         </div>
 
-        <!-- User Stats Grid -->
-        <div class="grid grid-cols-3 gap-2">
-          <div class="bg-white p-3 rounded-2xl border border-slate-200 text-center shadow-xs">
-            <i class="fa-solid fa-gamepad text-brand-orange text-lg"></i>
-            <p class="font-fredoka text-base font-bold text-slate-800 mt-1" id="stat-quizzes">0</p>
-            <p class="text-[10px] text-slate-400 font-extrabold uppercase">Quizzes</p>
-          </div>
-          <div class="bg-white p-3 rounded-2xl border border-slate-200 text-center shadow-xs">
-            <i class="fa-solid fa-circle-check text-brand-mint text-lg"></i>
-            <p class="font-fredoka text-base font-bold text-slate-800 mt-1" id="stat-correct">0</p>
-            <p class="text-[10px] text-slate-400 font-extrabold uppercase">Correct</p>
-          </div>
-          <div class="bg-white p-3 rounded-2xl border border-slate-200 text-center shadow-xs">
-            <i class="fa-solid fa-fire text-amber-500 text-lg"></i>
-            <p class="font-fredoka text-base font-bold text-slate-800 mt-1" id="stat-streak">1</p>
-            <p class="text-[10px] text-slate-400 font-extrabold uppercase">Streak</p>
-          </div>
-        </div>
-
-        <!-- Badges Section -->
-        <div class="flex items-center justify-between pt-2">
-          <h3 class="font-fredoka text-base font-bold text-slate-800">Achievement Badges</h3>
-          <span class="text-xs font-bold text-brand-purple bg-purple-50 px-2.5 py-0.5 rounded-full"><span id="unlocked-badge-count">1</span> / 16 Unlocked</span>
-        </div>
-
-        <div id="badges-grid" class="grid grid-cols-2 gap-3">
-          <!-- Dynamically populated 16 Badges -->
+        <div class="text-center p-2 text-slate-400 text-xs font-bold">
+          PlayZa Engine v6.5 Pro • Realtime Firebase Firestore Sync
         </div>
       </section>
 
     </main>
 
-    <!-- QUIZ MODAL SCREEN OVERLAY -->
+    <!-- CUSTOM GLASSMORPHISM ALERT MODAL (REPLACES BROWSER ALERT) -->
+    <div id="custom-alert-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[80] hidden flex items-center justify-center p-4">
+      <div class="bg-white w-full max-w-xs rounded-3xl p-5 text-center shadow-2xl space-y-3 relative border-2 border-slate-200 animate-celebrate">
+        <div id="custom-alert-icon" class="w-16 h-16 mx-auto rounded-2xl bg-amber-100 flex items-center justify-center text-3xl shadow-inner">
+          💡
+        </div>
+        <div>
+          <h3 id="custom-alert-title" class="font-fredoka text-lg font-bold text-slate-800">Notification</h3>
+          <p id="custom-alert-msg" class="text-xs text-slate-500 font-semibold mt-1">Message content goes here.</p>
+        </div>
+        <div class="flex gap-2 pt-1">
+          <button id="custom-alert-cancel-btn" class="hidden flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs">
+            Cancel
+          </button>
+          <button id="custom-alert-ok-btn" class="flex-1 btn-3d btn-blue py-2.5 rounded-xl font-fredoka font-bold text-xs uppercase">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOM REWARD VICTORY POPUP (DIAMONDS & XP) -->
+    <div id="custom-reward-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[85] hidden flex items-center justify-center p-4">
+      <div class="bg-white w-full max-w-xs rounded-3xl p-6 text-center shadow-2xl space-y-4 relative border-2 border-amber-400 animate-celebrate">
+        <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-amber-400 to-yellow-300 flex items-center justify-center text-5xl shadow-lg border-2 border-white">
+          💎
+        </div>
+        <div>
+          <span class="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider">Reward Claimed!</span>
+          <h2 id="reward-modal-title" class="font-fredoka text-2xl font-bold text-slate-800 mt-1">You Got Rewards!</h2>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-100">
+          <div class="text-center">
+            <span class="text-xs text-slate-400 font-bold uppercase block">Gems</span>
+            <span id="reward-modal-gems" class="font-fredoka text-xl font-bold text-brand-blue">+50 💎</span>
+          </div>
+          <div class="text-center border-l border-slate-200">
+            <span class="text-xs text-slate-400 font-bold uppercase block">XP</span>
+            <span id="reward-modal-xp" class="font-fredoka text-xl font-bold text-brand-mint">+100 XP</span>
+          </div>
+        </div>
+
+        <button onclick="closeRewardModal()" class="w-full btn-3d btn-yellow py-3 rounded-2xl font-fredoka font-bold text-xs uppercase tracking-wider">
+          Collect Rewards
+        </button>
+      </div>
+    </div>
+
+    <!-- QUIZ MODAL OVERLAY -->
     <div id="quiz-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-3">
       <div class="bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[90vh] max-h-[750px] relative">
 
@@ -534,19 +875,17 @@
         <div class="flex-1 p-5 overflow-y-auto flex flex-col justify-between space-y-4">
           <div class="flex items-center justify-between">
             <span class="text-xs font-extrabold text-brand-blue uppercase tracking-wider bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
-              Question <span id="quiz-q-index">1</span> of <span id="quiz-q-total">5</span>
+              Q #<span id="quiz-global-qindex">1</span> • (<span id="quiz-q-index">1</span>/5)
             </span>
 
-            <div id="quiz-mascot" class="w-12 h-12">
-              <svg viewBox="0 0 100 100" class="w-full h-full">
-                <circle cx="50" cy="50" r="45" fill="#FF5B00"/>
-                <polygon points="20,25 35,5 42,30" fill="#D94B00"/>
-                <polygon points="80,25 65,5 58,30" fill="#D94B00"/>
-                <path d="M 20,50 Q 50,95 80,50 Q 50,75 20,50 Z" fill="#FFFFFF"/>
-                <circle cx="38" cy="45" r="5" fill="#1E293B"/>
-                <circle cx="62" cy="45" r="5" fill="#1E293B"/>
-                <ellipse cx="50" cy="56" rx="4" ry="3" fill="#1E293B"/>
-              </svg>
+            <!-- Lifeline Power-ups -->
+            <div class="flex items-center gap-1.5">
+              <button onclick="use5050Lifeline()" class="btn-3d btn-purple px-2 py-1 rounded-xl text-[10px] font-bold flex items-center gap-1">
+                <span>50:50</span> <span class="text-[9px] opacity-80">(10💎)</span>
+              </button>
+              <button onclick="useSkipLifeline()" class="btn-3d btn-yellow px-2 py-1 rounded-xl text-[10px] font-bold flex items-center gap-1">
+                <span>Skip ⏩</span> <span class="text-[9px] opacity-80">(15💎)</span>
+              </button>
             </div>
           </div>
 
@@ -554,15 +893,16 @@
             Loading question...
           </h2>
 
-          <div id="quiz-options-container" class="space-y-3 my-2">
-            <!-- Injected options -->
-          </div>
+          <div id="quiz-options-container" class="space-y-3 my-2"></div>
 
           <div id="quiz-feedback" class="hidden p-3 rounded-2xl text-xs font-bold flex items-center gap-3">
             <div id="feedback-icon" class="text-2xl">🎉</div>
-            <div>
+            <div class="flex-1">
               <p id="feedback-title" class="font-fredoka text-sm">Correct!</p>
               <p id="feedback-desc" class="text-[11px] opacity-90">Great job!</p>
+            </div>
+            <div id="feedback-reward-badge" class="bg-white/80 backdrop-blur-md px-2.5 py-1 rounded-xl text-[11px] font-extrabold shadow-xs">
+              +15 XP
             </div>
           </div>
         </div>
@@ -576,14 +916,36 @@
       </div>
     </div>
 
+    <!-- LEVEL UP CELEBRATION MODAL -->
+    <div id="levelup-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl space-y-4 animate-celebrate relative overflow-hidden border-2 border-amber-400">
+        <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-amber-400 to-orange-500 flex items-center justify-center text-5xl shadow-lg">
+          👑
+        </div>
+        <div>
+          <span class="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider">Level Up Unlocked</span>
+          <h2 class="font-fredoka text-3xl font-bold text-slate-800 mt-1">Level <span id="levelup-num">2</span>!</h2>
+          <p class="text-xs text-slate-500 font-semibold mt-1">You reached a new Level! Check Avatar Vault for glowing rewards!</p>
+        </div>
+
+        <div class="bg-amber-50 p-3 rounded-2xl border border-amber-200 text-xs font-bold text-amber-900">
+          ✨ Higher XP targets unlocked! Keep grinding!
+        </div>
+
+        <button onclick="closeLevelUpModal()" class="w-full btn-3d btn-orange py-3 rounded-2xl font-fredoka font-bold text-sm uppercase">
+          Awesome!
+        </button>
+      </div>
+    </div>
+
     <!-- QUIZ SUMMARY MODAL -->
     <div id="summary-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
       <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl space-y-4 animate-celebrate">
         <div class="w-20 h-20 mx-auto rounded-3xl bg-amber-100 flex items-center justify-center text-4xl shadow-inner">
           🏆
         </div>
-        <h2 class="font-fredoka text-2xl font-bold text-slate-800">Quiz Completed!</h2>
-        <p class="text-xs text-slate-500 font-semibold">Awesome performance! Synced to Cloud:</p>
+        <h2 class="font-fredoka text-2xl font-bold text-slate-800">Quiz Batch Complete!</h2>
+        <p class="text-xs text-slate-500 font-semibold">Questions saved to Local & Firebase Cloud:</p>
 
         <div class="grid grid-cols-2 gap-3 py-2">
           <div class="bg-emerald-50 p-3 rounded-2xl border border-emerald-200 text-center">
@@ -592,19 +954,19 @@
           </div>
           <div class="bg-blue-50 p-3 rounded-2xl border border-blue-200 text-center">
             <i class="fa-solid fa-gem text-brand-blue text-xl"></i>
-            <p class="font-fredoka text-lg font-bold text-blue-800 mt-1">+<span id="summary-gems">15</span> 💎</p>
+            <p class="font-fredoka text-lg font-bold text-blue-800 mt-1">+<span id="summary-gems">25</span> 💎</p>
           </div>
         </div>
 
-        <p class="text-xs text-slate-600 font-bold">Accuracy: <span id="summary-accuracy" class="text-brand-orange">100%</span></p>
+        <p class="text-xs text-slate-600 font-bold">Session Accuracy: <span id="summary-accuracy" class="text-brand-orange">100%</span></p>
 
         <button onclick="closeSummaryModal()" class="w-full btn-3d btn-mint py-3 rounded-2xl font-fredoka font-bold text-sm uppercase">
-          Continue & Sync
+          Continue & Save
         </button>
       </div>
     </div>
 
-    <!-- AUTH / FIREBASE ACCOUNT SYNC MODAL -->
+    <!-- AUTH MODAL -->
     <div id="auth-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
       <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl relative space-y-4">
         <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-lg">
@@ -620,7 +982,7 @@
         </div>
 
         <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-bold text-slate-600">
-          <button id="tab-btn-login" onclick="switchAuthTab('login')" class="flex-1 py-1.5 rounded-lg bg-white shadow-xs text-slate-800">Login</button>
+          <button id="tab-btn-login" onclick="switchAuthTab('login')" class="flex-1 py-1.5 rounded-lg bg-white shadow-xs text-slate-800 font-bold">Login</button>
           <button id="tab-btn-signup" onclick="switchAuthTab('signup')" class="flex-1 py-1.5 rounded-lg">Sign Up</button>
         </div>
 
@@ -653,27 +1015,27 @@
 
     <!-- BOTTOM FIXED NAVIGATION BAR -->
     <nav class="bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-2 flex justify-around items-center absolute bottom-0 left-0 right-0 z-30 shadow-lg">
-      <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center py-1 px-3 rounded-2xl text-brand-orange transition-all duration-200">
+      <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center py-1 px-2.5 rounded-2xl text-brand-orange font-bold transition-all duration-200 scale-105">
         <i class="fa-solid fa-house text-lg"></i>
         <span class="text-[10px] font-fredoka font-bold mt-0.5">Home</span>
       </button>
 
-      <button onclick="switchTab('quizzes')" id="nav-quizzes" class="nav-btn flex flex-col items-center py-1 px-3 rounded-2xl text-slate-400 hover:text-slate-600 transition-all duration-200">
+      <button onclick="switchTab('quizzes')" id="nav-quizzes" class="nav-btn flex flex-col items-center py-1 px-2.5 rounded-2xl text-slate-400 hover:text-slate-600 transition-all duration-200">
         <i class="fa-solid fa-graduation-cap text-lg"></i>
-        <span class="text-[10px] font-fredoka font-bold mt-0.5">Quizzes</span>
+        <span class="text-[10px] font-fredoka font-bold mt-0.5">Subjects</span>
       </button>
 
-      <button onclick="switchTab('battle')" id="nav-battle" class="nav-btn flex flex-col items-center py-1 px-3 rounded-2xl text-slate-400 hover:text-slate-600 transition-all duration-200">
+      <button onclick="switchTab('battle')" id="nav-battle" class="nav-btn flex flex-col items-center py-1 px-2.5 rounded-2xl text-slate-400 hover:text-slate-600 transition-all duration-200">
         <i class="fa-solid fa-fire-flame-curved text-lg"></i>
         <span class="text-[10px] font-fredoka font-bold mt-0.5">Battle</span>
       </button>
 
-      <button onclick="switchTab('shop')" id="nav-shop" class="nav-btn flex flex-col items-center py-1 px-3 rounded-2xl text-slate-400 hover:text-slate-600 transition-all duration-200">
+      <button onclick="switchTab('shop')" id="nav-shop" class="nav-btn flex flex-col items-center py-1 px-2.5 rounded-2xl text-slate-400 hover:text-slate-600 transition-all duration-200">
         <i class="fa-solid fa-store text-lg"></i>
         <span class="text-[10px] font-fredoka font-bold mt-0.5">Shop</span>
       </button>
 
-      <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn flex flex-col items-center py-1 px-3 rounded-2xl text-slate-400 hover:text-slate-600 transition-all duration-200">
+      <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn flex flex-col items-center py-1 px-2.5 rounded-2xl text-slate-400 hover:text-slate-600 transition-all duration-200">
         <i class="fa-solid fa-user text-lg"></i>
         <span class="text-[10px] font-fredoka font-bold mt-0.5">Profile</span>
       </button>
@@ -696,7 +1058,8 @@
       getFirestore, 
       doc, 
       setDoc, 
-      getDoc 
+      getDoc,
+      onSnapshot
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -714,9 +1077,12 @@
     const db = getFirestore(app);
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'playza-default';
 
-    const LOCAL_CACHE_KEY = 'playza_full_sync_user_v3';
+    const LOCAL_CACHE_KEY = 'playza_full_sync_user_v6';
 
-    // Full Application State Schema
+    window.calculateNextLevelXp = function(lvl) {
+      return Math.round(100 * Math.pow(1.35, lvl - 1));
+    };
+
     const defaultState = {
       uid: null,
       displayName: "PlayZa Explorer",
@@ -725,30 +1091,51 @@
       level: 1,
       xp: 0,
       nextLevelXp: 100,
-      gems: 50,
+      gems: 100,
       streak: 1,
+      hasStreakShield: false,
+      hasXpBoost: false,
+      isVip: false,
+      lastDailyBonus: null,
+      lastMysteryChestDate: null,
       equippedAvatar: "zippy_classic",
       unlockedAvatars: ["zippy_classic"],
       unlockedBadges: ["badge_welcome"],
       quizzesPlayed: 0,
       correctAnswers: 0,
+      totalQuestionsAttempted: 0,
       quest1Count: 0,
       quest1Claimed: false,
       quest2Count: 0,
       quest2Claimed: false,
-      bossHp: 100
+      bossHp: 100,
+      bossAttacks: 0,
+      spinsLeftToday: 3,
+      lastSpinDate: null,
+      wheelSpinsCount: 0,
+      lifelinesUsed: 0,
+      activeQuizState: null,
+      subjectStats: {},
+      subjectProgress: {}
     };
 
-    // Instant local cache load
     const savedLocal = localStorage.getItem(LOCAL_CACHE_KEY);
     window.userState = savedLocal ? { ...defaultState, ...JSON.parse(savedLocal) } : { ...defaultState };
 
     window.soundEnabled = true;
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let audioCtx = null;
 
+    /* EXTENDED WEB AUDIO SOUND GENERATOR FOR TICKING, CLICKS & REWARDS */
     window.playSound = function(type) {
       if (!window.soundEnabled) return;
       try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain);
@@ -756,19 +1143,27 @@
         const now = audioCtx.currentTime;
 
         if (type === 'click') {
-          osc.frequency.setValueAtTime(450, now);
-          osc.frequency.exponentialRampToValueAtTime(220, now + 0.04);
-          gain.gain.setValueAtTime(0.1, now);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
+          osc.frequency.setValueAtTime(500, now);
+          osc.frequency.exponentialRampToValueAtTime(250, now + 0.03);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.03);
           osc.start(now);
-          osc.stop(now + 0.04);
+          osc.stop(now + 0.03);
+        } else if (type === 'tick') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(800, now);
+          osc.frequency.exponentialRampToValueAtTime(400, now + 0.02);
+          gain.gain.setValueAtTime(0.06, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+          osc.start(now);
+          osc.stop(now + 0.02);
         } else if (type === 'tab') {
-          osc.frequency.setValueAtTime(300, now);
-          osc.frequency.exponentialRampToValueAtTime(600, now + 0.06);
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(640, now + 0.05);
           gain.gain.setValueAtTime(0.08, now);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
           osc.start(now);
-          osc.stop(now + 0.06);
+          osc.stop(now + 0.05);
         } else if (type === 'correct') {
           osc.frequency.setValueAtTime(523.25, now);
           osc.frequency.setValueAtTime(659.25, now + 0.08);
@@ -779,7 +1174,7 @@
           osc.stop(now + 0.3);
         } else if (type === 'wrong') {
           osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(200, now);
+          osc.frequency.setValueAtTime(220, now);
           osc.frequency.setValueAtTime(140, now + 0.1);
           gain.gain.setValueAtTime(0.2, now);
           gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
@@ -788,41 +1183,121 @@
         } else if (type === 'levelup') {
           osc.frequency.setValueAtTime(440, now);
           osc.frequency.setValueAtTime(880, now + 0.12);
-          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.setValueAtTime(0.25, now);
           gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
           osc.start(now);
           osc.stop(now + 0.4);
-        } else if (type === 'buy') {
+        } else if (type === 'buy' || type === 'claim' || type === 'spin') {
           osc.frequency.setValueAtTime(587.33, now);
           osc.frequency.setValueAtTime(880, now + 0.1);
           gain.gain.setValueAtTime(0.2, now);
           gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
           osc.start(now);
           osc.stop(now + 0.2);
-        } else if (type === 'claim') {
-          osc.frequency.setValueAtTime(659.25, now);
-          osc.frequency.setValueAtTime(987.77, now + 0.12);
-          gain.gain.setValueAtTime(0.25, now);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-          osc.start(now);
-          osc.stop(now + 0.3);
         }
       } catch (e) {
         console.warn("Audio Context Error", e);
       }
     };
 
+    /* GLOBAL TACTILE RIPPLE CLICK EFFECT */
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.btn-3d, button');
+      if (btn) {
+        playSound('click');
+        const rect = btn.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple-effect';
+        const diameter = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = `${diameter}px`;
+        ripple.style.left = `${e.clientX - rect.left - diameter / 2}px`;
+        ripple.style.top = `${e.clientY - rect.top - diameter / 2}px`;
+        btn.style.position = 'relative';
+        btn.style.overflow = 'hidden';
+        btn.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 400);
+      }
+    });
+
+    /* CUSTOM TOAST NOTIFICATIONS (NO BROWSER ALERT) */
+    window.showToast = function(msg, icon = '💡', type = 'info') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = `pointer-events-auto bg-slate-900/90 backdrop-blur-md text-white border border-slate-700/80 px-3.5 py-2 rounded-2xl shadow-xl flex items-center gap-2.5 text-xs font-bold w-full transition-all duration-300 animate-toast`;
+      toast.innerHTML = `
+        <span class="text-base">${icon}</span>
+        <span class="flex-1">${msg}</span>
+      `;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 2800);
+    };
+
+    /* CUSTOM MODAL ALERT (REPLACES BROWSER ALERT) */
+    window.showAlertModal = function(title, msg, icon = '💡', btnText = 'OK', onConfirm = null, showCancel = false) {
+      document.getElementById('custom-alert-title').innerText = title;
+      document.getElementById('custom-alert-msg').innerText = msg;
+      document.getElementById('custom-alert-icon').innerText = icon;
+      
+      const okBtn = document.getElementById('custom-alert-ok-btn');
+      const cancelBtn = document.getElementById('custom-alert-cancel-btn');
+      okBtn.innerText = btnText;
+
+      if (showCancel) {
+        cancelBtn.classList.remove('hidden');
+      } else {
+        cancelBtn.classList.add('hidden');
+      }
+
+      const modal = document.getElementById('custom-alert-modal');
+      modal.classList.remove('hidden');
+
+      okBtn.onclick = () => {
+        modal.classList.add('hidden');
+        if (onConfirm) onConfirm();
+      };
+      cancelBtn.onclick = () => {
+        modal.classList.add('hidden');
+      };
+    };
+
+    /* CUSTOM REWARD POPUP FOR DIAMONDS & XP */
+    window.showRewardModal = function(gems, xp, title = "Rewards Claimed!") {
+      document.getElementById('reward-modal-title').innerText = title;
+      document.getElementById('reward-modal-gems').innerText = `+${gems} 💎`;
+      document.getElementById('reward-modal-xp').innerText = `+${xp} XP`;
+      document.getElementById('custom-reward-modal').classList.remove('hidden');
+      playSound('claim');
+      confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+    };
+
+    window.closeRewardModal = function() {
+      document.getElementById('custom-reward-modal').classList.add('hidden');
+    };
+
     window.toggleSound = function() {
       window.soundEnabled = !window.soundEnabled;
-      const icon = document.getElementById('sound-icon');
+      const btn = document.getElementById('setting-sound-btn');
       if (window.soundEnabled) {
-        icon.className = "fa-solid fa-volume-high text-brand-mint";
+        btn.innerText = "ON";
+        btn.className = "btn-3d btn-mint px-3.5 py-1.5 rounded-xl text-xs font-bold";
+        showToast("Sound Effects Enabled", "🔊");
       } else {
-        icon.className = "fa-solid fa-volume-xmark text-slate-400";
+        btn.innerText = "OFF";
+        btn.className = "btn-3d btn-rose px-3.5 py-1.5 rounded-xl text-xs font-bold";
+        showToast("Sound Effects Muted", "🔇");
       }
     };
 
     setPersistence(auth, browserLocalPersistence).catch(err => console.warn(err));
+
+    let firestoreUnsubscribe = null;
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -830,7 +1305,7 @@
         window.userState.isGuest = user.isAnonymous;
         if (user.email) window.userState.email = user.email;
 
-        await syncUserFromFirebase();
+        setupFirestoreRealtimeSync();
       } else {
         try {
           await signInAnonymously(auth);
@@ -840,23 +1315,25 @@
       }
     });
 
-    async function syncUserFromFirebase() {
+    /* ADVANCED FIRESTORE REALTIME SYNC (ONSNAPSHOT) */
+    function setupFirestoreRealtimeSync() {
       if (!window.userState.uid) return;
-      try {
-        const userDocRef = doc(db, 'artifacts', appId, 'users', window.userState.uid);
-        const docSnap = await getDoc(userDocRef);
+      if (firestoreUnsubscribe) firestoreUnsubscribe();
 
+      const docRef = doc(db, 'artifacts', appId, 'users', window.userState.uid);
+      
+      firestoreUnsubscribe = onSnapshot(docRef, (docSnap) => {
         if (docSnap.exists()) {
           const remoteData = docSnap.data();
-          window.userState = { ...window.userState, ...remoteData };
+          window.userState = { ...defaultState, ...remoteData, uid: window.userState.uid };
           localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(window.userState));
+          updateUI();
         } else {
-          await setDoc(userDocRef, window.userState, { merge: true });
+          setDoc(docRef, window.userState, { merge: true });
         }
-      } catch (e) {
-        console.warn("Firestore sync error:", e);
-      }
-      updateUI();
+      }, (err) => {
+        console.warn("Firestore snapshot listener error:", err);
+      });
     }
 
     window.saveUserToFirebase = async function() {
@@ -870,56 +1347,163 @@
       }
     };
 
-    // 24 Full Avatars
+    window.switchTab = function(tabName) {
+      playSound('tab');
+      const tabs = ['home', 'quizzes', 'battle', 'shop', 'profile', 'settings'];
+      tabs.forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        const navBtn = document.getElementById(`nav-${t}`);
+        if (el) {
+          if (t === tabName) {
+            el.classList.remove('hidden');
+          } else {
+            el.classList.add('hidden');
+          }
+        }
+        if (navBtn) {
+          if (t === tabName) {
+            navBtn.className = "nav-btn flex flex-col items-center py-1 px-2.5 rounded-2xl text-brand-orange font-bold transition-all duration-200 scale-105";
+          } else {
+            navBtn.className = "nav-btn flex flex-col items-center py-1 px-2.5 rounded-2xl text-slate-400 hover:text-slate-600 transition-all duration-200";
+          }
+        }
+      });
+      const screen = document.getElementById('screen-container');
+      if (screen) screen.scrollTop = 0;
+    };
+
+    // AVATARS LIST WITH EMOJIS & RICH GRAPHIC SVGs
     window.avatarsList = [
       { id: "zippy_classic", name: "Zippy Fox", icon: "🦊", price: 0, desc: "Default mascot hero" },
+      { 
+        id: "cyber_robot_svg", 
+        name: "Cyber Mech AI", 
+        type: "svg",
+        svg: `<svg viewBox="0 0 64 64" class="w-full h-full"><rect x="12" y="16" width="40" height="36" rx="10" fill="#3B82F6"/><circle cx="26" cy="30" r="5" fill="#6EE7B7"/><circle cx="38" cy="30" r="5" fill="#6EE7B7"/><rect x="22" y="42" width="20" height="4" rx="2" fill="#1E293B"/><line x1="32" y1="4" x2="32" y2="16" stroke="#3B82F6" stroke-width="4"/><circle cx="32" cy="4" r="4" fill="#F43F5E"/></svg>`, 
+        price: 150, 
+        desc: "Futuristic Mech Robot Avatar" 
+      },
+      { 
+        id: "crown_king_svg", 
+        name: "Golden Crown King", 
+        type: "svg",
+        svg: `<svg viewBox="0 0 64 64" class="w-full h-full"><polygon points="12,48 18,20 28,32 32,16 36,32 46,20 52,48" fill="#F59E0B"/><circle cx="32" cy="12" r="3" fill="#EF4444"/><circle cx="18" cy="16" r="3" fill="#3B82F6"/><circle cx="46" cy="16" r="3" fill="#3B82F6"/><rect x="12" y="48" width="40" height="8" rx="3" fill="#D97706"/></svg>`, 
+        price: 250, 
+        desc: "Royal Kingdom Trivia King" 
+      },
+      { id: "glow_neon_fox", name: "Neon Aura Fox", icon: "🦊", price: "Lvl 2", desc: "Level 2 Glowing Aura Reward", glow: "glow-neon", reqLvl: 2 },
+      { id: "glow_fire_phoenix", name: "Fire Aura Phoenix", icon: "🦅", price: "Lvl 3", desc: "Level 3 Flaming Aura Reward", glow: "glow-fire", reqLvl: 3 },
+      { id: "glow_cyber_dragon", name: "Cyber Neon Dragon", icon: "🐲", price: "Lvl 5", desc: "Level 5 Cybernetic Aura", glow: "glow-neon", reqLvl: 5 },
+      { id: "glow_astral_owl", name: "Astral Glowing Owl", icon: "🦉", price: "Lvl 8", desc: "Level 8 Stellar Cosmic Aura", glow: "glow-god", reqLvl: 8 },
+      { id: "glow_quantum_god", name: "Quantum Celestial", icon: "👑", price: "Lvl 10", desc: "Level 10 Supreme Divine Aura", glow: "glow-god", reqLvl: 10 },
       { id: "cyber_fox", name: "Cyber Fox", icon: "🎧", price: 100, desc: "Tactical neon cyber fox" },
-      { id: "ninja_cat", name: "Ninja Cat", icon: "🐱‍👤", price: 150, desc: "Silent shadow ninja warrior" },
-      { id: "astro_bear", name: "Astro Bear", icon: "🐻", price: 200, desc: "Cosmic galaxy explorer" },
-      { id: "super_panda", name: "Super Panda", icon: "🐼", price: 250, desc: "Electric lightning panda" },
+      { id: "ninja_cat", name: "Ninja Cat", icon: "🐱‍👤", price: 120, desc: "Silent shadow ninja warrior" },
+      { id: "astro_bear", name: "Astro Bear", icon: "🐻", price: 180, desc: "Cosmic galaxy explorer" },
+      { id: "super_panda", name: "Super Panda", icon: "🐼", price: 200, desc: "Electric lightning panda" },
       { id: "wizard_dragon", name: "Wizard Dragon", icon: "🐲", price: 300, desc: "Mythic magic spellcaster" },
       { id: "gamer_owl", name: "Gamer Owl", icon: "🦉", price: 350, desc: "Pro esports strategy master" },
-      { id: "neon_robot", name: "Neon Robot", icon: "🤖", price: 400, desc: "Futuristic supercomputer AI" },
-      { id: "golden_lion", name: "Golden Lion", icon: "🦁", price: 500, desc: "Royal trivia king" },
-      { id: "dino_champ", name: "Dino Champ", icon: "🦖", price: 600, desc: "Prehistoric quiz legend" },
-      { id: "chef_penguin", name: "Chef Penguin", icon: "🐧", price: 250, desc: "Master culinary artisan" },
-      { id: "pixel_bunny", name: "Pixel Bunny", icon: "🐰", price: 180, desc: "8-bit retro arcade hopper" },
-      { id: "shadow_wolf", name: "Shadow Wolf", icon: "🐺", price: 320, desc: "Alpha night wolf hunter" },
-      { id: "phoenix_fire", name: "Cosmic Phoenix", icon: "🦅", price: 450, desc: "Eternal burning phoenix" },
-      { id: "samurai_frog", name: "Samurai Frog", icon: "🐸", price: 220, desc: "Honorable pond samurai" },
-      { id: "galactic_alien", name: "Galactic Alien", icon: "👽", price: 380, desc: "Intergalactic mind lord" },
-      { id: "koala_yoda", name: "Master Koala", icon: "🐨", price: 290, desc: "Peaceful forest sage" },
-      { id: "viking_tiger", name: "Viking Tiger", icon: "🐯", price: 420, desc: "Fierce northern chieftain" },
-      { id: "mecha_shark", name: "Mecha Shark", icon: "🦈", price: 480, desc: "Deep ocean cyber predator" },
-      { id: "detective_dog", name: "Detective Dog", icon: "🐶", price: 210, desc: "Sharp mystery investigator" },
-      { id: "royal_eagle", name: "Royal Eagle", icon: "🦅", price: 550, desc: "Majestic sky ruler" },
-      { id: "unicorn_sparkle", name: "Mystic Unicorn", icon: "🦄", price: 360, desc: "Enchanted star magic" },
-      { id: "cyber_samurai", name: "Cyber Samurai", icon: "👺", price: 650, desc: "Futuristic katana master" },
-      { id: "pirate_parrot", name: "Pirate Parrot", icon: "🦜", price: 270, desc: "Treasure hunting sky sailor" }
+      { id: "golden_lion", name: "Golden Lion", icon: "🦁", price: 400, desc: "Royal trivia king" },
+      { id: "dino_champ", name: "Dino Champ", icon: "🦖", price: 450, desc: "Prehistoric quiz legend" },
+      { id: "diamond_emperor", name: "Diamond Emperor", icon: "💎", price: 500, desc: "Supreme Diamond Master", glow: "glow-god" },
+      { id: "cyber_wolf", name: "Neon Cyber Wolf", icon: "🐺", price: 280, desc: "High-tech alpha predator", glow: "glow-neon" },
+      { id: "quantum_alien", name: "Quantum Alien", icon: "👽", price: 320, desc: "Deep space intergalactic mind", glow: "glow-god" }
     ];
 
-    // 16 Badges
+    // DIAMOND EXCHANGE STORE ITEMS
+    window.diamondExchangeItems = [
+      { id: "ex_streak_shield", name: "Streak Shield", icon: "🛡️", cost: 100, desc: "Protects daily streak if missed" },
+      { id: "ex_xp_boost", name: "2X XP Booster", icon: "⚡", cost: 150, desc: "Earn 2X XP on all quiz questions" },
+      { id: "ex_mystery_chest", name: "Mystery Diamond Chest", icon: "🎁", cost: 200, desc: "Contains up to +500 XP & Rare Avatars!" },
+      { id: "ex_vip_badge", name: "VIP Crown Status", icon: "👑", cost: 500, desc: "Unlocks permanent VIP Profile Crown" }
+    ];
+
+    // EXTENDED ACHIEVEMENTS LIST (25 BADGES)
     window.badgesList = [
       { id: "badge_welcome", name: "First Steps", icon: "🐣", desc: "Started PlayZa quiz adventure", goal: 1 },
-      { id: "badge_quiz_5", name: "Quiz Whiz", icon: "⚡", desc: "Completed 5 quizzes", goal: 5 },
+      { id: "badge_quiz_5", name: "Quiz Whiz", icon: "⚡", desc: "Completed 5 quiz sessions", goal: 5 },
+      { id: "badge_quiz_15", name: "Quiz Veteran", icon: "🎖️", desc: "Completed 15 quiz sessions", goal: 15 },
+      { id: "badge_quiz_30", name: "Quiz Master", icon: "🏆", desc: "Completed 30 quiz sessions", goal: 30 },
       { id: "badge_perfect", name: "Brainiac", icon: "🧠", desc: "Scored 100% accuracy on a quiz", goal: 1 },
-      { id: "badge_streak_3", name: "Streak Master", icon: "🔥", desc: "Maintained daily streak", goal: 1 },
-      { id: "badge_gems_200", name: "Gem Collector", icon: "💎", desc: "Accumulated 200 total gems", goal: 200 },
-      { id: "badge_speed", name: "Speed Demon", icon: "⏱️", desc: "Answered question under 5 secs", goal: 1 },
+      { id: "badge_streak_3", name: "Streak Starter", icon: "🔥", desc: "Maintained 3-day streak", goal: 3 },
+      { id: "badge_streak_7", name: "Streak Legend", icon: "🕯️", desc: "Maintained 7-day streak", goal: 7 },
+      { id: "badge_gems_100", name: "Gem Collector", icon: "💎", desc: "Accumulated 100 total gems", goal: 100 },
+      { id: "badge_gems_500", name: "Gem Hoarder", icon: "💰", desc: "Accumulated 500 total gems", goal: 500 },
+      { id: "badge_gems_1000", name: "Gem Tycoon", icon: "👑", desc: "Accumulated 1000 total gems", goal: 1000 },
       { id: "badge_correct_10", name: "Bullseye", icon: "🎯", desc: "Scored 10 correct answers", goal: 10 },
+      { id: "badge_correct_50", name: "Sharpshooter", icon: "🏹", desc: "Scored 50 correct answers", goal: 50 },
+      { id: "badge_correct_100", name: "Century Solver", icon: "💯", desc: "Scored 100 correct answers", goal: 100 },
+      { id: "badge_level_2", name: "Rookie Climber", icon: "🌱", desc: "Reached Level 2", goal: 2 },
       { id: "badge_level_5", name: "Trivia Titan", icon: "👑", desc: "Reached Level 5 player status", goal: 5 },
-      { id: "badge_fashion", name: "Fashionista", icon: "🛍️", desc: "Unlocked 3 unique avatars", goal: 3 },
-      { id: "badge_legend", name: "PlayZa Legend", icon: "🌟", desc: "Accumulated 1000 total XP", goal: 1000 },
-      { id: "badge_pop", name: "Pop Guru", icon: "🎬", desc: "Finished Movies & Pop Culture", goal: 1 },
-      { id: "badge_tech", name: "Tech Wizard", icon: "🤖", desc: "Finished Tech & AI quiz", goal: 1 },
-      { id: "badge_space", name: "Space Explorer", icon: "🪐", desc: "Finished Space & Science quiz", goal: 1 },
-      { id: "badge_anime", name: "Otaku King", icon: "🎮", desc: "Finished Anime & Gaming quiz", goal: 1 },
-      { id: "badge_math", name: "Math Genius", icon: "🔢", desc: "Finished Math Magic quiz", goal: 1 },
-      { id: "badge_master", name: "Grandmaster", icon: "🏆", desc: "Unlocked 10 badges", goal: 10 }
+      { id: "badge_level_10", name: "Grand Champion", icon: "🌟", desc: "Reached Level 10 master status", goal: 10 },
+      { id: "badge_wheel_3", name: "Lucky Spinner", icon: "🎰", desc: "Spun the Lucky Wheel 3 times", goal: 3 },
+      { id: "badge_wheel_15", name: "Spin Master", icon: "🎡", desc: "Spun the Lucky Wheel 15 times", goal: 15 },
+      { id: "badge_lifeline_5", name: "Lifeline Master", icon: "🆘", desc: "Used 5 quiz lifelines", goal: 5 },
+      { id: "badge_boss_3", name: "Boss Attacker", icon: "⚔️", desc: "Attacked the Boss 3 times", goal: 3 },
+      { id: "badge_boss_slayer", name: "Boss Slayer", icon: "🐲", desc: "Defeated the Raid Boss", goal: 1 },
+      { id: "badge_speed_demon", name: "Speed Demon", icon: "⚡", desc: "Answered with >10s remaining", goal: 1 },
+      { id: "badge_scholar", name: "Dedicated Scholar", icon: "📖", desc: "Attempted 150 questions", goal: 150 },
+      { id: "badge_shop_3", name: "Avatar Fashionist", icon: "🦊", desc: "Unlocked 3 different avatars", goal: 3 },
+      { id: "badge_ultimate", name: "Ultimate Legend", icon: "🏅", desc: "Unlocked 10 other badges", goal: 10 }
     ];
 
-    // Quiz Categories
     window.quizCategories = [
+      {
+        id: "math_magic",
+        title: "Mathematics & Logic",
+        icon: "📐",
+        color: "bg-amber-500",
+        questions: [
+          { q: "What is 12 x 8?", options: ["84", "96", "104", "88"], correct: 1 },
+          { q: "What is square root of 64?", options: ["6", "7", "8", "9"], correct: 2 },
+          { q: "Triangle with 3 equal sides is called?", options: ["Isosceles", "Equilateral", "Scalene", "Right-angled"], correct: 1 },
+          { q: "What is 15% of 100?", options: ["10", "15", "20", "25"], correct: 1 },
+          { q: "Solve: 5 + 3 x 2", options: ["16", "11", "13", "10"], correct: 1 }
+        ]
+      },
+      {
+        id: "coding_cs",
+        title: "Computer Science & Coding",
+        icon: "💻",
+        color: "bg-blue-600",
+        questions: [
+          { q: "Which language runs in browser natively?", options: ["Python", "Java", "JavaScript", "C++"], correct: 2 },
+          { q: "What does HTML stand for?", options: ["Hyper Text Markup Language", "High Tech Main Language", "Home Tool Markup Language", "Hyperlink Text Manipulation"], correct: 0 },
+          { q: "Which symbol is used for ID in CSS?", options: [".", "#", "*", "&"], correct: 1 },
+          { q: "What data structure operates on LIFO?", options: ["Queue", "Stack", "Array", "Tree"], correct: 1 }
+        ]
+      },
+      {
+        id: "physics_science",
+        title: "Physics & Science",
+        icon: "🔬",
+        color: "bg-teal-500",
+        questions: [
+          { q: "What is the chemical formula for Water?", options: ["CO2", "H2O", "NaCl", "O2"], correct: 1 },
+          { q: "What speed does light travel at in vacuum?", options: ["300,000 km/s", "150,000 km/s", "1,000,000 km/s", "30,000 km/s"], correct: 0 },
+          { q: "Which gas is most abundant in Earth's atmosphere?", options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"], correct: 2 }
+        ]
+      },
+      {
+        id: "geography_world",
+        title: "World Geography",
+        icon: "🌍",
+        color: "bg-emerald-500",
+        questions: [
+          { q: "Which is the largest continent on Earth?", options: ["Africa", "North America", "Asia", "Europe"], correct: 2 },
+          { q: "What is the capital city of Japan?", options: ["Kyoto", "Tokyo", "Osaka", "Seoul"], correct: 1 },
+          { q: "Which river is the longest in the world?", options: ["Amazon", "Nile", "Mississippi", "Yangtze"], correct: 1 }
+        ]
+      },
+      {
+        id: "history_civ",
+        title: "History & Civilizations",
+        icon: "📜",
+        color: "bg-orange-600",
+        questions: [
+          { q: "Who was the first President of the United States?", options: ["Abraham Lincoln", "George Washington", "Thomas Jefferson", "John Adams"], correct: 1 },
+          { q: "Which ancient wonder was located in Egypt?", options: ["Hanging Gardens", "Great Pyramid of Giza", "Colossus of Rhodes", "Lighthouse"], correct: 1 }
+        ]
+      },
       {
         id: "tech_ai",
         title: "Tech & AI",
@@ -927,105 +1511,316 @@
         color: "bg-blue-500",
         questions: [
           { q: "What does 'AI' stand for?", options: ["Automated Internet", "Artificial Intelligence", "Advanced Algorithm", "Apple iOS"], correct: 1 },
-          { q: "Which language is used for web interactivity?", options: ["Python", "C++", "JavaScript", "HTML"], correct: 2 },
-          { q: "What company created ChatGPT?", options: ["Google", "OpenAI", "Microsoft", "Meta"], correct: 1 },
-          { q: "What is the brain of a computer called?", options: ["RAM", "SSD", "CPU", "GPU"], correct: 2 }
-        ]
-      },
-      {
-        id: "space_science",
-        title: "Space & Science",
-        icon: "🪐",
-        color: "bg-purple-500",
-        questions: [
-          { q: "Which planet is known as the Red Planet?", options: ["Venus", "Jupiter", "Mars", "Saturn"], correct: 2 },
-          { q: "What gas do plants absorb from atmosphere?", options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"], correct: 1 },
-          { q: "What is the closest star to Earth?", options: ["Proxima Centauri", "North Star", "Sun", "Sirius"], correct: 2 },
-          { q: "How many planets are in solar system?", options: ["7", "8", "9", "10"], correct: 1 }
-        ]
-      },
-      {
-        id: "anime_gaming",
-        title: "Anime & Gaming",
-        icon: "🎮",
-        color: "bg-orange-500",
-        questions: [
-          { q: "Which character uses a Poké Ball?", options: ["Naruto", "Ash Ketchum", "Luffy", "Goku"], correct: 1 },
-          { q: "What game features Creepers & blocks?", options: ["Roblox", "Minecraft", "Fortnite", "Terraria"], correct: 1 },
-          { q: "Who is Mario's brother?", options: ["Luigi", "Wario", "Yoshi", "Toad"], correct: 0 },
-          { q: "What anime features Super Saiyans?", options: ["Bleach", "Dragon Ball Z", "One Piece", "Demon Slayer"], correct: 1 }
-        ]
-      },
-      {
-        id: "general_knowledge",
-        title: "General Knowledge",
-        icon: "🌍",
-        color: "bg-emerald-500",
-        questions: [
-          { q: "How many colors are in a rainbow?", options: ["5", "6", "7", "8"], correct: 2 },
-          { q: "Which ocean is the largest on Earth?", options: ["Atlantic", "Indian", "Arctic", "Pacific"], correct: 3 },
-          { q: "What is the capital city of Japan?", options: ["Kyoto", "Tokyo", "Osaka", "Seoul"], correct: 1 },
-          { q: "Which animal is King of the Jungle?", options: ["Tiger", "Elephant", "Lion", "Gorilla"], correct: 2 }
-        ]
-      },
-      {
-        id: "movies_pop",
-        title: "Movies & Pop Culture",
-        icon: "🎬",
-        color: "bg-red-500",
-        questions: [
-          { q: "Who plays Iron Man in MCU?", options: ["Chris Evans", "Robert Downey Jr.", "Chris Hemsworth", "Tom Holland"], correct: 1 },
-          { q: "Which wizard school does Harry Potter attend?", options: ["Hogwarts", "Narnia", "Gondor", "Arendelle"], correct: 0 },
-          { q: "Which studio created 'Toy Story'?", options: ["Disney", "Pixar", "DreamWorks", "Illumination"], correct: 1 },
-          { q: "What is Peter Parker's superhero name?", options: ["Batman", "Superman", "Spider-Man", "Flash"], correct: 2 }
-        ]
-      },
-      {
-        id: "math_magic",
-        title: "Math Magic",
-        icon: "🔢",
-        color: "bg-amber-500",
-        questions: [
-          { q: "What is 12 x 8?", options: ["84", "96", "104", "88"], correct: 1 },
-          { q: "What is square root of 64?", options: ["6", "7", "8", "9"], correct: 2 },
-          { q: "Triangle with 3 equal sides is called?", options: ["Isosceles", "Equilateral", "Scalene", "Right-angled"], correct: 1 },
-          { q: "What is 15% of 100?", options: ["10", "15", "20", "25"], correct: 1 }
+          { q: "What company created ChatGPT?", options: ["Google", "OpenAI", "Microsoft", "Meta"], correct: 1 }
         ]
       }
     ];
 
+    // INFINITE DYNAMIC QUESTION GENERATOR ENGINE
+    window.generateInfiniteQuestion = function(catId, qIndex) {
+      if (catId === 'math_magic') {
+        const types = ['add', 'sub', 'mult', 'div', 'square'];
+        const type = types[qIndex % types.length];
+        let qText = '', correctAns = 0;
+        const difficulty = Math.floor(qIndex / 5) + 1;
+        const maxNum = difficulty * 12;
+
+        if (type === 'add') {
+          const a = Math.floor(Math.random() * maxNum) + 12;
+          const b = Math.floor(Math.random() * maxNum) + 8;
+          qText = `What is ${a} + ${b}?`;
+          correctAns = a + b;
+        } else if (type === 'sub') {
+          const a = Math.floor(Math.random() * maxNum) + 25;
+          const b = Math.floor(Math.random() * (a - 5)) + 5;
+          qText = `What is ${a} - ${b}?`;
+          correctAns = a - b;
+        } else if (type === 'mult') {
+          const a = Math.floor(Math.random() * (difficulty * 4 + 6)) + 3;
+          const b = Math.floor(Math.random() * 11) + 2;
+          qText = `What is ${a} × ${b}?`;
+          correctAns = a * b;
+        } else if (type === 'div') {
+          const b = Math.floor(Math.random() * 9) + 2;
+          const ans = Math.floor(Math.random() * 12) + 2;
+          const a = b * ans;
+          qText = `What is ${a} ÷ ${b}?`;
+          correctAns = ans;
+        } else {
+          const a = Math.floor(Math.random() * (difficulty * 2 + 5)) + 4;
+          qText = `What is ${a}² (${a} x ${a})?`;
+          correctAns = a * a;
+        }
+
+        let options = [correctAns];
+        while (options.length < 4) {
+          let delta = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1);
+          let wrong = correctAns + delta;
+          if (wrong < 0) wrong = Math.abs(wrong) + 1;
+          if (!options.includes(wrong)) options.push(wrong);
+        }
+        options.sort(() => Math.random() - 0.5);
+        return { q: qText, options: options.map(o => String(o)), correct: options.indexOf(correctAns) };
+      } 
+      else if (catId === 'coding_cs') {
+        const csQuestions = [
+          { q: `In CSS, what property changes text color?`, options: ["text-color", "color", "font-color", "style"], correct: 1 },
+          { q: `What is the binary representation of decimal ${qIndex % 10 + 2}?`, options: [(qIndex % 10 + 2).toString(2), ((qIndex % 10 + 2) + 1).toString(2), ((qIndex % 10 + 2) + 2).toString(2), "1111"], correct: 0 },
+          { q: `Which HTTP code represents 'Not Found'?`, options: ["200", "404", "500", "301"], correct: 1 },
+          { q: `Which keyword creates a variable in JavaScript?`, options: ["var", "let", "const", "All of these"], correct: 3 },
+          { q: `What does SQL stand for?`, options: ["Structured Query Language", "Simple Question Line", "Sequential Query Logic", "System Core Language"], correct: 0 }
+        ];
+        return csQuestions[qIndex % csQuestions.length];
+      }
+      else {
+        const genQuestions = [
+          { q: `General Knowledge Q#${qIndex + 1}: Which is the largest ocean?`, options: ["Atlantic", "Pacific", "Indian", "Arctic"], correct: 1 },
+          { q: `General Knowledge Q#${qIndex + 1}: What is 2 to the power of ${(qIndex % 5) + 3}?`, options: [String(Math.pow(2, (qIndex % 5) + 3)), String(Math.pow(2, (qIndex % 5) + 2)), "64", "128"], correct: 0 },
+          { q: `General Knowledge Q#${qIndex + 1}: Which primary color mixes with Blue to make Purple?`, options: ["Red", "Yellow", "Green", "White"], correct: 0 }
+        ];
+        return genQuestions[qIndex % genQuestions.length];
+      }
+    };
+
+    window.getQuestionForSubject = function(catId, qIdx) {
+      const cat = window.quizCategories.find(c => c.id === catId);
+      if (cat && cat.questions && qIdx < cat.questions.length) {
+        return cat.questions[qIdx];
+      }
+      return window.generateInfiniteQuestion(catId, qIdx);
+    };
+
+    // LUCKY WHEEL REWARDS DATA & ENGINE
+    window.wheelItems = [
+      { label: "20 💎", type: "gems", val: 20, color: "#FF5B00" },
+      { label: "50 XP", type: "xp", val: 50, color: "#1CB0F6" },
+      { label: "50 💎", type: "gems", val: 50, color: "#9333EA" },
+      { label: "🎁 Box", type: "box", val: 40, color: "#FFD000" },
+      { label: "100 💎", type: "gems", val: 100, color: "#58CC02" },
+      { label: "100 XP", type: "xp", val: 100, color: "#F43F5E" },
+      { label: "10 💎", type: "gems", val: 10, color: "#0EA5E9" },
+      { label: "🔥 Bonus", type: "bonus", val: 75, color: "#EC4899" }
+    ];
+
+    function drawWheel() {
+      const canvas = document.getElementById('wheel-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const numSlices = window.wheelItems.length;
+      const arc = (2 * Math.PI) / numSlices;
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const radius = canvas.width / 2 - 4;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      window.wheelItems.forEach((item, i) => {
+        const angle = i * arc;
+        ctx.beginPath();
+        ctx.fillStyle = item.color;
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, angle, angle + arc);
+        ctx.lineTo(cx, cy);
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(angle + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.font = "bold 12px Nunito, sans-serif";
+        ctx.fillText(item.label, radius - 12, 4);
+        ctx.restore();
+      });
+    }
+
+    /* PERFECTED SPIN WHEEL WITH AUDIO TICKING ENGINE */
+    let isSpinning = false;
+    window.spinWheelAction = async function() {
+      const u = window.userState;
+      const today = new Date().toDateString();
+
+      if (u.lastSpinDate !== today) {
+        u.lastSpinDate = today;
+        u.spinsLeftToday = 3;
+      }
+
+      if (u.spinsLeftToday <= 0) {
+        showAlertModal("Spin Limit Reached", "Daily spins completed! Come back tomorrow for 3 new spins.", "🎰");
+        return;
+      }
+
+      if (isSpinning) return;
+      isSpinning = true;
+
+      playSound('spin');
+      u.spinsLeftToday--;
+      u.wheelSpinsCount = (u.wheelSpinsCount || 0) + 1;
+
+      const canvas = document.getElementById('wheel-canvas');
+      const numSlices = window.wheelItems.length;
+      const selectedIndex = Math.floor(Math.random() * numSlices);
+      const sliceDeg = 360 / numSlices;
+
+      const targetRotation = 360 * 5 + (360 - (selectedIndex * sliceDeg + sliceDeg / 2));
+
+      // Synchronized audio tick effect during rotation
+      let tickCount = 0;
+      const tickInterval = setInterval(() => {
+        playSound('tick');
+        tickCount++;
+        if (tickCount > 24) clearInterval(tickInterval);
+      }, 150);
+
+      canvas.style.transform = `rotate(${targetRotation}deg)`;
+
+      setTimeout(async () => {
+        clearInterval(tickInterval);
+        isSpinning = false;
+        canvas.style.transition = 'none';
+        canvas.style.transform = `rotate(${targetRotation % 360}deg)`;
+        setTimeout(() => {
+          canvas.style.transition = 'transform 4s cubic-bezier(0.15, 0.9, 0.15, 1)';
+        }, 50);
+
+        const reward = window.wheelItems[selectedIndex];
+        let wonGems = 0, wonXp = 0;
+        if (reward.type === 'gems' || reward.type === 'box' || reward.type === 'bonus') {
+          u.gems += reward.val;
+          wonGems = reward.val;
+        }
+        if (reward.type === 'xp' || reward.type === 'box' || reward.type === 'bonus') {
+          addXp(reward.val);
+          wonXp = reward.val;
+        }
+
+        checkBadges();
+        await saveUserToFirebase();
+        updateUI();
+
+        showRewardModal(wonGems, wonXp, `🎉 Won ${reward.label}!`);
+      }, 4000);
+    };
+
+    /* DAILY MYSTERY CHEST ACTION */
+    window.openMysteryChest = async function() {
+      const u = window.userState;
+      const today = new Date().toDateString();
+
+      if (u.lastMysteryChestDate === today) {
+        showAlertModal("Chest Already Opened", "You have already unlocked today's Mystery Chest! Return tomorrow.", "🎁");
+        return;
+      }
+
+      u.lastMysteryChestDate = today;
+      const rewardGems = Math.floor(Math.random() * 40) + 30;
+      const rewardXp = Math.floor(Math.random() * 80) + 50;
+
+      u.gems += rewardGems;
+      addXp(rewardXp);
+
+      await saveUserToFirebase();
+      updateUI();
+
+      showRewardModal(rewardGems, rewardXp, "🎁 Mystery Chest Rewards!");
+    };
+
+    window.addXp = function(amount) {
+      const u = window.userState;
+      const multiplier = u.hasXpBoost ? 2 : 1;
+      u.xp += (amount * multiplier);
+
+      while (u.xp >= u.nextLevelXp) {
+        u.xp -= u.nextLevelXp;
+        u.level++;
+        u.nextLevelXp = calculateNextLevelXp(u.level);
+        
+        playSound('levelup');
+        document.getElementById('levelup-num').innerText = u.level;
+        document.getElementById('levelup-modal').classList.remove('hidden');
+        confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
+      }
+    };
+
+    window.closeLevelUpModal = function() {
+      document.getElementById('levelup-modal').classList.add('hidden');
+    };
+
     window.updateUI = function() {
       const u = window.userState;
+      u.nextLevelXp = calculateNextLevelXp(u.level);
+
+      const today = new Date().toDateString();
+      if (u.lastSpinDate !== today) {
+        u.lastSpinDate = today;
+        u.spinsLeftToday = 3;
+      }
 
       document.getElementById('header-username').innerText = u.displayName;
       document.getElementById('header-level').innerText = u.level;
       document.getElementById('header-streak').innerText = u.streak;
       document.getElementById('header-gems').innerText = u.gems;
       document.getElementById('shop-gems-balance').innerText = u.gems;
+      document.getElementById('spin-counter-badge').innerText = `${u.spinsLeftToday}/3 Spins`;
+
+      const vipHeader = document.getElementById('vip-header-badge');
+      if (u.isVip) {
+        vipHeader.classList.remove('hidden');
+      } else {
+        vipHeader.classList.add('hidden');
+      }
 
       const xpPercent = Math.min(100, Math.floor((u.xp / u.nextLevelXp) * 100));
       document.getElementById('header-xp-bar').style.width = `${xpPercent}%`;
+      document.getElementById('header-xp-text').innerText = `${u.xp}/${u.nextLevelXp}`;
 
       const currentAvatar = window.avatarsList.find(a => a.id === u.equippedAvatar) || window.avatarsList[0];
-      document.getElementById('header-avatar').innerText = currentAvatar.icon;
-      document.getElementById('profile-avatar-icon').innerText = currentAvatar.icon;
+      
+      const avatarContainerHeader = document.getElementById('header-avatar');
+      const profileAvatarIcon = document.getElementById('profile-avatar-icon');
+
+      const applyAvatarDisplay = (el) => {
+        if (!el) return;
+        el.className = el.className.replace(/\bglow-\w+/g, '').trim();
+        if (currentAvatar.glow) el.classList.add(currentAvatar.glow);
+
+        if (currentAvatar.type === "svg") {
+          el.innerHTML = currentAvatar.svg;
+        } else {
+          el.innerText = currentAvatar.icon;
+        }
+      };
+
+      applyAvatarDisplay(avatarContainerHeader);
+      applyAvatarDisplay(profileAvatarIcon);
 
       const guestBadge = document.getElementById('guest-badge');
       if (u.isGuest) {
         guestBadge.innerText = "Guest";
         guestBadge.className = "bg-amber-100 text-amber-800 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md uppercase";
+        document.getElementById('setting-account-type').innerText = "Guest User (Temporary)";
+        document.getElementById('profile-sync-btn-text').innerText = "Sync Account";
       } else {
         guestBadge.innerText = "Synced";
         guestBadge.className = "bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md uppercase";
+        document.getElementById('setting-account-type').innerText = `Synced: ${u.email}`;
+        document.getElementById('profile-sync-btn-text').innerText = "Account Connected";
       }
 
       document.getElementById('profile-name').innerText = u.displayName;
-      document.getElementById('profile-email-text').innerText = u.email || "Guest User (Tap to Sync Cloud)";
+      document.getElementById('profile-email-text').innerText = u.email || "Guest User (Tap below to sync)";
       document.getElementById('profile-level').innerText = u.level;
       document.getElementById('profile-xp').innerText = u.xp;
       document.getElementById('profile-xp-progress').style.width = `${xpPercent}%`;
       document.getElementById('profile-xp-current').innerText = u.xp;
       document.getElementById('profile-xp-next').innerText = u.nextLevelXp;
+
+      const totalAttempted = u.totalQuestionsAttempted || u.correctAnswers || 1;
+      const accuracyCalc = u.correctAnswers > 0 ? Math.round((u.correctAnswers / totalAttempted) * 100) : 100;
+      document.getElementById('stat-accuracy').innerText = `${Math.min(100, accuracyCalc)}%`;
 
       document.getElementById('stat-quizzes').innerText = u.quizzesPlayed;
       document.getElementById('stat-correct').innerText = u.correctAnswers;
@@ -1034,7 +1829,6 @@
       document.getElementById('quest1-progress').innerText = Math.min(2, u.quest1Count);
       document.getElementById('quest2-progress').innerText = Math.min(1, u.quest2Count);
 
-      // Quest 1 Action Button
       const q1Act = document.getElementById('quest1-action');
       if (u.quest1Claimed) {
         q1Act.innerHTML = `<span class="text-xs font-bold text-slate-400">Claimed</span>`;
@@ -1044,59 +1838,99 @@
         q1Act.innerHTML = `<span class="text-xs font-extrabold text-brand-orange bg-orange-50 px-2.5 py-1 rounded-xl border border-orange-100">+50 XP</span>`;
       }
 
-      // Quest 2 Action Button
       const q2Act = document.getElementById('quest2-action');
       if (u.quest2Claimed) {
         q2Act.innerHTML = `<span class="text-xs font-bold text-slate-400">Claimed</span>`;
       } else if (u.quest2Count >= 1) {
-        q2Act.innerHTML = `<button onclick="claimQuest(2)" class="btn-3d btn-blue px-3 py-1 rounded-xl text-xs font-extrabold uppercase">Claim 20 💎</button>`;
+        q2Act.innerHTML = `<button onclick="claimQuest(2)" class="btn-3d btn-blue px-3 py-1 rounded-xl text-xs font-extrabold uppercase">Claim 30 💎</button>`;
       } else {
-        q2Act.innerHTML = `<span class="text-xs font-extrabold text-brand-blue bg-blue-50 px-2.5 py-1 rounded-xl border border-blue-100">+20 💎</span>`;
+        q2Act.innerHTML = `<span class="text-xs font-extrabold text-brand-blue bg-blue-50 px-2.5 py-1 rounded-xl border border-blue-100">+30 💎</span>`;
       }
 
-      // Boss HP
+      if (u.lastDailyBonus === today) {
+        document.getElementById('btn-claim-daily').innerText = "CLAIMED";
+        document.getElementById('btn-claim-daily').disabled = true;
+        document.getElementById('btn-claim-daily').className = "px-3 py-1.5 rounded-xl text-xs font-bold bg-white/20 text-white cursor-not-allowed";
+      } else {
+        document.getElementById('btn-claim-daily').innerText = "CLAIM";
+        document.getElementById('btn-claim-daily').disabled = false;
+        document.getElementById('btn-claim-daily').className = "btn-3d btn-yellow px-3 py-1.5 rounded-xl text-xs font-extrabold uppercase";
+      }
+
+      const homeResumeBanner = document.getElementById('home-resume-banner');
+      if (u.activeQuizState && u.activeQuizState.inProgress) {
+        homeResumeBanner.classList.remove('hidden');
+        document.getElementById('resume-banner-desc').innerText = `Subject: ${u.activeQuizState.catTitle} • Q #${u.activeQuizState.currentQuestionIdx + 1}`;
+      } else {
+        homeResumeBanner.classList.add('hidden');
+      }
+
       const hpPercent = Math.max(0, u.bossHp);
       document.getElementById('boss-hp-text').innerText = `${hpPercent} / 100 HP`;
       document.getElementById('boss-hp-bar').style.width = `${hpPercent}%`;
 
+      drawWheel();
       renderHomeCategories();
       renderAllCategories();
+      renderDiamondExchangeGrid();
       renderAvatarShop();
       renderBadgesGrid();
       renderBattleStandings();
+      renderSubjectAccuracyList();
+    };
+
+    window.claimDailyBonus = async function() {
+      const u = window.userState;
+      const today = new Date().toDateString();
+      if (u.lastDailyBonus === today) return;
+
+      u.lastDailyBonus = today;
+      u.gems += 50;
+      addXp(100);
+      await saveUserToFirebase();
+      updateUI();
+      showRewardModal(50, 100, "🌟 Daily Bonus Claimed!");
     };
 
     window.claimQuest = async function(questId) {
-      playSound('claim');
       const u = window.userState;
       if (questId === 1 && u.quest1Count >= 2 && !u.quest1Claimed) {
-        u.xp += 50;
+        addXp(50);
         u.quest1Claimed = true;
+        showToast("Claimed +50 XP Quest Reward!", "🎯");
       } else if (questId === 2 && u.quest2Count >= 1 && !u.quest2Claimed) {
-        u.gems += 20;
+        u.gems += 30;
         u.quest2Claimed = true;
+        showToast("Claimed +30 Gems Quest Reward!", "💎");
       }
+      checkBadges();
       await saveUserToFirebase();
       updateUI();
-      confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
     };
 
     window.attackBoss = function() {
-      startQuiz('tech_ai');
+      const u = window.userState;
+      u.bossAttacks = (u.bossAttacks || 0) + 1;
+      checkBadges();
+      startQuiz('math_magic');
     };
 
     function renderHomeCategories() {
       const grid = document.getElementById('home-categories-grid');
+      if (!grid) return;
       grid.innerHTML = '';
+      const u = window.userState;
+
       window.quizCategories.slice(0, 4).forEach(cat => {
+        const solved = (u.subjectProgress && u.subjectProgress[cat.id]) || 0;
         grid.innerHTML += `
           <div onclick="startQuiz('${cat.id}')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-brand-orange transition-all flex items-center gap-3">
             <div class="w-11 h-11 rounded-2xl ${cat.color} text-white flex items-center justify-center text-xl shadow-xs">
               ${cat.icon}
             </div>
             <div>
-              <h4 class="font-fredoka text-sm font-bold text-slate-800">${cat.title}</h4>
-              <p class="text-[10px] text-slate-400 font-bold">${cat.questions.length} Questions</p>
+              <h4 class="font-fredoka text-sm font-bold text-slate-800 line-clamp-1">${cat.title}</h4>
+              <p class="text-[10px] text-brand-orange font-extrabold">Q #${solved + 1} Ready</p>
             </div>
           </div>
         `;
@@ -1105,20 +1939,24 @@
 
     function renderAllCategories() {
       const grid = document.getElementById('all-categories-grid');
+      if (!grid) return;
       grid.innerHTML = '';
+      const u = window.userState;
+
       window.quizCategories.forEach(cat => {
+        const solved = (u.subjectProgress && u.subjectProgress[cat.id]) || 0;
         grid.innerHTML += `
           <div onclick="startQuiz('${cat.id}')" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-brand-blue transition-all flex items-center justify-between">
             <div class="flex items-center gap-3.5">
-              <div class="w-12 h-12 rounded-2xl ${cat.color} text-white flex items-center justify-center text-2xl shadow-xs">
+              <div class="w-12 h-12 rounded-2xl ${cat.color} text-white flex items-center justify-center text-2xl shadow-sm">
                 ${cat.icon}
               </div>
               <div>
                 <h4 class="font-fredoka text-base font-bold text-slate-800">${cat.title}</h4>
-                <p class="text-xs text-slate-500 font-semibold">${cat.questions.length} Questions • +50 XP Reward</p>
+                <p class="text-xs text-slate-400 font-semibold">${solved} Questions Solved • Infinite Mode</p>
               </div>
             </div>
-            <button class="btn-3d btn-mint px-3.5 py-1.5 rounded-xl text-xs font-extrabold uppercase">
+            <button class="btn-3d btn-blue px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase">
               Play
             </button>
           </div>
@@ -1126,383 +1964,512 @@
       });
     }
 
+    function renderDiamondExchangeGrid() {
+      const grid = document.getElementById('diamond-exchange-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      const u = window.userState;
+
+      window.diamondExchangeItems.forEach(item => {
+        let isOwned = false;
+        if (item.id === 'ex_streak_shield' && u.hasStreakShield) isOwned = true;
+        if (item.id === 'ex_xp_boost' && u.hasXpBoost) isOwned = true;
+        if (item.id === 'ex_vip_badge' && u.isVip) isOwned = true;
+
+        grid.innerHTML += `
+          <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between gap-2">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-2xl bg-amber-100/70 border border-amber-200 flex items-center justify-center text-2xl">
+                ${item.icon}
+              </div>
+              <div>
+                <h4 class="font-fredoka text-sm font-bold text-slate-800">${item.name}</h4>
+                <p class="text-[11px] text-slate-400 font-semibold line-clamp-1">${item.desc}</p>
+              </div>
+            </div>
+            ${
+              isOwned 
+              ? `<span class="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl">Active</span>`
+              : `<button onclick="buyExchangeItem('${item.id}', ${item.cost})" class="btn-3d btn-purple px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1">
+                  <span>${item.cost}</span>
+                  <i class="fa-solid fa-gem text-[10px] text-yellow-300"></i>
+                </button>`
+            }
+          </div>
+        `;
+      });
+    }
+
+    window.buyExchangeItem = async function(itemId, cost) {
+      const u = window.userState;
+      if (u.gems < cost) {
+        showAlertModal("Not Enough Gems", `You need ${cost} Gems to exchange this item! Play quizzes or spin wheel to earn more.`, "💎");
+        return;
+      }
+
+      u.gems -= cost;
+      playSound('buy');
+
+      if (itemId === 'ex_streak_shield') {
+        u.hasStreakShield = true;
+        showToast("Streak Shield Activated!", "🛡️");
+      } else if (itemId === 'ex_xp_boost') {
+        u.hasXpBoost = true;
+        showToast("2X XP Booster Activated!", "⚡");
+      } else if (itemId === 'ex_vip_badge') {
+        u.isVip = true;
+        showToast("VIP Status Unlocked!", "👑");
+      } else if (itemId === 'ex_mystery_chest') {
+        const bonusXp = Math.floor(Math.random() * 200) + 100;
+        const bonusGems = Math.floor(Math.random() * 150) + 50;
+        u.gems += bonusGems;
+        addXp(bonusXp);
+        showRewardModal(bonusGems, bonusXp, "🎁 Mystery Vault Unlocked!");
+      }
+
+      await saveUserToFirebase();
+      updateUI();
+    };
+
     function renderAvatarShop() {
       const grid = document.getElementById('avatar-grid');
+      if (!grid) return;
       grid.innerHTML = '';
       const u = window.userState;
 
       window.avatarsList.forEach(av => {
-        const isUnlocked = u.unlockedAvatars.includes(av.id);
+        const isUnlocked = u.unlockedAvatars.includes(av.id) || (av.reqLvl && u.level >= av.reqLvl);
         const isEquipped = u.equippedAvatar === av.id;
 
-        let btnHtml = '';
-        if (isEquipped) {
-          btnHtml = `<span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase">Equipped</span>`;
-        } else if (isUnlocked) {
-          btnHtml = `<button onclick="equipAvatar('${av.id}')" class="w-full btn-3d btn-blue py-1.5 rounded-xl text-xs font-bold">EQUIP</button>`;
-        } else {
-          btnHtml = `
-            <button onclick="buyAvatar('${av.id}', ${av.price})" class="w-full btn-3d btn-orange py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1">
-              <span>BUY</span>
-              <span>(${av.price} 💎)</span>
-            </button>
-          `;
-        }
-
         grid.innerHTML += `
-          <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between items-center text-center space-y-2">
-            <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-slate-100 to-slate-200 border-2 border-slate-200 flex items-center justify-center text-3xl shadow-inner mt-1">
-              ${av.icon}
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex flex-col items-center text-center space-y-2 relative">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-100 to-orange-100 border-2 border-brand-orange flex items-center justify-center text-3xl p-1 overflow-hidden ${av.glow || ''}">
+              ${av.type === 'svg' ? av.svg : av.icon}
             </div>
             <div>
               <h4 class="font-fredoka text-sm font-bold text-slate-800">${av.name}</h4>
-              <p class="text-[10px] text-slate-400 font-semibold mt-0.5 line-clamp-1">${av.desc}</p>
+              <p class="text-[10px] text-slate-400 font-semibold line-clamp-1">${av.desc}</p>
             </div>
-            <div class="w-full pt-1">
-              ${btnHtml}
-            </div>
+
+            ${
+              isEquipped 
+              ? `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-3 py-1 rounded-xl uppercase">Equipped</span>`
+              : isUnlocked 
+                ? `<button onclick="equipAvatar('${av.id}')" class="btn-3d btn-mint px-4 py-1 rounded-xl text-xs font-bold uppercase">Equip</button>`
+                : typeof av.price === 'number'
+                  ? `<button onclick="buyAvatar('${av.id}',${av.price})" class="btn-3d btn-blue px-3 py-1 rounded-xl text-xs font-bold flex items-center gap-1 uppercase">
+                      <span>${av.price}</span>
+                      <i class="fa-solid fa-gem text-[10px]"></i>
+                    </button>`
+                  : `<span class="bg-slate-100 text-slate-500 text-[10px] font-bold px-2.5 py-1 rounded-xl">${av.price} Req</span>`
+            }
           </div>
         `;
       });
     }
 
-    window.buyAvatar = async function(avatarId, price) {
-      playSound('click');
+    window.buyAvatar = async function(avId, price) {
       const u = window.userState;
       if (u.gems < price) {
-        alert("Not enough Gems! Complete quizzes to earn more.");
+        showAlertModal("Not Enough Gems", "You do not have enough Gems to buy this avatar!", "💎");
         return;
       }
+
       u.gems -= price;
-      u.unlockedAvatars.push(avatarId);
-      u.equippedAvatar = avatarId;
+      u.unlockedAvatars.push(avId);
+      u.equippedAvatar = avId;
       playSound('buy');
       checkBadges();
       await saveUserToFirebase();
       updateUI();
+      showToast("New Avatar Unlocked & Equipped!", "🦊");
     };
 
-    window.equipAvatar = async function(avatarId) {
+    window.equipAvatar = async function(avId) {
+      const u = window.userState;
+      u.equippedAvatar = avId;
       playSound('click');
-      window.userState.equippedAvatar = avatarId;
       await saveUserToFirebase();
       updateUI();
+      showToast("Avatar Equipped!", "✨");
     };
 
     function renderBadgesGrid() {
       const grid = document.getElementById('badges-grid');
+      if (!grid) return;
       grid.innerHTML = '';
       const u = window.userState;
 
-      document.getElementById('unlocked-badge-count').innerText = u.unlockedBadges.length;
-
+      let unlockedCount = 0;
       window.badgesList.forEach(b => {
         const isUnlocked = u.unlockedBadges.includes(b.id);
+        if (isUnlocked) unlockedCount++;
 
         grid.innerHTML += `
-          <div class="p-3.5 rounded-2xl ${isUnlocked ? 'badge-card-unlocked' : 'badge-card-locked'} flex items-start gap-3 relative overflow-hidden">
-            <div class="w-11 h-11 rounded-2xl ${isUnlocked ? 'bg-amber-400 text-slate-900 shadow-md' : 'bg-slate-200 text-slate-400'} flex items-center justify-center text-2xl flex-shrink-0">
-              ${isUnlocked ? b.icon : '🔒'}
-            </div>
+          <div class="p-3 rounded-2xl border ${isUnlocked ? 'badge-card-unlocked' : 'badge-card-locked'} flex items-center gap-3">
+            <div class="text-3xl">${b.icon}</div>
             <div>
-              <div class="flex items-center gap-1">
-                <h4 class="font-fredoka text-xs font-bold ${isUnlocked ? 'text-amber-900' : 'text-slate-600'}">${b.name}</h4>
-                ${isUnlocked ? '<i class="fa-solid fa-circle-check text-amber-600 text-[10px]"></i>' : ''}
-              </div>
-              <p class="text-[10px] ${isUnlocked ? 'text-amber-800' : 'text-slate-400'} font-semibold mt-0.5 leading-tight">${b.desc}</p>
+              <h4 class="font-fredoka text-xs font-bold text-slate-800">${b.name}</h4>
+              <p class="text-[10px] text-slate-500 font-semibold leading-tight mt-0.5">${b.desc}</p>
             </div>
           </div>
         `;
       });
-    }
 
-    function checkBadges() {
+      document.getElementById('unlocked-badge-count').innerText = unlockedCount;
+    };
+
+    window.checkBadges = function() {
       const u = window.userState;
       const unlock = (id) => {
         if (!u.unlockedBadges.includes(id)) {
           u.unlockedBadges.push(id);
-          playSound('levelup');
-          confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+          showToast(`Achievement Unlocked: Badge!`, "🏆");
         }
       };
 
       if (u.quizzesPlayed >= 5) unlock("badge_quiz_5");
-      if (u.gems >= 200) unlock("badge_gems_200");
+      if (u.quizzesPlayed >= 15) unlock("badge_quiz_15");
+      if (u.quizzesPlayed >= 30) unlock("badge_quiz_30");
+      if (u.streak >= 3) unlock("badge_streak_3");
+      if (u.streak >= 7) unlock("badge_streak_7");
+      if (u.gems >= 100) unlock("badge_gems_100");
+      if (u.gems >= 500) unlock("badge_gems_500");
+      if (u.gems >= 1000) unlock("badge_gems_1000");
       if (u.correctAnswers >= 10) unlock("badge_correct_10");
+      if (u.correctAnswers >= 50) unlock("badge_correct_50");
+      if (u.correctAnswers >= 100) unlock("badge_correct_100");
+      if (u.level >= 2) unlock("badge_level_2");
       if (u.level >= 5) unlock("badge_level_5");
-      if (u.unlockedAvatars.length >= 3) unlock("badge_fashion");
-      if (u.xp >= 1000) unlock("badge_legend");
-      if (u.unlockedBadges.length >= 10) unlock("badge_master");
-    }
+      if (u.level >= 10) unlock("badge_level_10");
+      if ((u.wheelSpinsCount || 0) >= 3) unlock("badge_wheel_3");
+      if ((u.wheelSpinsCount || 0) >= 15) unlock("badge_wheel_15");
+      if ((u.lifelinesUsed || 0) >= 5) unlock("badge_lifeline_5");
+      if ((u.bossAttacks || 0) >= 3) unlock("badge_boss_3");
+      if (u.unlockedAvatars.length >= 3) unlock("badge_shop_3");
+      if (u.unlockedBadges.length >= 10) unlock("badge_ultimate");
+    };
 
     function renderBattleStandings() {
       const list = document.getElementById('battle-leaderboard-list');
       if (!list) return;
-      list.innerHTML = '';
-
       const u = window.userState;
-      const players = [
-        { name: "Mecha Slayer", xp: 1250, icon: "👺" },
-        { name: u.displayName, xp: u.xp, icon: window.avatarsList.find(a => a.id === u.equippedAvatar)?.icon || "🦊", isMe: true },
-        { name: "Cyber Ninja", xp: 620, icon: "🎧" },
-        { name: "Star Explorer", xp: 410, icon: "🐻" }
+
+      const mockLeaderboard = [
+        { name: u.displayName, xp: u.xp + (u.level * 100), rank: 1, avatar: "🦊", isUser: true },
+        { name: "CyberNinja", xp: 1250, rank: 2, avatar: "🤖", isUser: false },
+        { name: "QuizMaster99", xp: 980, rank: 3, avatar: "👑", isUser: false },
+        { name: "AstroGirl", xp: 720, rank: 4, avatar: "🐻", isUser: false }
       ];
 
-      players.sort((a, b) => b.xp - a.xp);
+      mockLeaderboard.sort((a, b) => b.xp - a.xp);
 
-      players.forEach((p, idx) => {
+      list.innerHTML = '';
+      mockLeaderboard.forEach((item, idx) => {
         list.innerHTML += `
-          <div class="p-3 flex items-center justify-between ${p.isMe ? 'bg-amber-50/80 border-l-4 border-brand-orange font-bold' : ''}">
+          <div class="p-3 flex items-center justify-between ${item.isUser ? 'bg-amber-50/80 font-bold' : ''}">
             <div class="flex items-center gap-3">
-              <span class="w-5 text-center font-fredoka font-bold text-slate-400 text-xs">#${idx + 1}</span>
-              <span class="text-xl">${p.icon}</span>
-              <span class="text-slate-800 text-xs truncate max-w-[120px]">${p.name} ${p.isMe ? '(You)' : ''}</span>
+              <span class="font-fredoka text-sm w-5 text-slate-400">#${idx + 1}</span>
+              <div class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-lg">
+                ${item.avatar}
+              </div>
+              <div>
+                <h5 class="text-xs font-bold text-slate-800">${item.name} ${item.isUser ? '(You)' : ''}</h5>
+                <p class="text-[10px] text-slate-400 font-semibold">${item.xp} Total Power</p>
+              </div>
             </div>
-            <span class="font-fredoka text-xs text-brand-orange">${p.xp} XP</span>
+            <span class="text-xs font-extrabold text-brand-orange">Lvl ${Math.floor(item.xp / 100) + 1}</span>
           </div>
         `;
       });
     }
 
-    let activeQuiz = null;
-    let currentQuestionIdx = 0;
-    let quizScore = 0;
+    function renderSubjectAccuracyList() {
+      const list = document.getElementById('subject-accuracy-list');
+      if (!list) return;
+      list.innerHTML = '';
+      const u = window.userState;
+
+      window.quizCategories.forEach(cat => {
+        const solved = (u.subjectProgress && u.subjectProgress[cat.id]) || 0;
+        list.innerHTML += `
+          <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100 text-xs font-bold">
+            <div class="flex items-center gap-2">
+              <span>${cat.icon}</span>
+              <span class="text-slate-800">${cat.title}</span>
+            </div>
+            <span class="text-brand-blue font-extrabold">${solved} Solved</span>
+          </div>
+        `;
+      });
+    }
+
+    /* QUIZ BATCH ENGINE WITH MID-QUIZ RESUME SUPPORT */
+    let currentQuizCatId = null;
+    let currentQuizIndex = 0;
+    let currentBatchScore = 0;
+    let currentBatchQuestions = [];
     let selectedOptionIdx = null;
-    let questionTimer = null;
+    let quizTimerInterval = null;
     let timeLeft = 15;
 
     window.startQuiz = function(catId) {
-      playSound('click');
-      const category = window.quizCategories.find(c => c.id === catId);
-      if (!category) return;
+      currentQuizCatId = catId;
+      const u = window.userState;
+      const solved = (u.subjectProgress && u.subjectProgress[catId]) || 0;
+      currentQuizIndex = solved;
 
-      activeQuiz = category;
-      currentQuestionIdx = 0;
-      quizScore = 0;
-      selectedOptionIdx = null;
-
-      document.getElementById('quiz-q-total').innerText = category.questions.length;
+      currentBatchScore = 0;
+      loadQuizQuestionBatch();
       document.getElementById('quiz-modal').classList.remove('hidden');
-
-      loadQuestion();
     };
 
-    function loadQuestion() {
-      if (questionTimer) clearInterval(questionTimer);
+    window.resumeSavedQuiz = function() {
+      const u = window.userState;
+      if (u.activeQuizState && u.activeQuizState.inProgress) {
+        currentQuizCatId = u.activeQuizState.catId;
+        currentQuizIndex = u.activeQuizState.currentQuestionIdx;
+        loadQuizQuestionBatch();
+        document.getElementById('quiz-modal').classList.remove('hidden');
+      }
+    };
 
-      const q = activeQuiz.questions[currentQuestionIdx];
+    function loadQuizQuestionBatch() {
+      const q = window.getQuestionForSubject(currentQuizCatId, currentQuizIndex);
       selectedOptionIdx = null;
 
-      document.getElementById('quiz-q-index').innerText = currentQuestionIdx + 1;
+      document.getElementById('quiz-global-qindex').innerText = currentQuizIndex + 1;
+      document.getElementById('quiz-q-index').innerText = (currentQuizIndex % 5) + 1;
       document.getElementById('quiz-question-text').innerText = q.q;
-
-      const progressPercent = ((currentQuestionIdx) / activeQuiz.questions.length) * 100;
-      document.getElementById('quiz-progress-bar').style.width = `${progressPercent}%`;
 
       const container = document.getElementById('quiz-options-container');
       container.innerHTML = '';
 
-      q.options.forEach((optText, idx) => {
+      q.options.forEach((opt, idx) => {
         container.innerHTML += `
-          <div onclick="selectOption(${idx})" id="opt-${idx}" class="option-card p-3.5 bg-white border-2 border-slate-200 rounded-2xl cursor-pointer flex items-center gap-3 shadow-xs">
-            <span class="w-7 h-7 rounded-xl bg-slate-100 text-slate-600 font-fredoka font-bold text-xs flex items-center justify-center">${String.fromCharCode(65 + idx)}</span>
-            <span class="font-bold text-xs text-slate-700 flex-1">${optText}</span>
+          <div id="opt-${idx}" onclick="selectQuizOption(${idx})" class="option-card p-3.5 bg-white rounded-2xl border-2 border-slate-200 cursor-pointer font-bold text-xs text-slate-800 flex items-center justify-between">
+            <span>${opt}</span>
+            <div class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-[10px] text-transparent check-mark">✓</div>
           </div>
         `;
       });
 
-      const feedback = document.getElementById('quiz-feedback');
-      feedback.className = "hidden p-3 rounded-2xl text-xs font-bold flex items-center gap-3";
+      document.getElementById('quiz-feedback').classList.add('hidden');
+      document.getElementById('btn-quiz-next').innerText = "Check Answer";
 
-      const btn = document.getElementById('btn-quiz-next');
-      btn.innerText = "Check Answer";
-      btn.className = "w-full btn-3d btn-mint py-3.5 rounded-2xl font-fredoka font-bold text-base uppercase tracking-wider";
+      const u = window.userState;
+      u.activeQuizState = {
+        inProgress: true,
+        catId: currentQuizCatId,
+        catTitle: (window.quizCategories.find(c => c.id === currentQuizCatId) || {}).title || "Quiz",
+        currentQuestionIdx: currentQuizIndex
+      };
+      saveUserToFirebase();
 
+      resetQuizTimer();
+    }
+
+    function resetQuizTimer() {
+      clearInterval(quizTimerInterval);
       timeLeft = 15;
       document.getElementById('quiz-timer').innerText = `${timeLeft}s`;
-      questionTimer = setInterval(() => {
+
+      quizTimerInterval = setInterval(() => {
         timeLeft--;
         document.getElementById('quiz-timer').innerText = `${timeLeft}s`;
         if (timeLeft <= 0) {
-          clearInterval(questionTimer);
+          clearInterval(quizTimerInterval);
           submitOrNextQuestion();
         }
       }, 1000);
     }
 
-    window.selectOption = function(idx) {
-      if (document.getElementById('btn-quiz-next').innerText === "Next Question" || 
-          document.getElementById('btn-quiz-next').innerText === "Finish Quiz") return;
-
-      playSound('click');
+    window.selectQuizOption = function(idx) {
       selectedOptionIdx = idx;
-
+      playSound('click');
       for (let i = 0; i < 4; i++) {
         const el = document.getElementById(`opt-${i}`);
         if (el) el.classList.remove('selected');
       }
+      const sel = document.getElementById(`opt-${idx}`);
+      if (sel) sel.classList.add('selected');
+    };
 
-      const activeEl = document.getElementById(`opt-${idx}`);
-      if (activeEl) activeEl.classList.add('selected');
+    window.use5050Lifeline = function() {
+      const u = window.userState;
+      if (u.gems < 10) {
+        showToast("Need 10 Gems for 50:50 Lifeline!", "💎");
+        return;
+      }
+      u.gems -= 10;
+      u.lifelinesUsed = (u.lifelinesUsed || 0) + 1;
+      const q = window.getQuestionForSubject(currentQuizCatId, currentQuizIndex);
+      let hiddenCount = 0;
+      for (let i = 0; i < 4; i++) {
+        if (i !== q.correct && hiddenCount < 2) {
+          const optEl = document.getElementById(`opt-${i}`);
+          if (optEl) optEl.classList.add('opacity-30', 'pointer-events-none');
+          hiddenCount++;
+        }
+      }
+      checkBadges();
+      saveUserToFirebase();
+      updateUI();
+      showToast("50:50 Lifeline Applied!", "🆘");
+    };
+
+    window.useSkipLifeline = function() {
+      const u = window.userState;
+      if (u.gems < 15) {
+        showToast("Need 15 Gems to Skip!", "💎");
+        return;
+      }
+      u.gems -= 15;
+      u.lifelinesUsed = (u.lifelinesUsed || 0) + 1;
+      checkBadges();
+      saveUserToFirebase();
+      updateUI();
+      currentQuizIndex++;
+      loadQuizQuestionBatch();
+      showToast("Question Skipped!", "⏩");
     };
 
     window.submitOrNextQuestion = function() {
       const btn = document.getElementById('btn-quiz-next');
+      const q = window.getQuestionForSubject(currentQuizCatId, currentQuizIndex);
 
       if (btn.innerText === "Check Answer") {
-        if (selectedOptionIdx === null) {
-          alert("Please select an answer first!");
-          return;
-        }
-
-        clearInterval(questionTimer);
-        const q = activeQuiz.questions[currentQuestionIdx];
-        const feedback = document.getElementById('quiz-feedback');
-        feedback.classList.remove('hidden');
+        clearInterval(quizTimerInterval);
+        const u = window.userState;
+        u.totalQuestionsAttempted = (u.totalQuestionsAttempted || 0) + 1;
 
         if (selectedOptionIdx === q.correct) {
           playSound('correct');
-          quizScore++;
-          document.getElementById(`opt-${selectedOptionIdx}`).className = "option-card p-3.5 border-2 rounded-2xl flex items-center gap-3 correct";
-          feedback.className = "p-3 rounded-2xl text-xs font-bold flex items-center gap-3 bg-emerald-100 text-emerald-800 border border-emerald-300";
-          document.getElementById('feedback-icon').innerText = "🎉";
-          document.getElementById('feedback-title').innerText = "Correct Answer!";
-          document.getElementById('feedback-desc').innerText = "Awesome job! You earned bonus XP.";
+          currentBatchScore++;
+          u.correctAnswers++;
+          addXp(15);
+          u.gems += 5;
 
-          if (timeLeft >= 10 && !window.userState.unlockedBadges.includes("badge_speed")) {
-            window.userState.unlockedBadges.push("badge_speed");
+          if (timeLeft >= 10) {
+            const speedBadge = window.badgesList.find(b => b.id === 'badge_speed_demon');
+            if (speedBadge && !u.unlockedBadges.includes('badge_speed_demon')) {
+              u.unlockedBadges.push('badge_speed_demon');
+            }
+          }
+
+          const sel = document.getElementById(`opt-${selectedOptionIdx}`);
+          if (sel) sel.className = "option-card p-3.5 rounded-2xl border-2 correct font-bold text-xs flex items-center justify-between";
+
+          document.getElementById('quiz-feedback').className = "p-3 rounded-2xl text-xs font-bold flex items-center gap-3 bg-emerald-100 text-emerald-900 border border-emerald-300";
+          document.getElementById('feedback-title').innerText = "Correct Answer!";
+          document.getElementById('feedback-desc').innerText = "+15 XP & +5 Gems Earned!";
+          document.getElementById('quiz-feedback').classList.remove('hidden');
+
+          if (currentQuizCatId === 'math_magic' && u.bossHp > 0) {
+            u.bossHp = Math.max(0, u.bossHp - 15);
+            if (u.bossHp === 0 && !u.unlockedBadges.includes('badge_boss_slayer')) {
+              u.unlockedBadges.push('badge_boss_slayer');
+            }
           }
         } else {
           playSound('wrong');
-          document.getElementById(`opt-${selectedOptionIdx}`).className = "option-card p-3.5 border-2 rounded-2xl flex items-center gap-3 wrong";
-          document.getElementById(`opt-${q.correct}`).className = "option-card p-3.5 border-2 rounded-2xl flex items-center gap-3 correct";
+          if (selectedOptionIdx !== null) {
+            const sel = document.getElementById(`opt-${selectedOptionIdx}`);
+            if (sel) sel.className = "option-card p-3.5 rounded-2xl border-2 wrong font-bold text-xs flex items-center justify-between";
+          }
+          const correctOpt = document.getElementById(`opt-${q.correct}`);
+          if (correctOpt) correctOpt.className = "option-card p-3.5 rounded-2xl border-2 correct font-bold text-xs flex items-center justify-between";
 
-          feedback.className = "p-3 rounded-2xl text-xs font-bold flex items-center gap-3 bg-rose-100 text-rose-800 border border-rose-300";
-          document.getElementById('feedback-icon').innerText = "😅";
-          document.getElementById('feedback-title').innerText = "Oops, Incorrect!";
-          document.getElementById('feedback-desc').innerText = `Correct answer was ${q.options[q.correct]}`;
+          document.getElementById('quiz-feedback').className = "p-3 rounded-2xl text-xs font-bold flex items-center gap-3 bg-rose-100 text-rose-900 border border-rose-300";
+          document.getElementById('feedback-title').innerText = "Incorrect!";
+          document.getElementById('feedback-desc').innerText = `Correct answer was option #${q.correct + 1}`;
+          document.getElementById('quiz-feedback').classList.remove('hidden');
         }
 
-        if (currentQuestionIdx < activeQuiz.questions.length - 1) {
-          btn.innerText = "Next Question";
-          btn.className = "w-full btn-3d btn-blue py-3.5 rounded-2xl font-fredoka font-bold text-base uppercase tracking-wider";
-        } else {
-          btn.innerText = "Finish Quiz";
-          btn.className = "w-full btn-3d btn-yellow py-3.5 rounded-2xl font-fredoka font-bold text-base uppercase tracking-wider";
-        }
-
+        btn.innerText = "Next Question ➔";
+        saveUserToFirebase();
+        updateUI();
       } else {
-        if (currentQuestionIdx < activeQuiz.questions.length - 1) {
-          currentQuestionIdx++;
-          loadQuestion();
+        currentQuizIndex++;
+        const u = window.userState;
+        u.subjectProgress[currentQuizCatId] = currentQuizIndex;
+
+        if ((currentQuizIndex % 5) === 0) {
+          finishQuizBatch();
         } else {
-          finishQuiz();
+          loadQuizQuestionBatch();
         }
       }
     };
 
-    window.exitQuiz = function() {
-      if (questionTimer) clearInterval(questionTimer);
-      document.getElementById('quiz-modal').classList.add('hidden');
-    };
-
-    async function finishQuiz() {
-      if (questionTimer) clearInterval(questionTimer);
-      document.getElementById('quiz-modal').classList.add('hidden');
-
+    function finishQuizBatch() {
+      clearInterval(quizTimerInterval);
       const u = window.userState;
-      const qTotal = activeQuiz.questions.length;
-      const accuracy = Math.round((quizScore / qTotal) * 100);
-
-      const xpEarned = quizScore * 15 + 20;
-      const gemsEarned = quizScore * 3 + 5;
-
-      u.xp += xpEarned;
-      u.gems += gemsEarned;
       u.quizzesPlayed++;
-      u.correctAnswers += quizScore;
       u.quest1Count++;
 
-      // Boss damage
-      u.bossHp = Math.max(0, u.bossHp - (quizScore * 10));
-
-      if (accuracy === 100) {
+      if (currentBatchScore === 5) {
         u.quest2Count++;
-        if (!u.unlockedBadges.includes("badge_perfect")) {
-          u.unlockedBadges.push("badge_perfect");
-        }
+        if (!u.unlockedBadges.includes('badge_perfect')) u.unlockedBadges.push('badge_perfect');
       }
 
-      if (activeQuiz.id === "tech_ai" && !u.unlockedBadges.includes("badge_tech")) u.unlockedBadges.push("badge_tech");
-      if (activeQuiz.id === "movies_pop" && !u.unlockedBadges.includes("badge_pop")) u.unlockedBadges.push("badge_pop");
-      if (activeQuiz.id === "space_science" && !u.unlockedBadges.includes("badge_space")) u.unlockedBadges.push("badge_space");
-      if (activeQuiz.id === "anime_gaming" && !u.unlockedBadges.includes("badge_anime")) u.unlockedBadges.push("badge_anime");
-      if (activeQuiz.id === "math_magic" && !u.unlockedBadges.includes("badge_math")) u.unlockedBadges.push("badge_math");
-
-      if (u.xp >= u.nextLevelXp) {
-        u.level++;
-        u.nextLevelXp = Math.round(u.nextLevelXp * 1.5);
-        playSound('levelup');
-      }
-
+      u.activeQuizState = null;
       checkBadges();
-      await saveUserToFirebase();
+      saveUserToFirebase();
       updateUI();
 
-      document.getElementById('summary-xp').innerText = xpEarned;
-      document.getElementById('summary-gems').innerText = gemsEarned;
-      document.getElementById('summary-accuracy').innerText = `${accuracy}%`;
+      document.getElementById('quiz-modal').classList.add('hidden');
+      document.getElementById('summary-xp').innerText = currentBatchScore * 15;
+      document.getElementById('summary-gems').innerText = currentBatchScore * 5;
+      document.getElementById('summary-accuracy').innerText = `${Math.round((currentBatchScore / 5) * 100)}%`;
       document.getElementById('summary-modal').classList.remove('hidden');
-
-      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+      confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
     }
 
     window.closeSummaryModal = function() {
-      playSound('click');
       document.getElementById('summary-modal').classList.add('hidden');
     };
 
-    let authMode = 'login';
+    window.exitQuiz = function() {
+      showAlertModal("Exit Quiz?", "Your progress will be saved automatically!", "⏸️", "Exit", () => {
+        clearInterval(quizTimerInterval);
+        document.getElementById('quiz-modal').classList.add('hidden');
+        updateUI();
+      }, true);
+    };
 
+    /* AUTH & ACCOUNT SYNC HANDLING */
+    let authMode = 'login';
     window.openAuthModal = function() {
       playSound('click');
       document.getElementById('auth-modal').classList.remove('hidden');
     };
-
     window.closeAuthModal = function() {
       document.getElementById('auth-modal').classList.add('hidden');
     };
 
     window.switchAuthTab = function(mode) {
       authMode = mode;
-      const loginBtn = document.getElementById('tab-btn-login');
-      const signupBtn = document.getElementById('tab-btn-signup');
-      const nameField = document.getElementById('name-field');
-      const submitBtn = document.getElementById('btn-auth-submit');
-
-      if (mode === 'signup') {
-        signupBtn.className = "flex-1 py-1.5 rounded-lg bg-white shadow-xs text-slate-800 font-bold";
-        loginBtn.className = "flex-1 py-1.5 rounded-lg font-bold";
-        nameField.classList.remove('hidden');
-        submitBtn.innerText = "Create Free Account";
+      playSound('click');
+      if (mode === 'login') {
+        document.getElementById('tab-btn-login').className = "flex-1 py-1.5 rounded-lg bg-white shadow-xs text-slate-800 font-bold";
+        document.getElementById('tab-btn-signup').className = "flex-1 py-1.5 rounded-lg text-slate-500 font-bold";
+        document.getElementById('name-field').classList.add('hidden');
       } else {
-        loginBtn.className = "flex-1 py-1.5 rounded-lg bg-white shadow-xs text-slate-800 font-bold";
-        signupBtn.className = "flex-1 py-1.5 rounded-lg font-bold";
-        nameField.classList.add('hidden');
-        submitBtn.innerText = "Sync & Login";
+        document.getElementById('tab-btn-signup').className = "flex-1 py-1.5 rounded-lg bg-white shadow-xs text-slate-800 font-bold";
+        document.getElementById('tab-btn-login').className = "flex-1 py-1.5 rounded-lg text-slate-500 font-bold";
+        document.getElementById('name-field').classList.remove('hidden');
       }
     };
 
     window.handleAuthSubmit = async function() {
-      playSound('click');
       const email = document.getElementById('auth-email').value.trim();
       const password = document.getElementById('auth-password').value.trim();
       const name = document.getElementById('auth-name').value.trim();
       const errEl = document.getElementById('auth-error-msg');
-      errEl.classList.add('hidden');
 
       if (!email || !password) {
-        errEl.innerText = "Please enter email & password.";
+        errEl.innerText = "Please enter both Email and Password.";
         errEl.classList.remove('hidden');
         return;
       }
@@ -1510,64 +2477,59 @@
       try {
         if (authMode === 'signup') {
           const res = await createUserWithEmailAndPassword(auth, email, password);
-          window.userState.uid = res.user.uid;
+          window.userState.displayName = name || "PlayZa Adventurer";
           window.userState.email = email;
-          window.userState.displayName = name || "Explorer";
           window.userState.isGuest = false;
+          window.userState.uid = res.user.uid;
         } else {
           const res = await signInWithEmailAndPassword(auth, email, password);
-          window.userState.uid = res.user.uid;
           window.userState.email = email;
           window.userState.isGuest = false;
+          window.userState.uid = res.user.uid;
         }
 
         await saveUserToFirebase();
-        await syncUserFromFirebase();
         closeAuthModal();
+        showToast("Account Synced Successfully!", "☁️");
+        updateUI();
       } catch (err) {
-        errEl.innerText = err.message || "Auth error.";
+        errEl.innerText = err.message || "Authentication Failed!";
         errEl.classList.remove('hidden');
       }
     };
 
-    window.switchTab = function(tabId) {
-      playSound('tab');
-      const tabs = ['home', 'quizzes', 'battle', 'shop', 'profile'];
-      tabs.forEach(t => {
-        const sec = document.getElementById(`tab-${t}`);
-        const navBtn = document.getElementById(`nav-${t}`);
-        if (t === tabId) {
-          if (sec) sec.classList.remove('hidden');
-          if (navBtn) navBtn.className = "nav-btn flex flex-col items-center py-1 px-3 rounded-2xl text-brand-orange font-bold transition-all duration-200 scale-105";
-        } else {
-          if (sec) sec.classList.add('hidden');
-          if (navBtn) navBtn.className = "nav-btn flex flex-col items-center py-1 px-3 rounded-2xl text-slate-400 hover:text-slate-600 transition-all duration-200";
-        }
+    window.saveNewNickname = async function() {
+      const name = document.getElementById('setting-name-input').value.trim();
+      if (!name) return;
+      window.userState.displayName = name;
+      await saveUserToFirebase();
+      updateUI();
+      showToast("Nickname Updated!", "✏️");
+    };
+
+    window.forceCloudSyncAction = async function() {
+      await saveUserToFirebase();
+      showToast("Cloud Sync Complete!", "☁️");
+    };
+
+    window.resetLocalCache = function() {
+      showAlertModal("Reset Cache?", "This will clear local cache data. Continue?", "⚠️", "Reset", () => {
+        localStorage.removeItem(LOCAL_CACHE_KEY);
+        location.reload();
+      }, true);
+    };
+
+    window.filterSubjects = function() {
+      const query = document.getElementById('search-subject-input').value.toLowerCase();
+      const cards = document.querySelectorAll('#all-categories-grid > div');
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(query) ? 'flex' : 'none';
       });
     };
 
-    let currentBannerIdx = 0;
-    setInterval(() => {
-      currentBannerIdx = (currentBannerIdx + 1) % 3;
-      const slider = document.getElementById('banner-slider');
-      if (slider) {
-        slider.style.transform = `translateX(-${currentBannerIdx * 100}%)`;
-      }
-    }, 4000);
-
-    window.onload = function() {
-      updateUI();
-    };
+    // INITIAL UI DRAW
+    updateUI();
   </script>
-  <!-- <body> ke end mein Service Worker register karein -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then((reg) => console.log('Service Worker registered successfully!', reg))
-        .catch((err) => console.log('Service Worker registration failed:', err));
-    });
-  }
-</script>
 </body>
 </html>
