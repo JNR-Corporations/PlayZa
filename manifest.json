@@ -1,17 +1,86 @@
 {
-  "name": "My App",
-  "short_name": "App",
-  "start_url": "/",
+  "name": "PlayZa — Play • Learn • Win",
+  "short_name": "PlayZa",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
-  "description": "My Progressive Web App",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait-primary",
+  "background_color": "#FFF7ED",
+  "theme_color": "#FF6B00",
+  "description": "PlayZa is a privacy-focused quiz and learning game with quizzes, battles, rewards, avatars, progress tracking and a local-first experience.",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "categories": [
+    "education",
+    "games"
+  ],
   "icons": [
     {
-      "src": "icon.png",
-      "sizes": "192x192 512x512",
+      "src": "icon-192.png",
+      "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Play Quiz",
+      "short_name": "Quiz",
+      "url": "./?action=quiz",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Shop",
+      "short_name": "Shop",
+      "url": "./?tab=shop",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "short_name": "Profile",
+      "url": "./?tab=profile",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }

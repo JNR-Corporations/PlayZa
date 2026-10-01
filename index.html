@@ -16,10 +16,12 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer" />
   <!-- 1. Web Manifest link karne ke liye -->
-    <link rel="manifest" href="manifest.json">
-
-    <!-- Theme color jo mobile browser ke status bar me dikhega -->
-    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#FF6B00">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="application-name" content="PlayZa">
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" referrerpolicy="no-referrer"></script>
 
@@ -880,6 +882,12 @@
           </div>
         </div>
 
+        <!-- SHOP SEARCH (ADDITIVE) -->
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input id="shop-search-input" type="search" inputmode="search" autocomplete="off" oninput="filterShopItems()" placeholder="Search avatars, boosts & vault items..." class="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-800 shadow-xs focus:outline-none focus:border-brand-blue">
+        </div>
+
         <!-- DIAMOND EXCHANGE SECTION -->
         <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
           <div class="flex items-center justify-between border-b border-slate-100 pb-2">
@@ -999,7 +1007,7 @@
 
         <div class="flex items-center justify-between pt-1">
           <h3 class="font-fredoka text-base font-bold text-slate-800">Achievement Badges</h3>
-          <span class="text-xs font-bold text-brand-purple bg-purple-50 px-2.5 py-0.5 rounded-full"><span id="unlocked-badge-count">1</span> / 25 Unlocked</span>
+          <span class="text-xs font-bold text-brand-purple bg-purple-50 px-2.5 py-0.5 rounded-full"><span id="unlocked-badge-count">1</span> / <span id="badge-total-count">25</span> Unlocked</span>
         </div>
 
         <div id="badges-grid" class="grid grid-cols-2 gap-3"></div>
@@ -1108,8 +1116,39 @@
           </div>
         </div>
 
+        <!-- PRIVACY & DATA CENTER (ADDITIVE) -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-4 text-white shadow-xl border border-slate-700 space-y-3">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="inline-flex items-center gap-1.5 bg-emerald-400/15 text-emerald-300 border border-emerald-400/20 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider">
+                <i class="fa-solid fa-shield-halved"></i> Privacy focused
+              </div>
+              <h3 class="font-fredoka text-base font-bold mt-2">Privacy & Data Center</h3>
+              <p id="privacy-summary-text" class="text-[11px] text-slate-300 font-semibold mt-1 leading-relaxed">Local-first data controls.</p>
+            </div>
+            <div class="w-11 h-11 rounded-2xl bg-emerald-400/10 border border-emerald-300/10 flex items-center justify-center text-xl">🔐</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="exportPlayZaData()" class="btn-3d btn-blue px-3 py-2.5 rounded-xl text-[11px] font-extrabold uppercase flex items-center justify-center gap-1.5"><i class="fa-solid fa-download"></i> Export Data</button>
+            <button onclick="triggerImportData()" class="btn-3d btn-purple px-3 py-2.5 rounded-xl text-[11px] font-extrabold uppercase flex items-center justify-center gap-1.5"><i class="fa-solid fa-upload"></i> Import Data</button>
+          </div>
+          <input id="data-import-input" type="file" accept="application/json,.json" class="hidden" onchange="handleImportData(event)">
+        </div>
+
+        <!-- ABOUT / VERSION / LICENSE (ADDITIVE) -->
+        <button onclick="openAboutApp()" class="w-full text-left bg-white rounded-2xl p-4 border border-slate-200 shadow-xs hover:shadow-md transition-all flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-blue-100 text-brand-blue flex items-center justify-center text-lg"><i class="fa-solid fa-circle-info"></i></div>
+            <div>
+              <h4 class="font-fredoka text-sm font-bold text-slate-800">About PlayZa</h4>
+              <p class="text-[11px] text-slate-400 font-semibold">Version, license, privacy & build details</p>
+            </div>
+          </div>
+          <div class="text-slate-400"><i class="fa-solid fa-chevron-right"></i></div>
+        </button>
+
         <div class="text-center p-2 text-slate-400 text-xs font-bold">
-          PlayZa Engine v6.5 Pro • Realtime Firebase Firestore Sync
+          <span id="settings-version-text">PlayZa Engine v6.6.0 • Mobile Production</span>
         </div>
       </section>
 
@@ -1133,6 +1172,48 @@
             OK
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- ABOUT APP MODAL -->
+    <div id="about-app-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[90] hidden flex items-center justify-center p-4">
+      <div class="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4 border-2 border-slate-200 max-h-[88vh] overflow-y-auto">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="inline-flex items-center gap-1.5 bg-blue-50 text-brand-blue border border-blue-100 px-2.5 py-1 rounded-full text-[9px] font-black uppercase"><i class="fa-solid fa-shield-halved"></i> Privacy focused</div>
+            <h2 class="font-fredoka text-2xl font-bold text-slate-800 mt-2">About PlayZa</h2>
+            <p class="text-xs text-slate-500 font-semibold">Play • Learn • Win</p>
+          </div>
+          <button onclick="closeAboutApp()" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-3">
+            <div class="text-[9px] font-black text-slate-400 uppercase">Version</div>
+            <div id="about-version" class="font-fredoka text-base font-bold text-slate-800 mt-1">6.6.0</div>
+          </div>
+          <div class="rounded-2xl bg-emerald-50 border border-emerald-200 p-3">
+            <div class="text-[9px] font-black text-emerald-500 uppercase">Build</div>
+            <div id="about-build" class="font-fredoka text-base font-bold text-emerald-800 mt-1">Production Mobile</div>
+          </div>
+        </div>
+
+        <div class="rounded-2xl bg-blue-50 border border-blue-200 p-3.5">
+          <div class="flex items-center gap-2 text-brand-blue font-fredoka font-bold text-sm"><i class="fa-solid fa-lock"></i> Privacy Model</div>
+          <p id="about-privacy" class="text-[11px] text-slate-600 font-semibold leading-relaxed mt-1.5">Local-first</p>
+        </div>
+
+        <div class="rounded-2xl bg-amber-50 border border-amber-200 p-3.5">
+          <div class="flex items-center gap-2 text-amber-700 font-fredoka font-bold text-sm"><i class="fa-solid fa-scale-balanced"></i> License</div>
+          <p id="about-license-name" class="text-[11px] text-amber-900 font-black mt-1.5">PlayZa App License 1.0</p>
+          <p id="about-license-text" class="text-[10px] text-amber-900/80 font-semibold leading-relaxed mt-1"></p>
+        </div>
+
+        <div class="text-[10px] text-slate-400 font-semibold leading-relaxed">
+          Firebase/Google/FONT Awesome/Tailwind/CDN services are third-party dependencies and may have their own terms and licenses.
+        </div>
+
+        <button onclick="closeAboutApp()" class="w-full btn-3d btn-orange py-3 rounded-2xl font-fredoka font-bold text-sm uppercase">Done</button>
       </div>
     </div>
 
@@ -1188,7 +1269,7 @@
         <div class="flex-1 p-5 overflow-y-auto flex flex-col justify-between space-y-4">
           <div class="flex items-center justify-between">
             <span class="text-xs font-extrabold text-brand-blue uppercase tracking-wider bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
-              Q #<span id="quiz-global-qindex">1</span> • (<span id="quiz-q-index">1</span>/5)
+              Q #<span id="quiz-global-qindex">1</span> • <span id="quiz-q-index">1</span> • Endless
             </span>
 
             <!-- Lifeline Power-ups -->
@@ -1595,6 +1676,19 @@
     const GUEST_CACHE_KEY = 'playza_state_guest_v8';
     const ACCOUNT_CACHE_PREFIX = 'playza_state_account_v8:';
     const SOUND_CACHE_KEY = 'playza_sound';
+
+    // APP META — single source of truth; UI/version/license are managed from JS.
+    const PLAYZA_APP_META = Object.freeze({
+      name: 'PlayZa',
+      version: '6.6.0',
+      build: 'Production Mobile',
+      channel: 'Stable',
+      licenseName: 'PlayZa App License 1.0',
+      licenseText: '© PlayZa. All rights reserved. Original PlayZa UI, logic and assets are intended for authorized use. Third-party libraries and services remain subject to their respective licenses.',
+      privacyMode: 'Local-first',
+      privacySummary: 'Gameplay data stays on-device by default. Cloud sync runs only after account sign-in. No advertising or analytics storage is added by the app logic.'
+    });
+    window.PLAYZA_APP_META = PLAYZA_APP_META;
 
     window.calculateNextLevelXp = function(lvl) {
       const safeLevel = Math.max(1, Math.floor(Number(lvl) || 1));
@@ -2477,7 +2571,9 @@
           { q: `Which keyword creates a variable in JavaScript?`, options: ["var", "let", "const", "All of these"], correct: 3 },
           { q: `What does SQL stand for?`, options: ["Structured Query Language", "Simple Question Line", "Sequential Query Logic", "System Core Language"], correct: 0 }
         ];
-        return csQuestions[qIndex % csQuestions.length];
+        const cycle = Math.floor(qIndex / csQuestions.length) + 1;
+        const base = csQuestions[qIndex % csQuestions.length];
+        return { ...base, q: `${base.q} • Challenge ${cycle}` };
       }
       else {
         const genQuestions = [
@@ -2839,6 +2935,9 @@
       renderBadgesGrid();
       renderBattleStandings();
       renderSubjectAccuracyList();
+      filterShopItems();
+      const badgeTotal = document.getElementById('badge-total-count');
+      if (badgeTotal) badgeTotal.innerText = window.badgesList.length;
     };
 
     window.claimDailyBonus = async function() {
@@ -2885,7 +2984,7 @@
       const u = window.userState;
 
       window.quizCategories.slice(0, 4).forEach(cat => {
-        const solved = (u.subjectProgress && u.subjectProgress[cat.id]) || 0;
+        const solved = Number(u.subjectStats?.[cat.id]?.attempted || 0);
         grid.innerHTML += `
           <div onclick="startQuiz('${cat.id}')" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-brand-orange transition-all flex items-center gap-3">
             <div class="w-11 h-11 rounded-2xl ${cat.color} text-white flex items-center justify-center text-xl shadow-xs">
@@ -2907,7 +3006,7 @@
       const u = window.userState;
 
       window.quizCategories.forEach(cat => {
-        const solved = (u.subjectProgress && u.subjectProgress[cat.id]) || 0;
+        const solved = Number(u.subjectStats?.[cat.id]?.attempted || 0);
         grid.innerHTML += `
           <div onclick="startQuiz('${cat.id}')" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs cursor-pointer hover:border-brand-blue transition-all flex items-center justify-between">
             <div class="flex items-center gap-3.5">
@@ -2965,6 +3064,14 @@
 
     window.buyExchangeItem = async function(itemId, cost) {
       const u = window.userState;
+      const activeNonConsumable =
+        (itemId === 'ex_streak_shield' && u.hasStreakShield) ||
+        (itemId === 'ex_xp_boost' && u.hasXpBoost) ||
+        (itemId === 'ex_vip_badge' && u.isVip);
+      if (activeNonConsumable) {
+        showToast('This upgrade is already active.', '✅');
+        return;
+      }
       if (u.gems < cost) {
         showAlertModal("Not Enough Gems", `You need ${cost} Gems to exchange this item! Play quizzes or spin wheel to earn more.`, "💎");
         return;
@@ -3058,6 +3165,82 @@
       await saveUserToFirebase();
       updateUI();
       showToast("Avatar Equipped!", "✨");
+    };
+
+    window.filterShopItems = function() {
+      const q = String(document.getElementById('shop-search-input')?.value || '').trim().toLowerCase();
+      document.querySelectorAll('#diamond-exchange-grid > div, #avatar-grid > div').forEach(card => {
+        const text = String(card.innerText || '').toLowerCase();
+        card.style.display = !q || text.includes(q) ? '' : 'none';
+      });
+    };
+
+    window.openAboutApp = function() {
+      renderAppMeta();
+      document.getElementById('about-app-modal')?.classList.remove('hidden');
+    };
+    window.closeAboutApp = function() {
+      document.getElementById('about-app-modal')?.classList.add('hidden');
+    };
+    function renderAppMeta() {
+      document.title = `${PLAYZA_APP_META.name} • ${PLAYZA_APP_META.version}`;
+      const map = {
+        'settings-version-text': `PlayZa Engine v${PLAYZA_APP_META.version} • ${PLAYZA_APP_META.build}`,
+        'about-version': PLAYZA_APP_META.version,
+        'about-build': PLAYZA_APP_META.build,
+        'about-privacy': `${PLAYZA_APP_META.privacyMode}: ${PLAYZA_APP_META.privacySummary}`,
+        'about-license-name': PLAYZA_APP_META.licenseName,
+        'about-license-text': PLAYZA_APP_META.licenseText,
+        'privacy-summary-text': PLAYZA_APP_META.privacySummary
+      };
+      Object.entries(map).forEach(([id, value]) => { const el = document.getElementById(id); if (el) el.textContent = value; });
+    }
+
+    window.exportPlayZaData = function() {
+      try {
+        const payload = {
+          app: PLAYZA_APP_META.name,
+          version: PLAYZA_APP_META.version,
+          exportedAt: new Date().toISOString(),
+          data: persistableState(window.userState)
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `playza-data-v${PLAYZA_APP_META.version}.json`;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showToast('Your local PlayZa data was exported.', '🔐');
+      } catch (_) {
+        showToast('Data export is unavailable on this device.', '⚠️');
+      }
+    };
+
+    window.triggerImportData = function() {
+      document.getElementById('data-import-input')?.click();
+    };
+
+    window.handleImportData = async function(event) {
+      const file = event?.target?.files?.[0];
+      if (!file) return;
+      try {
+        const raw = await file.text();
+        const parsed = JSON.parse(raw);
+        const incoming = safeObject(parsed?.data || parsed);
+        if (!incoming || typeof incoming !== 'object') throw new Error('Invalid data');
+        const identity = { uid: window.userState?.uid || null, email: window.userState?.email || '', isGuest: window.userState?.isGuest !== false ? true : false };
+        window.userState = normalizeState(incoming, identity);
+        // Never import account identity fields from the file.
+        persistLocal();
+        await saveUserToFirebase(true);
+        updateUI();
+        showToast('PlayZa data imported successfully.', '✅');
+      } catch (_) {
+        showAlertModal('Import Failed', 'This JSON file is not a valid PlayZa data export.', '⚠️');
+      } finally {
+        if (event?.target) event.target.value = '';
+      }
     };
 
     function renderBadgesGrid() {
@@ -3174,14 +3357,28 @@
       const u = window.userState;
 
       window.quizCategories.forEach(cat => {
-        const solved = (u.subjectProgress && u.subjectProgress[cat.id]) || 0;
+        const stat = u.subjectStats?.[cat.id] || {attempted:0,correct:0};
+        const attempted = Math.max(0, Number(stat.attempted || 0));
+        const correct = Math.min(attempted, Math.max(0, Number(stat.correct || 0)));
+        const accuracy = attempted ? Math.round((correct / attempted) * 100) : 0;
+        const readyIndex = Math.max(0, Number(u.subjectProgress?.[cat.id] || 0));
         list.innerHTML += `
-          <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100 text-xs font-bold">
-            <div class="flex items-center gap-2">
-              <span>${cat.icon}</span>
-              <span class="text-slate-800">${cat.title}</span>
+          <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
+            <div class="flex items-center justify-between gap-2 text-xs font-bold">
+              <div class="flex items-center gap-2 min-w-0">
+                <span>${cat.icon}</span>
+                <span class="text-slate-800 truncate">${escapeHtml(cat.title)}</span>
+              </div>
+              <button onclick="startQuiz('${cat.id}')" class="text-[10px] font-black text-brand-orange bg-orange-50 border border-orange-100 px-2 py-1 rounded-lg">PLAY</button>
             </div>
-            <span class="text-brand-blue font-extrabold">${solved} Solved</span>
+            <div class="flex items-center justify-between text-[10px] font-bold text-slate-500">
+              <span>${attempted} Solved • ${correct} Correct</span>
+              <span class="text-brand-blue">${accuracy}%</span>
+            </div>
+            <div class="h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-brand-blue to-cyan-400 rounded-full transition-all" style="width:${accuracy}%"></div>
+            </div>
+            <div class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wide">Next question #${readyIndex + 1}</div>
           </div>
         `;
       });
@@ -3209,7 +3406,9 @@
         } : null,
         savedAt:Date.now(), ...extra
       };
-      try { localStorage.setItem(LOCAL_CACHE_KEY,JSON.stringify(u)); } catch(e) {}
+      // Never write the raw state here: it contains identity fields and LOCAL_CACHE_KEY was not defined.
+      // persistLocal() strips uid/email/isGuest and selects the correct guest/account cache.
+      try { persistLocal(); } catch (_) {}
       window.saveUserToFirebase(false);
     };
 
@@ -3244,6 +3443,12 @@
       }
       document.getElementById('quiz-global-qindex').innerText=currentQuizIndex+1;
       document.getElementById('quiz-q-index').innerText=currentQuizIndex+1;
+      const quizProgress = document.getElementById('quiz-progress-bar');
+      if (quizProgress) {
+        const cyclePos = currentQuizIndex % 10;
+        quizProgress.style.width = `${((cyclePos + 1) / 10) * 100}%`;
+        quizProgress.setAttribute('aria-valuenow', String(cyclePos + 1));
+      }
       document.getElementById('quiz-question-text').innerText=q.q;
       const container=document.getElementById('quiz-options-container'); container.innerHTML='';
       q.options.forEach((opt,idx)=>{
@@ -3323,7 +3528,13 @@
                   window.userState.activeQuizState?.questionSnapshot)
         ? window.userState.activeQuizState.questionSnapshot
         : window.getQuestionForSubject(currentQuizCatId,currentQuizIndex);
-      if(!q || questionLocked) return;
+      if(!q) return;
+      // questionLocked blocks changing an answered question, not the NEXT transition itself.
+      if(!quizAnswered && questionLocked) return;
+      if(!quizAnswered && selectedOptionIdx == null && !timedOut){
+        showToast('Select an option first.', '☝️');
+        return;
+      }
 
       if(!quizAnswered){
         clearInterval(quizTimerInterval);
@@ -3347,6 +3558,8 @@
         }
 
         const reward=rewardForAnswer(correct,timedOut);
+        const rewardBadge = document.getElementById('feedback-reward-badge');
+        if (rewardBadge) rewardBadge.innerText = `+${reward.xp} XP • +${reward.gems} 💎`;
         const key=questionKey();
         if(correct && timeLeft>=10){
           const b=u.unlockedBadges||[];
@@ -3597,6 +3810,7 @@
     };
 
     // INITIAL UI DRAW
+    renderAppMeta();
     updateUI();
   </script>
   <script>
