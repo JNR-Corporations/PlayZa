@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="referrer" content="no-referrer" />
+  <title>PlayZa - Beta Tester Application</title>
+  <script src="https://cdn.tailwindcss.com" referrerpolicy="no-referrer"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer" />
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              orange:'#FF5B00','orange-dark':'#D94B00',mint:'#58CC02','mint-dark':'#46A302',
+              blue:'#1CB0F6','blue-dark':'#1899D6',purple:'#9333EA','purple-dark':'#7E22CE',
+              yellow:'#FFD000',rose:'#F43F5E','rose-dark':'#E11D48',appbg:'#F4F7FB'
+            }
+          },
+          fontFamily:{fredoka:['Fredoka','sans-serif'],nunito:['Nunito','sans-serif']}
+        }
+      }
+    }
+  </script>
+
+  <style>
+    *{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+    body{font-family:'Nunito',sans-serif;background:#090d16}
+    input,textarea,select{user-select:text!important;-webkit-user-select:text!important}
+    .btn-3d{position:relative;transition:all .08s ease;cursor:pointer}
+    .btn-3d:active{transform:translateY(4px)!important;box-shadow:none!important}
+    .btn-mint{background:linear-gradient(180deg,#58CC02,#46A302);box-shadow:0 5px 0 #368200,0 8px 18px #58cc0266;color:#fff}
+    .btn-purple{background:linear-gradient(180deg,#A855F7,#8B5CF6);box-shadow:0 5px 0 #6D28D9,0 8px 18px #a855f766;color:#fff}
+    .mobile-frame{max-width:450px;width:100%;height:100vh;max-height:940px;border-radius:36px;overflow:hidden;box-shadow:0 30px 80px #000b,0 0 0 12px #1e293b;position:relative}
+    @media(max-width:640px){.mobile-frame{max-width:100%;height:100vh;max-height:100vh;border-radius:0;box-shadow:none}}
+    .no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+    .playza-input{border:2px solid #E2E8F0;border-bottom:4px solid #CBD5E1;border-radius:16px;transition:.2s;background:#FAFAFA}
+    .playza-input:focus{outline:none;border-color:#9333EA;border-bottom-color:#7E22CE;background:#fff;box-shadow:0 0 0 4px #9333ea1f}
+    .chip{border:2px solid #e2e8f0;background:#fff;border-bottom:4px solid #cbd5e1;border-radius:14px;padding:9px 10px;font-size:10px;font-weight:900;transition:.15s}
+    .chip.active{border-color:#9333ea;border-bottom-color:#7e22ce;background:#faf5ff;color:#7e22ce;transform:translateY(-1px)}
+    .field-error{border-color:#fb7185!important;border-bottom-color:#e11d48!important;background:#fff1f2!important}
+    .toast-pop{animation:toastIn .35s cubic-bezier(.175,.885,.32,1.275) forwards}
+    @keyframes toastIn{0%{transform:translateY(-30px) scale(.85);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
+    .progress-bar{transition:width .25s ease}
+    .spin{animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    .success-pulse{animation:successPulse .55s ease}@keyframes successPulse{50%{transform:scale(1.03)}}
+  </style>
+</head>
+
+<body class="h-full flex items-center justify-center p-0 sm:p-4 bg-slate-950">
+<div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center pointer-events-none space-y-2 w-11/12 max-w-xs"></div>
+
+<div class="mobile-frame bg-[#F4F7FB] flex flex-col relative w-full h-full text-slate-800">
+  <div class="bg-white/95 backdrop-blur-md px-4 py-3.5 flex items-center justify-between shadow-sm z-20 border-b border-slate-200">
+    <button onclick="goBack()" class="w-9 h-9 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-sm transition font-bold active:scale-95">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <div class="text-center">
+      <h1 class="font-fredoka text-base font-bold text-slate-800 flex items-center justify-center gap-1.5">
+        <span>Beta Tester Program</span>
+        <span class="bg-purple-100 text-purple-700 text-[10px] font-black px-2 py-0.5 rounded-md uppercase">V.I.P</span>
+      </h1>
+      <p class="text-[10px] text-slate-400 font-bold">PlayZa Early Access Lab</p>
+    </div>
+    <div class="w-9 h-9 rounded-2xl bg-violet-100 text-violet-600 flex items-center justify-center text-base"><i class="fa-solid fa-vial"></i></div>
+  </div>
+
+  <main class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-5 pb-12">
+    <section class="bg-gradient-to-br from-purple-700 via-indigo-700 to-slate-900 rounded-3xl p-5 text-white shadow-xl relative overflow-hidden border border-purple-500/30">
+      <div class="relative z-10 space-y-2.5">
+        <div class="inline-flex items-center gap-1.5 bg-yellow-400 text-slate-950 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
+          <i class="fa-solid fa-flask-vial"></i> Exclusive Access
+        </div>
+        <h2 class="font-fredoka text-2xl font-bold leading-tight">Shape the Future of PlayZa! 🚀</h2>
+        <p class="text-xs text-purple-100 font-semibold leading-relaxed">
+          PlayZa Beta Testers get early access to unreleased quiz modes, experimental features,
+          special tester recognition, and a direct channel for useful product feedback.
+        </p>
+      </div>
+      <div class="absolute -right-4 -bottom-6 text-8xl opacity-15 text-yellow-300 pointer-events-none">🧪</div>
+    </section>
+
+    <section class="space-y-3">
+      <h3 class="font-fredoka text-base font-bold text-slate-800 flex items-center gap-2">
+        <i class="fa-solid fa-award text-brand-purple"></i> Beta Tester Perks & Responsibilities
+      </h3>
+      <div class="grid grid-cols-2 gap-2.5">
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs"><div class="w-8 h-8 rounded-xl bg-purple-100 text-brand-purple flex items-center justify-center">⚡</div><h4 class="font-bold text-xs mt-1">Early Features</h4><p class="text-[10px] text-slate-500 font-semibold">Try selected unreleased features before wider rollout.</p></div>
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs"><div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">🏅</div><h4 class="font-bold text-xs mt-1">Tester Recognition</h4><p class="text-[10px] text-slate-500 font-semibold">Eligible testers may receive special profile recognition.</p></div>
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs"><div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">🐞</div><h4 class="font-bold text-xs mt-1">Bug Hunting</h4><p class="text-[10px] text-slate-500 font-semibold">Report reproducible UI, logic and stability problems.</p></div>
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs"><div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">💬</div><h4 class="font-bold text-xs mt-1">Useful Feedback</h4><p class="text-[10px] text-slate-500 font-semibold">Explain what happened and how the experience could improve.</p></div>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-3xl p-5 border border-slate-200 shadow-md">
+      <div class="border-b border-slate-100 pb-3 mb-4">
+        <div class="flex items-center justify-between gap-2">
+          <h3 class="font-fredoka text-lg font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-paper-plane text-brand-purple"></i> Beta Application</h3>
+          <span id="required-count" class="text-[9px] font-extrabold text-red-500 uppercase bg-red-50 px-2 py-1 rounded-md">Required</span>
+        </div>
+        <p class="text-[11px] text-slate-500 font-semibold mt-1">Your Firebase identity is linked to this application. Required fields must be complete before submission.</p>
+      </div>
+
+      <div class="mb-4">
+        <div class="flex justify-between text-[9px] font-black text-slate-400 mb-1"><span id="progress-label">Application progress</span><span id="progress-value">0%</span></div>
+        <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div id="progress-bar" class="progress-bar h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full" style="width:0%"></div></div>
+      </div>
+
+      <form id="beta-application-form" class="space-y-4" novalidate>
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Full Name <span class="text-red-500">*</span></label>
+          <input id="beta-fullname" required maxlength="80" autocomplete="name" placeholder="Enter your full name" class="w-full px-4 py-3 playza-input text-xs font-bold">
+          <p id="name-error" class="hidden text-[9px] text-rose-600 font-bold mt-1"></p>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide">Firebase Email <span class="text-red-500">*</span></label>
+            <span id="firebase-email-status" class="text-[9px] font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-md"><i class="fa-solid fa-circle-notch spin"></i> Checking…</span>
+          </div>
+          <input id="beta-email" type="email" readonly required class="w-full px-4 py-3 playza-input text-xs font-bold bg-slate-50">
+          <p id="email-help" class="text-[9px] text-slate-400 font-bold mt-1">Email is taken from the active Firebase Authentication session.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Primary Testing Device <span class="text-red-500">*</span></label>
+          <select id="beta-device" required class="w-full px-4 py-3 playza-input text-xs font-bold bg-white">
+            <option value="">Select your device / OS</option>
+            <option>Android Mobile</option><option>iPhone / iOS</option><option>Windows PC</option><option>Linux PC</option><option>macOS</option><option>ChromeOS</option><option>Tablet</option><option>Multiple Devices</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-2">Capabilities <span class="text-red-500">*</span></label>
+          <div id="capability-grid" class="grid grid-cols-2 gap-2"></div>
+          <p id="capability-error" class="hidden text-[9px] text-rose-600 font-bold mt-1">Select at least one capability.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Describe Your Capabilities & Experience <span class="text-red-500">*</span></label>
+          <textarea id="beta-capabilities-desc" required minlength="40" maxlength="2500" rows="5" placeholder="Tell us what you can actually contribute: testing, bug reproduction, UI/UX feedback, development, content, performance testing, etc." class="w-full px-4 py-3 playza-input text-xs font-bold leading-relaxed"></textarea>
+          <div class="flex justify-between mt-1"><span id="desc-help" class="text-[9px] text-slate-400 font-bold">Minimum 40 characters</span><span id="desc-count" class="text-[9px] text-slate-400 font-bold">0/2500</span></div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Primary Role</label>
+            <select id="beta-role" class="w-full px-4 py-3 playza-input text-xs font-bold bg-white">
+              <option value="">Select one</option><option>Student / Learner</option><option>Developer</option><option>UI/UX Designer</option><option>Tester / QA</option><option>Content Creator</option><option>Teacher / Mentor</option><option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Experience Level</label>
+            <select id="beta-experience" class="w-full px-4 py-3 playza-input text-xs font-bold bg-white">
+              <option value="">Select one</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Professional</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Testing Areas</label>
+          <div id="testing-grid" class="grid grid-cols-2 gap-2"></div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Tools / Technologies</label>
+          <input id="beta-tools" maxlength="1000" placeholder="HTML, CSS, JavaScript, Firebase, Git, Android, Figma…" class="w-full px-4 py-3 playza-input text-xs font-bold">
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Testing Availability</label>
+          <select id="beta-availability" class="w-full px-4 py-3 playza-input text-xs font-bold bg-white">
+            <option value="">Select one</option><option>Occasionally</option><option>A few times a week</option><option>Most days</option><option>Flexible</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Why do you want to join? <span class="text-red-500">*</span></label>
+          <textarea id="beta-why" required minlength="20" maxlength="1800" rows="4" placeholder="What interests you about PlayZa and what kind of feedback would you provide?" class="w-full px-4 py-3 playza-input text-xs font-bold leading-relaxed"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Portfolio / GitHub / Project Link</label>
+          <input id="beta-portfolio" type="url" maxlength="500" placeholder="https://github.com/yourusername" class="w-full px-4 py-3 playza-input text-xs font-bold">
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Anything Else?</label>
+          <textarea id="beta-extra" maxlength="1800" rows="3" placeholder="Ideas, previous testing experience, special skills, or anything useful for the review…" class="w-full px-4 py-3 playza-input text-xs font-bold leading-relaxed"></textarea>
+        </div>
+
+        <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-3 text-[9px] text-indigo-800 font-bold leading-relaxed flex gap-2">
+          <i class="fa-solid fa-shield-halved mt-0.5"></i>
+          <span>Your Firebase UID is used to associate the request with your account. Never enter a password, private key, recovery code, API secret, or other credential in this form.</span>
+        </div>
+
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-[9px] text-slate-600 font-bold leading-relaxed">
+          <i class="fa-solid fa-circle-info text-purple-600 mr-1"></i>
+          One active application is allowed per Firebase account. If a previous application is already under review, this page will not create another duplicate request.
+        </div>
+
+        <div id="application-status" class="hidden rounded-2xl p-3 text-xs font-extrabold"></div>
+
+        <button type="submit" id="btn-submit-beta" class="w-full btn-3d btn-purple py-3.5 rounded-2xl font-fredoka font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i><span>Submit Beta Application</span>
+        </button>
+
+        <button type="button" id="clear-draft" class="w-full py-2 text-[10px] font-black text-slate-400 hover:text-rose-500 transition">
+          <i class="fa-solid fa-trash-can mr-1"></i> Clear saved draft
+        </button>
+      </form>
+    </section>
+
+    <div class="text-center text-[10px] text-slate-400 font-semibold">
+      Application recipient: <span class="text-slate-600 font-bold">jn.corporation@proton.me</span> • PlayZa Developer Lab
+    </div>
+  </main>
+</div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import {getAuth,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import {getFirestore,collection,query,where,limit,getDocs,addDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+const firebaseConfig={
+ apiKey:"AIzaSyC7bEYtEIk4DN3edQKievh-ek89tWS4awc",
+ authDomain:"playza-87102.firebaseapp.com",
+ projectId:"playza-87102",
+ storageBucket:"playza-87102.firebasestorage.app",
+ messagingSenderId:"695215345584",
+ appId:"1:695215345584:web:14fc00081f035046979075"
+};
+
+/*
+  EMAIL DELIVERY
+  EmailJS is intentionally used only as a client-side delivery adapter.
+  Firebase Firestore stores the application record.
+  Configure these three values before production use.
+*/
+const EMAILJS_PUBLIC_KEY="G1CXA21If83KVos0S";
+const EMAILJS_SERVICE_ID="play-za-jnr";
+const EMAILJS_TEMPLATE_ID="template_87s6g9c";
+const RECEIVER="jn.corporation@proton.me";
+const APP_VERSION="1.0.0-beta";
+const DRAFT_KEY="playza_beta_application_draft_v2";
+
+const CAPABILITIES=[
+ "UI/UX Testing","Bug Hunting","Quiz Content Creation","Game Balance & Logic",
+ "Web Development","Android Testing","Performance Testing","Accessibility Testing",
+ "Security / Privacy Review","Feature Ideas","Documentation / Writing","Other"
+];
+const TESTING_AREAS=[
+ "New Features","UI / UX","Bug Reproduction","Performance / Stability",
+ "Accessibility","Quiz / Content","Mobile / Responsive","General Feedback"
+];
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+let currentUser=null;
+let duplicateChecked=false;
+let duplicateExists=false;
+let submitting=false;
+
+const $=id=>document.getElementById(id);
+
+function esc(v){
+ return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function toast(msg,type="info"){
+ const c=$("toast-container"),d=document.createElement("div");
+ const cls=type==="success"?"bg-emerald-600":type==="error"?"bg-rose-600":"bg-slate-900";
+ d.className=`toast-pop ${cls} text-white px-4 py-3 rounded-2xl shadow-xl text-xs font-bold flex items-center gap-2`;
+ d.innerHTML=`<i class="fa-solid ${type==="success"?"fa-circle-check":type==="error"?"fa-circle-exclamation":"fa-circle-info"}"></i><span>${esc(msg)}</span>`;
+ c.appendChild(d);setTimeout(()=>d.remove(),3500);
+}
+function setStatus(type,msg){
+ const e=$("application-status");
+ const map={success:"bg-emerald-50 text-emerald-700 border border-emerald-200",error:"bg-rose-50 text-rose-700 border border-rose-200",info:"bg-indigo-50 text-indigo-700 border border-indigo-200"};
+ e.className=`rounded-2xl p-3 text-xs font-extrabold ${map[type]||map.info}`;
+ e.innerHTML=`<i class="fa-solid ${type==="success"?"fa-circle-check":type==="error"?"fa-circle-exclamation":"fa-circle-info"} mr-1"></i>${esc(msg)}`;
+}
+function setBusy(on){
+ const b=$("btn-submit-beta");b.disabled=on;
+ b.innerHTML=on?'<i class="fa-solid fa-spinner spin"></i><span>Submitting…</span>':'<i class="fa-solid fa-paper-plane"></i><span>Submit Beta Application</span>';
+}
+function renderChoices(){
+ $("capability-grid").innerHTML=CAPABILITIES.map((x,i)=>`
+  <button type="button" class="chip text-left flex items-center gap-2" data-cap="${esc(x)}">
+   <i class="fa-regular fa-square"></i><span>${esc(x)}</span>
+  </button>`).join("");
+ $("testing-grid").innerHTML=TESTING_AREAS.map(x=>`
+  <button type="button" class="chip text-left flex items-center gap-2" data-test="${esc(x)}">
+   <i class="fa-regular fa-square"></i><span>${esc(x)}</span>
+  </button>`).join("");
+ document.querySelectorAll("[data-cap]").forEach(b=>b.onclick=()=>toggleChoice(b,"cap"));
+ document.querySelectorAll("[data-test]").forEach(b=>b.onclick=()=>toggleChoice(b,"test"));
+}
+function toggleChoice(b,type){
+ b.classList.toggle("active");
+ const icon=b.querySelector("i");
+ if(b.classList.contains("active")){icon.className="fa-solid fa-square-check";icon.style.color="#9333ea"}
+ else{icon.className="fa-regular fa-square";icon.style.color=""}
+ updateProgress();
+}
+function selected(selector){
+ return [...document.querySelectorAll(selector+".active")].map(x=>x.dataset.cap||x.dataset.test);
+}
+function updateProgress(){
+ const required=[
+  $("beta-fullname").value.trim(),
+  $("beta-email").value.trim(),
+  $("beta-device").value,
+  selected("[data-cap]").length,
+  $("beta-capabilities-desc").value.trim().length>=40,
+  $("beta-why").value.trim().length>=20
+ ];
+ const done=required.filter(Boolean).length, pct=Math.round(done/required.length*100);
+ $("progress-bar").style.width=pct+"%";$("progress-value").textContent=pct+"%";
+ $("required-count").textContent=`${done}/${required.length} required`;
+}
+function saveDraft(){
+ const data={
+  name:$("beta-fullname").value,device:$("beta-device").value,
+  caps:selected("[data-cap]"),desc:$("beta-capabilities-desc").value,
+  role:$("beta-role").value,experience:$("beta-experience").value,
+  tests:selected("[data-test]"),tools:$("beta-tools").value,
+  availability:$("beta-availability").value,why:$("beta-why").value,
+  portfolio:$("beta-portfolio").value,extra:$("beta-extra").value,
+  savedAt:Date.now()
+ };
+ localStorage.setItem(DRAFT_KEY,JSON.stringify(data));
+}
+function loadDraft(){
+ try{
+  const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");if(!d)return;
+  $("beta-fullname").value=d.name||"";$("beta-device").value=d.device||"";
+  $("beta-capabilities-desc").value=d.desc||"";$("beta-role").value=d.role||"";
+  $("beta-experience").value=d.experience||"";$("beta-tools").value=d.tools||"";
+  $("beta-availability").value=d.availability||"";$("beta-why").value=d.why||"";
+  $("beta-portfolio").value=d.portfolio||"";$("beta-extra").value=d.extra||"";
+  document.querySelectorAll("[data-cap]").forEach(b=>{if((d.caps||[]).includes(b.dataset.cap))toggleChoice(b,"cap")});
+  document.querySelectorAll("[data-test]").forEach(b=>{if((d.tests||[]).includes(b.dataset.test))toggleChoice(b,"test")});
+  if(Object.values(d).some(v=>v))toast("Your saved draft was restored.","info");
+ }catch(e){localStorage.removeItem(DRAFT_KEY)}
+}
+async function checkDuplicate(uid){
+ duplicateChecked=false;duplicateExists=false;
+ try{
+  const q=query(collection(db,"beta_applications"),where("uid","==",uid),limit(1));
+  const snap=await getDocs(q);
+  duplicateExists=!snap.empty;
+ }catch(e){
+  console.warn("Duplicate check unavailable:",e);
+ }
+ duplicateChecked=true;
+}
+async function fetchIdentity(user){
+ currentUser=user||null;
+ const s=$("firebase-email-status");
+ if(user?.email){
+  $("beta-email").value=user.email;
+  s.innerHTML='<i class="fa-solid fa-circle-check"></i> Firebase verified';
+  s.className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md";
+  await checkDuplicate(user.uid);
+  if(duplicateExists){
+   setStatus("info","An existing beta application is already associated with this Firebase account. Please do not submit a duplicate application.");
+   $("btn-submit-beta").disabled=true;
+   $("btn-submit-beta").classList.add("opacity-50");
+  }
+ }else{
+  s.innerHTML='<i class="fa-solid fa-user-slash"></i> Sign in required';
+  s.className="text-[9px] font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded-md";
+  $("email-help").textContent="Open this page after signing in to PlayZa.";
+ }
+ updateProgress();
+}
+function validate(){
+ const errors=[];
+ const name=$("beta-fullname").value.trim();
+ const desc=$("beta-capabilities-desc").value.trim();
+ const why=$("beta-why").value.trim();
+ if(!name||name.length<2)errors.push("Enter a valid name.");
+ if(!currentUser?.uid||!currentUser?.email)errors.push("A signed-in Firebase account is required.");
+ if(!$("beta-device").value)errors.push("Select your primary testing device.");
+ if(!selected("[data-cap]").length)errors.push("Select at least one capability.");
+ if(desc.length<40)errors.push("Capability description must be at least 40 characters.");
+ if(why.length<20)errors.push("Please explain why you want to join in at least 20 characters.");
+ const portfolio=$("beta-portfolio").value.trim();
+ if(portfolio && !/^https?:\/\/.+/i.test(portfolio))errors.push("Portfolio link must start with http:// or https://.");
+ if(duplicateExists)errors.push("A beta application already exists for this Firebase account.");
+ return errors;
+}
+async function sendEmail(data){
+ if(EMAILJS_PUBLIC_KEY.startsWith("YOUR_"))throw new Error("EMAIL_NOT_CONFIGURED");
+ emailjs.init({publicKey:EMAILJS_PUBLIC_KEY});
+ return emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{
+  to_email:RECEIVER,from_name:data.name,from_email:data.email,
+  uid:data.uid,role:data.role||"Not specified",experience:data.experience||"Not specified",
+  device:data.device,capabilities:data.capabilities.join(", "),description:data.description,
+  testing_areas:data.testingAreas.join(", ")||"Not specified",tools:data.tools||"Not specified",
+  availability:data.availability||"Not specified",portfolio:data.portfolio||"Not provided",
+  why:data.why,extra:data.extra||"None",submitted_at:data.submittedAt,app_version:APP_VERSION
+ });
+}
+
+$("beta-application-form").addEventListener("input",()=>{saveDraft();updateProgress()});
+$("beta-application-form").addEventListener("change",()=>{saveDraft();updateProgress()});
+$("beta-capabilities-desc").addEventListener("input",()=>{$("desc-count").textContent=$("beta-capabilities-desc").value.length+"/2500"});
+
+$("clear-draft").onclick=()=>{
+ localStorage.removeItem(DRAFT_KEY);
+ document.querySelectorAll("#beta-application-form input,#beta-application-form textarea,#beta-application-form select").forEach(e=>{if(e.id!=="beta-email")e.value=""});
+ document.querySelectorAll(".chip.active").forEach(b=>toggleChoice(b,b.dataset.cap?"cap":"test"));
+ $("desc-count").textContent="0/2500";updateProgress();toast("Saved draft cleared.","success");
+};
+
+$("beta-application-form").addEventListener("submit",async e=>{
+ e.preventDefault();
+ if(submitting)return;
+ const errors=validate();
+ if(errors.length){setStatus("error",errors[0]);toast(errors[0],"error");return}
+ if(!duplicateChecked && currentUser?.uid)await checkDuplicate(currentUser.uid);
+ if(duplicateExists){setStatus("info","A previous application already exists for this account.");return}
+
+ const data={
+  schemaVersion:2,app:"PlayZa",appVersion:APP_VERSION,
+  uid:currentUser.uid,email:currentUser.email,
+  name:$("beta-fullname").value.trim(),
+  device:$("beta-device").value,
+  capabilities:selected("[data-cap]"),
+  description:$("beta-capabilities-desc").value.trim(),
+  role:$("beta-role").value,experience:$("beta-experience").value,
+  testingAreas:selected("[data-test]"),tools:$("beta-tools").value.trim(),
+  availability:$("beta-availability").value,
+  why:$("beta-why").value.trim(),portfolio:$("beta-portfolio").value.trim(),
+  extra:$("beta-extra").value.trim(),
+  status:"pending",reviewStatus:"new",
+  source:"beta_user.html",recipient:RECEIVER,
+  submittedAt:new Date().toISOString()
+ };
+
+ submitting=true;setBusy(true);setStatus("info","Validating your Firebase identity and saving the application…");
+ try{
+  const ref=await addDoc(collection(db,"beta_applications"),{...data,createdAt:serverTimestamp()});
+  data.applicationId=ref.id;
+
+  // Email delivery is deliberately after Firestore persistence.
+  // If delivery fails, the application remains safely stored for manual review.
+  try{
+   await sendEmail(data);
+   await addDoc(collection(db,"beta_mail_log"),{
+    applicationId:ref.id,uid:data.uid,to:RECEIVER,delivery:"emailjs",status:"sent",
+    createdAt:serverTimestamp()
+   });
+  }catch(mailErr){
+   console.warn("Email delivery failed:",mailErr);
+   await addDoc(collection(db,"beta_mail_log"),{
+    applicationId:ref.id,uid:data.uid,to:RECEIVER,delivery:"emailjs",status:"delivery_failed",
+    error:String(mailErr?.message||mailErr).slice(0,300),createdAt:serverTimestamp()
+   }).catch(()=>{});
+   setStatus("success","Application saved successfully. Email delivery is not configured or temporarily unavailable, but your application is safely stored for review.");
+   toast("Application saved to Firebase.","success");
+   localStorage.removeItem(DRAFT_KEY);submitting=false;setBusy(false);return;
+  }
+
+  localStorage.removeItem(DRAFT_KEY);
+  setStatus("success","Application submitted successfully. Your request has been saved and the notification email was sent.");
+  toast("Beta application submitted!","success");
+  $("beta-application-form").reset();
+  document.querySelectorAll(".chip.active").forEach(b=>toggleChoice(b,b.dataset.cap?"cap":"test"));
+  $("beta-email").value=currentUser.email;$("desc-count").textContent="0/2500";
+  $("application-status").classList.add("success-pulse");
+  duplicateExists=true;
+  $("btn-submit-beta").disabled=true;
+ }catch(err){
+  console.error(err);
+  setStatus("error","We could not save the application. Nothing was submitted as complete. Please check your connection and try again.");
+  toast("Submission failed. Please try again.","error");
+ }finally{
+  submitting=false;
+  if(!duplicateExists)setBusy(false);
+  updateProgress();
+ }
+});
+
+window.goBack=()=>history.length>1?history.back():location.href="index.html";
+
+renderChoices();
+loadDraft();
+onAuthStateChanged(auth,fetchIdentity);
+</script>
+</body>
+</html>
