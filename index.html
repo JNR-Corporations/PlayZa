@@ -2,24 +2,26 @@
 <html lang="en" class="h-full bg-slate-950">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="color-scheme" content="light" />
   <title>PlayZa - Ultimate Quiz & Battle Platform Pro</title>
 
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com" referrerpolicy="no-referrer"></script>
   <!-- Google Fonts: Nunito & Fredoka -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" referrerpolicy="no-referrer">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin referrerpolicy="no-referrer">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" referrerpolicy="no-referrer">
   <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer" />
   <!-- 1. Web Manifest link karne ke liye -->
     <link rel="manifest" href="manifest.json">
 
     <!-- Theme color jo mobile browser ke status bar me dikhega -->
     <meta name="theme-color" content="#000000">
   <!-- Canvas Confetti -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" referrerpolicy="no-referrer"></script>
 
   <!-- Tailwind Custom Colors Config -->
   <script>
@@ -238,9 +240,300 @@
       transition: transform 4s cubic-bezier(0.15, 0.9, 0.15, 1);
     }
   </style>
+
+<style id="playza-game-overhaul">
+  :root{--pz-orange:#ff7a18;--pz-yellow:#ffd23f;--pz-blue:#3b82f6;--pz-green:#22c55e;--pz-red:#ef4444;--pz-ink:#172033;--pz-bg:#f7f9fc}
+  html,body{background:var(--pz-bg);overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent}
+  body{touch-action:manipulation}
+  button,.btn-3d,.option-card{min-height:44px;user-select:none;-webkit-user-select:none}
+  .btn-3d{transition:transform .12s ease,box-shadow .12s ease;will-change:transform}
+  .btn-3d:active{transform:translateY(2px) scale(.98)}
+  .option-card{transition:transform .14s ease,border-color .14s ease,background .14s ease,box-shadow .14s ease}
+  .option-card:active{transform:scale(.985)}
+  .option-card.selected{border-color:#ff7a18!important;background:#fff7ed!important;box-shadow:0 5px 0 #fed7aa,0 8px 18px rgba(249,115,22,.10)}
+  .option-card.correct{border-color:#22c55e!important;background:#f0fdf4!important;box-shadow:0 5px 0 #bbf7d0}
+  .option-card.wrong{border-color:#ef4444!important;background:#fef2f2!important;box-shadow:0 5px 0 #fecaca}
+  .game-card{box-shadow:0 7px 0 rgba(15,23,42,.06),0 12px 28px rgba(15,23,42,.06)}
+  .pz-avatar{width:100%;height:100%;position:relative;display:block;border-radius:28%;overflow:hidden;isolation:isolate}
+  .pz-avatar:before,.pz-avatar:after{content:"";position:absolute;display:block}
+  .pz-avatar--fox{background:linear-gradient(145deg,#ffb347,#ff6b35)}
+  .pz-avatar--fox:before{inset:18% 15% 10%;background:#fff3e0;border-radius:45% 45% 40% 40%;clip-path:polygon(0 25%,18% 0,30% 18%,70% 18%,82% 0,100% 25%,92% 100%,8% 100%)}
+  .pz-avatar--fox:after{width:15%;height:15%;left:28%;top:42%;background:#182033;border-radius:50%;box-shadow:28px 0 #182033,14px 15px 0 -3px #ff7a18}
+  .pz-avatar--robot{background:linear-gradient(145deg,#172554,#38bdf8)}
+  .pz-avatar--robot:before{inset:20%;background:#dbeafe;border:4px solid #0f172a;border-radius:22%;box-shadow:inset 0 -14px #93c5fd}
+  .pz-avatar--robot:after{width:13%;height:13%;left:29%;top:40%;border-radius:50%;background:#22d3ee;box-shadow:25px 0 #22d3ee,12px -18px 0 -3px #f43f5e}
+  .pz-avatar--crown{background:linear-gradient(145deg,#fff7b2,#f59e0b)}
+  .pz-avatar--crown:before{inset:28% 16% 12%;background:#fff;border-radius:48% 48% 35% 35%;box-shadow:inset 0 -8px #fde68a}
+  .pz-avatar--crown:after{inset:8% 15% auto;height:30%;background:#f59e0b;clip-path:polygon(0 100%,8% 0,35% 58%,50% 0,65% 58%,92% 0,100% 100%);}
+  .pz-avatar--cat{background:linear-gradient(145deg,#312e81,#818cf8)}
+  .pz-avatar--cat:before{inset:20%;background:#e0e7ff;border-radius:45%;clip-path:polygon(0 22%,20% 0,35% 17%,65% 17%,80% 0,100% 22%,92% 100%,8% 100%)}
+  .pz-avatar--cat:after{width:12%;height:12%;left:30%;top:43%;border-radius:50%;background:#111827;box-shadow:25px 0 #111827}
+  .pz-avatar--bear{background:linear-gradient(145deg,#0ea5e9,#1d4ed8)}
+  .pz-avatar--bear:before{inset:20%;background:#fde68a;border-radius:50%;box-shadow:-18px -14px 0 -8px #fde68a,18px -14px 0 -8px #fde68a}
+  .pz-avatar--bear:after{width:12%;height:12%;left:31%;top:44%;border-radius:50%;background:#172033;box-shadow:25px 0 #172033,12px 15px 0 -4px #92400e}
+  .pz-avatar--panda{background:linear-gradient(145deg,#111827,#475569)}
+  .pz-avatar--panda:before{inset:18%;background:#f8fafc;border-radius:50%}
+  .pz-avatar--panda:after{width:22%;height:30%;left:22%;top:32%;background:#111827;border-radius:50%;transform:rotate(25deg);box-shadow:30px 0 #111827}
+  .pz-avatar--dragon{background:linear-gradient(145deg,#064e3b,#22c55e)}
+  .pz-avatar--dragon:before{inset:17%;background:#86efac;border-radius:45% 45% 35% 35%;clip-path:polygon(0 22%,16% 0,30% 18%,70% 18%,84% 0,100% 22%,88% 100%,12% 100%)}
+  .pz-avatar--dragon:after{width:13%;height:13%;left:28%;top:40%;border-radius:50%;background:#052e16;box-shadow:28px 0 #052e16,12px 16px 0 -4px #ef4444}
+  .pz-avatar--owl{background:linear-gradient(145deg,#312e81,#c084fc)}
+  .pz-avatar--owl:before{inset:15%;background:#ddd6fe;border-radius:48% 48% 40% 40%;box-shadow:inset 0 -12px #a78bfa}
+  .pz-avatar--owl:after{width:22%;height:22%;left:22%;top:31%;border-radius:50%;background:#fff;box-shadow:31px 0 #fff,9px 9px 0 -3px #111827,22px 9px 0 -3px #111827}
+  .pz-avatar--lion{background:linear-gradient(145deg,#92400e,#fbbf24)}
+  .pz-avatar--lion:before{inset:10%;background:#b45309;border-radius:50%;box-shadow:inset 0 0 0 8px #f59e0b}
+  .pz-avatar--lion:after{inset:25%;background:#fde68a;border-radius:50%;box-shadow:0 0 0 4px #f59e0b}
+  .pz-avatar--wolf{background:linear-gradient(145deg,#0f172a,#06b6d4)}
+  .pz-avatar--wolf:before{inset:16%;background:#cbd5e1;clip-path:polygon(0 25%,18% 0,34% 20%,66% 20%,82% 0,100% 25%,90% 100%,10% 100%);border-radius:40%}
+  .pz-avatar--wolf:after{width:14%;height:14%;left:28%;top:43%;border-radius:50%;background:#06b6d4;box-shadow:28px 0 #06b6d4}
+  .pz-avatar--alien{background:radial-gradient(circle at 50% 40%,#a7f3d0,#10b981 55%,#064e3b)}
+  .pz-avatar--alien:before{inset:18% 12% 10%;background:#d1fae5;border-radius:50% 50% 42% 42%;transform:scaleX(.8)}
+  .pz-avatar--alien:after{width:23%;height:34%;left:24%;top:32%;background:#064e3b;border-radius:50%;transform:rotate(-10deg);box-shadow:29px 0 #064e3b}
+  .pz-avatar--dino{background:linear-gradient(145deg,#14532d,#84cc16)}
+  .pz-avatar--dino:before{inset:18%;background:#bef264;border-radius:48% 48% 35% 35%;clip-path:polygon(0 25%,15% 0,30% 20%,70% 20%,85% 0,100% 25%,88% 100%,12% 100%)}
+  .pz-avatar--dino:after{width:13%;height:13%;left:29%;top:42%;border-radius:50%;background:#172033;box-shadow:28px 0 #172033}
+  .pz-avatar--diamond{background:linear-gradient(145deg,#172554,#38bdf8)}
+  .pz-avatar--diamond:before{inset:18%;background:linear-gradient(135deg,#dbeafe,#67e8f9 45%,#818cf8);clip-path:polygon(50% 0,92% 25%,75% 90%,50% 100%,25% 90%,8% 25%)}
+  .pz-avatar--diamond:after{inset:30%;background:#fff;opacity:.65;clip-path:polygon(50% 0,100% 30%,55% 100%,0 30%)}
+  .pz-avatar--fire{background:radial-gradient(circle at 50% 75%,#fef08a,#f97316 45%,#991b1b)}
+  .pz-avatar--fire:before{inset:16%;background:#fb923c;clip-path:polygon(50% 0,72% 34%,100% 23%,82% 62%,91% 100%,50% 82%,9% 100%,18% 62%,0 23%,28% 34%);border-radius:45%}
+  .pz-avatar--fire:after{inset:35%;background:#fff7ed;clip-path:polygon(50% 0,85% 45%,50% 100%,15% 45%)}
+  .pz-avatar--quantum{background:conic-gradient(from 30deg,#22d3ee,#8b5cf6,#ec4899,#22d3ee)}
+  .pz-avatar--quantum:before{inset:17%;background:#f8fafc;border-radius:50%;box-shadow:inset 0 0 0 7px #c4b5fd}
+  .pz-avatar--quantum:after{width:18%;height:18%;left:24%;top:38%;background:#7c3aed;border-radius:50%;box-shadow:30px 0 #ec4899,15px 17px 0 -3px #06b6d4}
+  .pz-avatar--samurai{background:linear-gradient(145deg,#111827,#ef4444)}.pz-avatar--samurai:before{inset:18%;background:#f3f4f6;border-radius:45%;box-shadow:inset 0 -10px #dc2626}.pz-avatar--samurai:after{inset:20% 10% auto;height:18%;background:#111827;clip-path:polygon(0 0,100% 25%,88% 100%,12% 75%);box-shadow:0 28px 0 -4px #dc2626}
+  .pz-avatar--ice{background:linear-gradient(145deg,#0ea5e9,#e0f2fe)}.pz-avatar--ice:before{inset:16%;background:#dff8ff;clip-path:polygon(50% 0,72% 28%,100% 20%,82% 55%,90% 100%,50% 80%,10% 100%,18% 55%,0 20%,28% 28%)}.pz-avatar--ice:after{width:15%;height:15%;left:28%;top:40%;border-radius:50%;background:#075985;box-shadow:28px 0 #075985}
+  .pz-avatar--ninja{background:linear-gradient(145deg,#020617,#334155)}.pz-avatar--ninja:before{inset:18%;background:#475569;border-radius:50%;box-shadow:inset 0 -12px #0f172a}.pz-avatar--ninja:after{left:20%;right:20%;top:43%;height:12%;background:#0f172a;box-shadow:0 0 0 3px #ef4444}
+  .pz-avatar--ranger{background:linear-gradient(145deg,#312e81,#06b6d4)}.pz-avatar--ranger:before{inset:16%;background:#dbeafe;border-radius:42%;clip-path:polygon(15% 0,85% 0,100% 70%,70% 100%,30% 100%,0 70%)}.pz-avatar--ranger:after{left:25%;right:25%;top:42%;height:10%;background:#0f172a;border-radius:99px;box-shadow:0 15px #22d3ee}
+  .pz-avatar--lava{background:radial-gradient(circle,#fde047,#f97316 48%,#450a0a)}.pz-avatar--lava:before{inset:17%;background:#fca5a5;clip-path:polygon(50% 0,85% 20%,100% 60%,70% 100%,30% 100%,0 60%,15% 20%)}.pz-avatar--lava:after{left:28%;top:42%;width:44%;height:12%;background:#450a0a;border-radius:99px;box-shadow:0 18px #ef4444}
+  .pz-avatar--rainbow{background:conic-gradient(#ef4444,#f59e0b,#22c55e,#06b6d4,#6366f1,#ec4899,#ef4444)}.pz-avatar--rainbow:before{inset:18%;background:#fff;border-radius:50%;opacity:.9}.pz-avatar--rainbow:after{left:28%;top:42%;width:14%;height:14%;border-radius:50%;background:#312e81;box-shadow:28px 0 #312e81}
+  .pz-avatar--storm{background:linear-gradient(145deg,#172554,#64748b)}.pz-avatar--storm:before{inset:16%;background:#e2e8f0;border-radius:45%;clip-path:polygon(0 25%,20% 0,35% 18%,65% 18%,80% 0,100% 25%,90% 100%,10% 100%)}.pz-avatar--storm:after{left:28%;top:42%;width:44%;height:10%;background:#38bdf8;border-radius:99px;box-shadow:14px 16px #facc15}
+  .pz-avatar--crystal{background:linear-gradient(145deg,#312e81,#22d3ee)}.pz-avatar--crystal:before{inset:15%;background:linear-gradient(135deg,#fff,#a5f3fc,#818cf8);clip-path:polygon(50% 0,92% 25%,78% 90%,50% 100%,22% 90%,8% 25%)}.pz-avatar--crystal:after{inset:30%;background:#fff;opacity:.7;clip-path:polygon(50% 0,100% 35%,50% 100%,0 35%)}
+  .pz-avatar--pixel{background:#111827;image-rendering:pixelated}.pz-avatar--pixel:before{inset:20%;background:#fbbf24;clip-path:polygon(20% 0,80% 0,100% 20%,100% 80%,80% 100%,20% 100%,0 80%,0 20%);box-shadow:inset 0 -10px #f97316}.pz-avatar--pixel:after{left:27%;top:38%;width:14%;height:14%;background:#111827;box-shadow:28px 0 #111827}
+  .pz-avatar--mooncat{background:linear-gradient(145deg,#0f172a,#7c3aed)}.pz-avatar--mooncat:before{inset:17%;background:#e0e7ff;border-radius:45%;clip-path:polygon(0 25%,18% 0,35% 18%,65% 18%,82% 0,100% 25%,90% 100%,10% 100%)}.pz-avatar--mooncat:after{left:28%;top:42%;width:13%;height:13%;border-radius:50%;background:#fef08a;box-shadow:28px 0 #fef08a}
+  .pz-avatar--solarbot{background:linear-gradient(145deg,#f59e0b,#fef3c7)}.pz-avatar--solarbot:before{inset:18%;background:#f8fafc;border:4px solid #92400e;border-radius:22%;box-shadow:inset 0 -12px #facc15}.pz-avatar--solarbot:after{left:28%;top:40%;width:14%;height:14%;border-radius:50%;background:#f97316;box-shadow:28px 0 #f97316,14px -20px 0 -3px #facc15}
+  .pz-avatar--emeralddragon{background:linear-gradient(145deg,#022c22,#10b981)}.pz-avatar--emeralddragon:before{inset:14%;background:#a7f3d0;clip-path:polygon(0 25%,15% 0,32% 18%,68% 18%,85% 0,100% 25%,88% 100%,12% 100%)}.pz-avatar--emeralddragon:after{left:27%;top:42%;width:14%;height:14%;border-radius:50%;background:#064e3b;box-shadow:29px 0 #064e3b,14px 17px 0 -4px #fbbf24}
+  .pz-avatar--voidknight{background:radial-gradient(circle at 50% 35%,#a78bfa,#312e81 48%,#020617)}.pz-avatar--voidknight:before{inset:15%;background:#e9d5ff;clip-path:polygon(20% 0,80% 0,100% 30%,85% 100%,15% 100%,0 30%)}.pz-avatar--voidknight:after{left:25%;top:43%;width:50%;height:9%;background:#4c1d95;box-shadow:0 17px #ec4899}
+  .pz-avatar-glow{filter:drop-shadow(0 0 9px rgba(59,130,246,.55))}
+  .pz-avatar-fireglow{filter:drop-shadow(0 0 10px rgba(249,115,22,.65))}
+  .pz-avatar-godglow{filter:drop-shadow(0 0 12px rgba(139,92,246,.7))}
+  @media(max-width:640px){
+    main{padding-bottom:88px!important}
+    .fixed.bottom-0{padding-bottom:max(6px,env(safe-area-inset-bottom))}
+    #quiz-modal>div{max-height:100dvh!important}
+  }
+</style>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #FFF9F2;
+            color: #3C3C3C;
+            user-select: none;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(#FFD8B0 1.5px, transparent 1.5px), 
+                radial-gradient(#FFD8B0 1.5px, #FFF9F2 1.5px);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+        }
+
+        /* 3D Tactile Buttons */
+        .btn-3d {
+            transition: all 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        .btn-3d:active {
+            transform: translateY(4px) !important;
+            box-shadow: 0 0 0 transparent !important;
+        }
+
+        .btn-orange {
+            background-color: #FF6B00;
+            box-shadow: 0 5px 0 #D95B00;
+            color: #FFFFFF;
+        }
+        .btn-orange:hover {
+            background-color: #FF7A1A;
+        }
+
+        .btn-green {
+            background-color: #58CC02;
+            box-shadow: 0 5px 0 #46A302;
+            color: #FFFFFF;
+        }
+        .btn-green:hover {
+            background-color: #61E002;
+        }
+
+        .btn-blue {
+            background-color: #1CB0F6;
+            box-shadow: 0 5px 0 #1899D6;
+            color: #FFFFFF;
+        }
+        .btn-blue:hover {
+            background-color: #2BD0FF;
+        }
+
+        .btn-yellow {
+            background-color: #FFC800;
+            box-shadow: 0 5px 0 #E5B200;
+            color: #3C3C3C;
+        }
+        .btn-yellow:hover {
+            background-color: #FFD426;
+        }
+
+        .btn-white {
+            background-color: #FFFFFF;
+            border: 2px solid #E5E5E5;
+            box-shadow: 0 5px 0 #E5E5E5;
+            color: #4B4B4B;
+        }
+        .btn-white:hover {
+            background-color: #F7F7F7;
+        }
+
+        /* Input Styling */
+        .playza-input {
+            border: 2.5px solid #E5E5E5;
+            border-bottom: 5px solid #E5E5E5;
+            border-radius: 18px;
+            transition: all 0.2s ease;
+            background-color: #FAFAFA;
+        }
+        .playza-input:focus {
+            outline: none;
+            border-color: #FF6B00;
+            border-bottom-color: #D95B00;
+            background-color: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.12);
+        }
+
+        /* Floating background decoration animation */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(3deg); }
+        }
+        .floating-element {
+            animation: floatSlow 5s ease-in-out infinite;
+        }
+
+        /* Mascot SVGs animation transitions */
+        .fox-eye {
+            transition: transform 0.15s ease-out;
+            transform-origin: center;
+        }
+        .fox-ear-left, .fox-ear-right {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-origin: center bottom;
+        }
+        .fox-head {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-origin: center center;
+        }
+
+        /* Toast animation */
+        .toast-pop {
+            animation: toastIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes toastIn {
+            0% { transform: translateY(-30px) scale(0.85); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+    </style>
+
+<style id="playza-polish-v2">
+  :root{
+    --pz-surface:#ffffff;
+    --pz-surface-soft:#f8fafc;
+    --pz-line:#e7edf5;
+    --pz-text:#172033;
+    --pz-muted:#64748b;
+    --pz-shadow:0 10px 30px rgba(15,23,42,.08);
+    --pz-shadow-soft:0 5px 16px rgba(15,23,42,.06);
+  }
+  html{
+    scroll-behavior:smooth;
+    background:#f7f9fc;
+  }
+  body{
+    min-height:100dvh;
+    background:
+      radial-gradient(circle at 12% 0%,rgba(255,186,102,.16),transparent 27rem),
+      radial-gradient(circle at 100% 14%,rgba(96,165,250,.14),transparent 24rem),
+      #f7f9fc;
+    color:var(--pz-text);
+  }
+  input,textarea,select,[contenteditable="true"]{
+    user-select:text!important;
+    -webkit-user-select:text!important;
+  }
+  button,input,textarea,select{
+    font:inherit;
+  }
+  button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible{
+    outline:3px solid rgba(59,130,246,.35);
+    outline-offset:2px;
+  }
+  .mobile-frame{
+    border:1px solid rgba(255,255,255,.75);
+    background:linear-gradient(180deg,#fbfdff 0%,#f4f7fb 100%);
+  }
+  .game-card,
+  .mobile-frame .bg-white.rounded-2xl,
+  .mobile-frame .bg-white.rounded-3xl{
+    box-shadow:var(--pz-shadow-soft);
+  }
+  .mobile-frame .bg-white.rounded-2xl:hover,
+  .mobile-frame .bg-white.rounded-3xl:hover{
+    box-shadow:var(--pz-shadow);
+  }
+  .mobile-frame .btn-3d{
+    transform:translateZ(0);
+    will-change:transform,box-shadow;
+  }
+  .mobile-frame .btn-3d:hover{
+    filter:saturate(1.04) brightness(1.01);
+  }
+  .mobile-frame .option-card{
+    background:rgba(255,255,255,.96);
+    backdrop-filter:blur(10px);
+  }
+  .mobile-frame .option-card:hover{
+    border-color:#cbd5e1;
+    box-shadow:0 8px 20px rgba(15,23,42,.07);
+  }
+  .mobile-frame .fixed.bottom-0{
+    padding-bottom:max(8px,env(safe-area-inset-bottom));
+  }
+  #screen-container{
+    padding-bottom:calc(92px + env(safe-area-inset-bottom));
+  }
+  #toast-container > div{
+    backdrop-filter:blur(14px);
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:.01ms!important;
+      animation-iteration-count:1!important;
+      scroll-behavior:auto!important;
+      transition-duration:.01ms!important;
+    }
+  }
+  @media (max-width:640px){
+    .mobile-frame{
+      min-height:100dvh;
+      height:100dvh;
+    }
+    #screen-container{
+      padding-bottom:calc(96px + env(safe-area-inset-bottom));
+    }
+  }
+</style>
+
 </head>
 
-<body class="h-full flex items-center justify-center p-0 sm:p-4 bg-slate-950">
+<body class="h-full flex items-center justify-center p-0 sm:p-4 bg-slate-950" style="padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);">
 
   <!-- FLOATING TOAST CONTAINER -->
   <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center pointer-events-none space-y-2 w-11/12 max-w-xs"></div>
@@ -749,7 +1042,7 @@
               </div>
             </div>
             <div class="flex gap-2 pt-1">
-              <input type="text" id="setting-name-input" placeholder="New nickname..." class="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-brand-orange font-bold" />
+              <input type="text" id="setting-name-input" maxlength="32" autocomplete="nickname" placeholder="New nickname..." class="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-brand-orange font-bold" />
               <button onclick="saveNewNickname()" class="btn-3d btn-orange px-3.5 py-2 rounded-xl text-xs font-bold uppercase">Save</button>
             </div>
           </div>
@@ -781,6 +1074,21 @@
             </div>
             <button onclick="openAuthModal()" class="btn-3d btn-yellow px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase">
               Manage
+            </button>
+          </div>
+
+          <div class="p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-lg font-bold">
+                <i class="fa-solid fa-right-from-bracket"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-sm text-slate-800">Sign Out</h4>
+                <p class="text-[11px] text-slate-400 font-semibold">End this account session on this device</p>
+              </div>
+            </div>
+            <button onclick="handleSignOut()" class="btn-3d btn-blue px-3.5 py-1.5 rounded-xl text-xs font-bold">
+              SIGN OUT
             </button>
           </div>
 
@@ -971,49 +1279,246 @@
       </div>
     </div>
 
-    <!-- AUTH MODAL -->
-    <div id="auth-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-      <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl relative space-y-4">
-        <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-lg">
-          <i class="fa-solid fa-xmark"></i>
+<!-- PLAYZA AUTH MODAL — exact Login UI adapted from PlayZa login screen -->
+<div id="auth-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] hidden overflow-y-auto p-3 sm:p-5">
+  <div class="min-h-full flex items-center justify-center py-3">
+    <div class="w-full max-w-md login-auth-shell">
+      <div class="relative bg-white rounded-3xl shadow-2xl border-2 border-slate-200 overflow-hidden">
+    <!-- PLAYZA BRAND HEADER -->
+    <header class="mb-5 flex items-center justify-center gap-3 cursor-pointer" onclick="playSound('click')">
+        <div class="relative group">
+            <div class="w-14 h-14 rounded-2xl bg-playzaOrange flex items-center justify-center border-b-4 border-playzaOrangeDark text-white shadow-md transform group-hover:scale-105 transition-transform">
+                <span class="text-3xl">🦊</span>
+            </div>
+            <div class="absolute -top-2 -right-2 bg-playzaYellow text-xs font-black px-1.5 py-0.5 rounded-full border border-white font-fredoka shadow-sm text-playzaText">
+                NEW
+            </div>
+        </div>
+        <div class="text-left">
+            <h1 class="font-fredoka text-4xl font-extrabold tracking-wide text-playzaOrange flex items-center gap-1">
+                PlayZa <span class="text-xs bg-playzaPurple text-white px-2 py-0.5 rounded-full uppercase tracking-widest font-bold">V2.0</span>
+            </h1>
+            <p class="font-fredoka text-xs font-bold text-playzaSubtext uppercase tracking-widest -mt-1">Play • Learn • Win</p>
+        </div>
+    </header>
+
+    <!-- MAIN APPLICATION CARD -->
+    <div class="w-full max-w-md bg-playzaCard rounded-3xl p-6 md:p-8 border-2 border-playzaGray shadow-2xl relative overflow-hidden">
+        
+        <!-- SOUND TOGGLE BUTTON -->
+        <button onclick="toggleAudio()" id="btn-sound" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-orange-50 border-2 border-orange-200 text-playzaOrange flex items-center justify-center hover:bg-orange-100 transition-colors z-20">
+            <i class="fa-solid fa-volume-high text-sm"></i>
         </button>
 
-        <div class="text-center">
-          <div class="w-12 h-12 rounded-2xl bg-orange-100 text-brand-orange mx-auto flex items-center justify-center text-2xl font-bold">
-            🔥
-          </div>
-          <h2 class="font-fredoka text-xl font-bold text-slate-800 mt-2">PlayZa Account Sync</h2>
-          <p class="text-xs text-slate-500 mt-0.5 font-semibold">Login to access your Gems, Avatars & Level anywhere!</p>
+        <!-- ZIPPY THE FOX - ANIMATED SVG MASCOT -->
+        <div class="flex flex-col items-center justify-center mb-2 relative">
+            <div class="relative">
+                <svg id="zippy-svg" class="w-36 h-36 cursor-pointer drop-shadow-md" viewBox="0 0 200 200" onclick="triggerMascotTrick()">
+                    <!-- Headset Band -->
+                    <path d="M 45 85 C 45 25, 155 25, 155 85" stroke="#1CB0F6" stroke-width="12" stroke-linecap="round" fill="none" />
+                    <path d="M 45 85 C 45 25, 155 25, 155 85" stroke="#1899D6" stroke-width="6" stroke-linecap="round" fill="none" />
+                    
+                    <!-- Hero Purple Cape Back -->
+                    <path d="M 50 145 Q 100 185 150 145 L 165 190 Q 100 200 35 190 Z" fill="#8A2BE2" />
+
+                    <!-- Fox Main Head Group -->
+                    <g id="fox-head" class="fox-head">
+                        <!-- Left Ear -->
+                        <g id="fox-ear-left" class="fox-ear-left">
+                            <polygon points="50,85 15,25 80,60" fill="#FF6B00" stroke="#D95B00" stroke-width="3" stroke-linejoin="round"/>
+                            <polygon points="48,78 26,36 70,62" fill="#FFF2E6" />
+                        </g>
+
+                        <!-- Right Ear -->
+                        <g id="fox-ear-right" class="fox-ear-right">
+                            <polygon points="150,85 185,25 120,60" fill="#FF6B00" stroke="#D95B00" stroke-width="3" stroke-linejoin="round"/>
+                            <polygon points="152,78 174,36 130,62" fill="#FFF2E6" />
+                        </g>
+
+                        <!-- Head Base Base -->
+                        <path d="M 40 100 C 40 45, 160 45, 160 100 C 160 145, 130 160, 100 160 C 70 160, 40 145, 40 100 Z" fill="#FF6B00" />
+                        
+                        <!-- Fluffy White Snout / Cheeks -->
+                        <path d="M 42 108 Q 20 120, 60 142 C 80 152, 120 152, 140 142 Q 180 120, 158 108 C 145 130, 55 130, 42 108 Z" fill="#FFFFFF" />
+
+                        <!-- Headset Earcups -->
+                        <rect x="30" y="70" width="18" height="32" rx="9" fill="#1CB0F6" stroke="#1899D6" stroke-width="3"/>
+                        <rect x="152" y="70" width="18" height="32" rx="9" fill="#1CB0F6" stroke="#1899D6" stroke-width="3"/>
+                        <circle cx="39" cy="86" r="4" fill="#FFFFFF" />
+                        <circle cx="161" cy="86" r="4" fill="#FFFFFF" />
+
+                        <!-- Left Eye Base -->
+                        <circle cx="72" cy="92" r="16" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="2"/>
+                        <!-- Right Eye Base -->
+                        <circle cx="128" cy="92" r="16" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="2"/>
+
+                        <!-- Left Pupil -->
+                        <g id="fox-pupil-left" class="fox-eye">
+                            <circle cx="74" cy="92" r="8" fill="#3C3C3C"/>
+                            <circle cx="71" cy="89" r="3" fill="#FFFFFF"/>
+                        </g>
+
+                        <!-- Right Pupil -->
+                        <g id="fox-pupil-right" class="fox-eye">
+                            <circle cx="126" cy="92" r="8" fill="#3C3C3C"/>
+                            <circle cx="123" cy="89" r="3" fill="#FFFFFF"/>
+                        </g>
+
+                        <!-- Cute Cute Blushing Cheeks -->
+                        <ellipse cx="55" cy="115" rx="8" ry="4" fill="#FF9E9E" opacity="0.7"/>
+                        <ellipse cx="145" cy="115" rx="8" ry="4" fill="#FF9E9E" opacity="0.7"/>
+
+                        <!-- Cute Black Nose -->
+                        <path d="M 92 112 Q 100 108 108 112 Q 100 124 92 112 Z" fill="#2C2C2C" />
+                        <circle cx="98" cy="112" r="1.5" fill="#FFFFFF" />
+
+                        <!-- W-Shaped Cute Mouth -->
+                        <path id="fox-mouth" d="M 90 124 Q 100 130 100 125 Q 100 130 110 124" stroke="#3C3C3C" stroke-width="3" stroke-linecap="round" fill="none" />
+                    </g>
+                </svg>
+            </div>
+            
+            <div id="mascot-speech" class="bg-orange-100 border-2 border-playzaOrange text-playzaOrange font-fredoka font-bold text-xs px-3 py-1 rounded-full shadow-sm -mt-1 transform transition-all duration-300">
+                Hi! I'm Zippy! 🦊
+            </div>
         </div>
 
-        <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-bold text-slate-600">
-          <button id="tab-btn-login" onclick="switchAuthTab('login')" class="flex-1 py-1.5 rounded-lg bg-white shadow-xs text-slate-800 font-bold">Login</button>
-          <button id="tab-btn-signup" onclick="switchAuthTab('signup')" class="flex-1 py-1.5 rounded-lg">Sign Up</button>
+        <!-- AUTHENTICATION FORM BOX -->
+        <div id="auth-box">
+            <!-- Navigation Tabs (LOG IN / SIGN UP) -->
+            <div class="flex bg-gray-100 p-1.5 rounded-2xl mb-5 border-2 border-playzaGray">
+                <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2.5 rounded-xl font-fredoka font-bold text-sm tracking-wide transition-all bg-white text-playzaOrange shadow-sm">
+                    LOG IN
+                </button>
+                <button id="tab-signup" onclick="switchAuthTab('signup')" class="flex-1 py-2.5 rounded-xl font-fredoka font-bold text-sm tracking-wide text-playzaSubtext hover:text-playzaText transition-all">
+                    SIGN UP
+                </button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="form-login" onsubmit="handleAuth(event, 'login')" class="space-y-3.5">
+                <div>
+                    <label class="block font-fredoka text-xs uppercase font-bold text-playzaSubtext mb-1 tracking-wider">Email Address</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-playzaSubtext text-sm"></i>
+                        <input type="email" id="login-email" autocomplete="username" required placeholder="player@playza.com" onfocus="mascotFocus('email')" oninput="mascotLookTrack(this)" onblur="mascotReset()" class="w-full pl-11 pr-4 py-3 playza-input font-bold text-playzaText placeholder-gray-300 text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block font-fredoka text-xs uppercase font-bold text-playzaSubtext tracking-wider">Password</label>
+                        <button type="button" onclick="openForgotModal()" class="font-fredoka text-xs font-bold text-playzaBlue hover:underline">Forgot?</button>
+                    </div>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-playzaSubtext text-sm"></i>
+                        <input type="password" id="login-pass" autocomplete="current-password" required placeholder="••••••••" onfocus="mascotFocus('pass')" onblur="mascotReset()" class="w-full pl-11 pr-12 py-3 playza-input font-bold text-playzaText placeholder-gray-300 text-sm">
+                        <button type="button" onclick="togglePassword('login-pass', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-playzaSubtext hover:text-playzaOrange">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-login-submit" class="w-full py-3.5 rounded-2xl btn-3d btn-orange font-fredoka font-bold text-lg tracking-wider uppercase">
+                    LOG IN
+                </button>
+            </form>
+
+            <!-- SIGNUP FORM (Hidden initially) -->
+            <form id="form-signup" onsubmit="handleAuth(event, 'signup')" class="space-y-3.5 hidden">
+                <div>
+                    <label class="block font-fredoka text-xs uppercase font-bold text-playzaSubtext mb-1 tracking-wider">Full Name</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-playzaSubtext text-sm"></i>
+                        <input type="text" id="signup-name" maxlength="32" autocomplete="name" required placeholder="Zippy Gamer" onfocus="mascotFocus('name')" onblur="mascotReset()" class="w-full pl-11 pr-4 py-3 playza-input font-bold text-playzaText placeholder-gray-300 text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-fredoka text-xs uppercase font-bold text-playzaSubtext mb-1 tracking-wider">Email Address</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-playzaSubtext text-sm"></i>
+                        <input type="email" id="signup-email" autocomplete="email" required placeholder="player@playza.com" onfocus="mascotFocus('email')" oninput="mascotLookTrack(this)" onblur="mascotReset()" class="w-full pl-11 pr-4 py-3 playza-input font-bold text-playzaText placeholder-gray-300 text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-fredoka text-xs uppercase font-bold text-playzaSubtext mb-1 tracking-wider">Password</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-playzaSubtext text-sm"></i>
+                        <input type="password" id="signup-pass" autocomplete="new-password" required minlength="6" placeholder="Min 6 characters" onfocus="mascotFocus('pass')" onblur="mascotReset()" class="w-full pl-11 pr-12 py-3 playza-input font-bold text-playzaText placeholder-gray-300 text-sm">
+                        <button type="button" onclick="togglePassword('signup-pass', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-playzaSubtext hover:text-playzaOrange">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-signup-submit" class="w-full py-3.5 rounded-2xl btn-3d btn-green font-fredoka font-bold text-lg tracking-wider uppercase">
+                    CREATE ACCOUNT
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="my-4 flex items-center justify-center gap-3">
+                <div class="h-0.5 bg-playzaGray flex-1"></div>
+                <span class="font-fredoka text-xs font-bold text-playzaSubtext uppercase tracking-widest">OR</span>
+                <div class="h-0.5 bg-playzaGray flex-1"></div>
+            </div>
+
+            <!-- Social & Guest Login Options -->
+            <div class="space-y-2.5">
+                <button type="button" onclick="handleGoogleSignIn()" class="w-full py-3 rounded-2xl btn-3d btn-white font-fredoka font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-3">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    CONTINUE WITH GOOGLE
+                </button>
+
+                <button type="button" onclick="enterGuestMode()" class="w-full py-2.5 rounded-2xl border-2 border-dashed border-orange-300 text-playzaOrange font-fredoka font-bold text-xs tracking-wider uppercase hover:bg-orange-50 transition-colors flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bolt"></i> TRY DEMO / GUEST MODE
+                </button>
+            </div>
         </div>
 
-        <div class="space-y-3">
-          <div id="name-field" class="hidden">
-            <label class="text-[11px] font-bold text-slate-500 uppercase">Your Nickname</label>
-            <input type="text" id="auth-name" placeholder="Enter nickname" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-brand-orange" />
-          </div>
 
-          <div>
-            <label class="text-[11px] font-bold text-slate-500 uppercase">Email Address</label>
-            <input type="email" id="auth-email" placeholder="name@example.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-brand-orange" />
-          </div>
-
-          <div>
-            <label class="text-[11px] font-bold text-slate-500 uppercase">Password</label>
-            <input type="password" id="auth-password" placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-brand-orange" />
-          </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <!-- FORGOT PASSWORD MODAL -->
+    <div id="forgot-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm border-2 border-playzaGray shadow-2xl relative">
+            <button onclick="closeForgotModal()" class="absolute top-4 right-4 text-playzaSubtext hover:text-playzaText">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="text-center mb-4">
+                <div class="text-4xl mb-1">🔑</div>
+                <h3 class="font-fredoka text-xl font-bold text-playzaText">Reset Password</h3>
+                <p class="text-xs font-bold text-playzaSubtext mt-1">We will send a reset link to your email!</p>
+            </div>
+            <form onsubmit="handleResetPassword(event)" class="space-y-3">
+                <input type="email" id="reset-email" autocomplete="email" required placeholder="Enter registered email" class="w-full px-4 py-3 playza-input font-bold text-sm">
+                <button type="submit" class="w-full py-3 rounded-2xl btn-3d btn-orange font-fredoka font-bold text-sm uppercase">
+                    SEND RESET LINK
+                </button>
+            </form>
         </div>
+    </div>
 
-        <button id="btn-auth-submit" onclick="handleAuthSubmit()" class="w-full btn-3d btn-orange py-3 rounded-2xl font-fredoka font-bold text-sm uppercase">
-          Sync & Save Data
-        </button>
 
-        <div class="text-center">
-          <p id="auth-error-msg" class="text-xs text-red-500 font-bold hidden"></p>
+</div>
+
+
+    <!-- GAME BANNER DECK -->
+    <div id="playza-banner-deck" class="pointer-events-none fixed top-2 left-1/2 -translate-x-1/2 z-30 w-[min(92vw,620px)]">
+      <div id="pz-banner" class="hidden pointer-events-auto p-3 rounded-2xl bg-gradient-to-r from-orange-500 via-pink-500 to-violet-600 text-white shadow-xl border-2 border-white/30">
+        <div class="flex items-center gap-3">
+          <div id="pz-banner-icon" class="text-3xl">🏆</div>
+          <div class="min-w-0 flex-1"><div id="pz-banner-title" class="font-fredoka font-black">Challenge!</div><div id="pz-banner-text" class="text-xs font-bold opacity-90">Keep your streak alive.</div></div>
+          <button onclick="document.getElementById('pz-banner').classList.add('hidden')" class="w-8 h-8 rounded-full bg-white/20">×</button>
         </div>
       </div>
     </div>
@@ -1052,10 +1557,14 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { 
       getAuth, 
-      signInAnonymously, 
       signInWithEmailAndPassword, 
-      createUserWithEmailAndPassword, 
+      createUserWithEmailAndPassword,
       onAuthStateChanged,
+      signInWithPopup,
+      GoogleAuthProvider,
+      sendPasswordResetEmail,
+      updateProfile,
+      signOut,
       setPersistence,
       browserLocalPersistence
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -1064,6 +1573,7 @@
       doc, 
       setDoc, 
       getDoc,
+      deleteField,
       onSnapshot
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -1074,7 +1584,6 @@
       storageBucket: "playza-87102.firebasestorage.app",
       messagingSenderId: "695215345584",
       appId: "1:695215345584:web:14fc00081f035046979075",
-      measurementId: "G-PTR7E4D8VT"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -1082,10 +1591,34 @@
     const db = getFirestore(app);
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'playza-default';
 
-    const LOCAL_CACHE_KEY = 'playza_full_sync_user_v6';
+    const LEGACY_CACHE_KEY = 'playza_full_sync_user_v7';
+    const GUEST_CACHE_KEY = 'playza_state_guest_v8';
+    const ACCOUNT_CACHE_PREFIX = 'playza_state_account_v8:';
+    const SOUND_CACHE_KEY = 'playza_sound';
 
     window.calculateNextLevelXp = function(lvl) {
-      return Math.round(100 * Math.pow(1.35, lvl - 1));
+      const safeLevel = Math.max(1, Math.floor(Number(lvl) || 1));
+      return Math.max(100, Math.round(100 * Math.pow(1.35, safeLevel - 1)));
+    };
+
+    const sanitizeName = (value) => String(value ?? '')
+      .replace(/[\u0000-\u001F\u007F]/g, '')
+      .replace(/[<>`]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 32);
+
+    const clampInt = (value, min, max, fallback) => {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return fallback;
+      return Math.min(max, Math.max(min, Math.floor(n)));
+    };
+
+    const safeObject = (value) => value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+
+    const uniqueStringArray = (value, fallback) => {
+      if (!Array.isArray(value)) return [...fallback];
+      return [...new Set(value.filter(v => typeof v === 'string' && v.length <= 100))].slice(0, 500);
     };
 
     const defaultState = {
@@ -1096,13 +1629,17 @@
       level: 1,
       xp: 0,
       nextLevelXp: 100,
+      totalXpEarned: 0,
       gems: 100,
+      totalGemsEarned: 100,
       streak: 1,
+      lastActiveDate: null,
       hasStreakShield: false,
       hasXpBoost: false,
       isVip: false,
       lastDailyBonus: null,
       lastMysteryChestDate: null,
+      dailyQuestDate: null,
       equippedAvatar: "zippy_classic",
       unlockedAvatars: ["zippy_classic"],
       unlockedBadges: ["badge_welcome"],
@@ -1124,10 +1661,102 @@
       subjectProgress: {}
     };
 
-    const savedLocal = localStorage.getItem(LOCAL_CACHE_KEY);
-    window.userState = savedLocal ? { ...defaultState, ...JSON.parse(savedLocal) } : { ...defaultState };
+    const readStoredState = (key) => {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return safeObject(parsed);
+      } catch (err) {
+        console.warn("PlayZa local state parse failed.");
+        try { localStorage.removeItem(key); } catch (_) {}
+        return null;
+      }
+    };
 
-    window.soundEnabled = true;
+    const normalizeState = (raw = {}, identity = {}) => {
+      const source = safeObject(raw);
+      const state = { ...defaultState, ...source };
+      state.uid = identity.uid ?? null;
+      state.email = identity.email || '';
+      state.isGuest = identity.isGuest ?? true;
+      state.displayName = sanitizeName(source.displayName || defaultState.displayName) || defaultState.displayName;
+      state.level = clampInt(source.level, 1, 100000, 1);
+      state.nextLevelXp = window.calculateNextLevelXp(state.level);
+      state.xp = clampInt(source.xp, 0, 1000000000, 0);
+      state.totalXpEarned = clampInt(source.totalXpEarned, 0, 100000000000, state.xp);
+      state.gems = clampInt(source.gems, 0, 1000000000, 100);
+      state.totalGemsEarned = clampInt(source.totalGemsEarned, state.gems, 100000000000, state.gems);
+      state.streak = clampInt(source.streak, 1, 100000, 1);
+      state.totalQuestionsAttempted = clampInt(source.totalQuestionsAttempted, 0, 1000000000, 0);
+      state.correctAnswers = clampInt(source.correctAnswers, 0, state.totalQuestionsAttempted, 0);
+      state.quizzesPlayed = clampInt(source.quizzesPlayed, 0, 1000000000, 0);
+      state.quest1Count = clampInt(source.quest1Count, 0, 2, 0);
+      state.quest2Count = clampInt(source.quest2Count, 0, 1, 0);
+      state.bossHp = clampInt(source.bossHp, 0, 100, 100);
+      state.bossAttacks = clampInt(source.bossAttacks, 0, 1000000000, 0);
+      state.spinsLeftToday = clampInt(source.spinsLeftToday, 0, 3, 3);
+      state.wheelSpinsCount = clampInt(source.wheelSpinsCount, 0, 1000000000, 0);
+      state.lifelinesUsed = clampInt(source.lifelinesUsed, 0, 1000000000, 0);
+      state.unlockedAvatars = uniqueStringArray(source.unlockedAvatars, defaultState.unlockedAvatars);
+      if (!state.unlockedAvatars.includes("zippy_classic")) state.unlockedAvatars.unshift("zippy_classic");
+      state.unlockedBadges = uniqueStringArray(source.unlockedBadges, defaultState.unlockedBadges);
+      if (!state.unlockedBadges.includes("badge_welcome")) state.unlockedBadges.unshift("badge_welcome");
+      state.subjectStats = Object.fromEntries(Object.entries(safeObject(source.subjectStats))
+        .filter(([k,v]) => typeof k === 'string' && safeObject(v))
+        .map(([k,v]) => [k, {
+          attempted: clampInt(v.attempted, 0, 1000000000, 0),
+          correct: clampInt(v.correct, 0, clampInt(v.attempted, 0, 1000000000, 0), 0)
+        }]));
+      state.subjectProgress = Object.fromEntries(Object.entries(safeObject(source.subjectProgress))
+        .filter(([k,v]) => typeof k === 'string' && Number.isFinite(Number(v)))
+        .map(([k,v]) => [k, Math.max(0, Math.floor(Number(v)))]));
+      state.activeQuizState = source.activeQuizState && typeof source.activeQuizState === 'object'
+        ? source.activeQuizState : null;
+      state.hasStreakShield = !!source.hasStreakShield;
+      state.hasXpBoost = !!source.hasXpBoost;
+      state.isVip = !!source.isVip;
+      return state;
+    };
+
+    const persistableState = (state) => {
+      const out = JSON.parse(JSON.stringify(state || {}));
+      delete out.uid;
+      delete out.email;
+      delete out.isGuest;
+      return out;
+    };
+
+    const accountCacheKey = (uid) => uid ? `${ACCOUNT_CACHE_PREFIX}${uid}` : GUEST_CACHE_KEY;
+
+    const readLocalGuestState = () => {
+      const next = readStoredState(GUEST_CACHE_KEY);
+      if (next) return normalizeState(next, {uid:null,email:'',isGuest:true});
+      const legacy = readStoredState(LEGACY_CACHE_KEY);
+      if (legacy) {
+        const migrated = normalizeState(legacy, {uid:null,email:'',isGuest:true});
+        try {
+          localStorage.setItem(GUEST_CACHE_KEY, JSON.stringify(persistableState(migrated)));
+          localStorage.removeItem(LEGACY_CACHE_KEY);
+        } catch (_) {}
+        return migrated;
+      }
+      return normalizeState(defaultState, {uid:null,email:'',isGuest:true});
+    };
+
+    window.userState = readLocalGuestState();
+    window.__playzaSync = { ready:false, saving:false, queued:false, timer:null, retryTimer:null, lastWrite:0, hydrated:false };
+
+    const persistLocal = () => {
+      try {
+        const key = accountCacheKey(window.userState?.uid && !window.userState?.isGuest ? window.userState.uid : null);
+        localStorage.setItem(key, JSON.stringify(persistableState(window.userState)));
+      } catch (e) {
+        console.warn("PlayZa local save failed.");
+      }
+    };
+
+    window.soundEnabled = localStorage.getItem(SOUND_CACHE_KEY) !== 'off';
     let audioCtx = null;
 
     /* EXTENDED WEB AUDIO SOUND GENERATOR FOR TICKING, CLICKS & REWARDS */
@@ -1205,11 +1834,38 @@
       }
     };
 
+    window.playGameSfx = function(type) {
+      if (!window.soundEnabled) return;
+      const map = {
+        combo: ['click','correct'],
+        timeout: ['wrong'],
+        boss: ['levelup','buy'],
+        achievement: ['claim','correct'],
+        success: ['correct'],
+        error: ['wrong']
+      };
+      const sequence = map[type] || ['click'];
+      sequence.forEach((soundType, index) => setTimeout(() => window.playSound(soundType), index * 90));
+    };
+
+    window.triggerConfetti = function(options = {}) {
+      if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+      if (typeof confetti !== 'function') return;
+      try {
+        confetti({
+          particleCount: 70,
+          spread: 62,
+          origin: { y: 0.62 },
+          ...options
+        });
+      } catch (_) {}
+    };
+
     /* GLOBAL TACTILE RIPPLE CLICK EFFECT */
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('.btn-3d, button');
       if (btn) {
-        playSound('click');
+        if (!btn.hasAttribute('onclick') && !btn.hasAttribute('onsubmit')) playSound('click');
         const rect = btn.getBoundingClientRect();
         const ripple = document.createElement('span');
         ripple.className = 'ripple-effect';
@@ -1231,10 +1887,13 @@
 
       const toast = document.createElement('div');
       toast.className = `pointer-events-auto bg-slate-900/90 backdrop-blur-md text-white border border-slate-700/80 px-3.5 py-2 rounded-2xl shadow-xl flex items-center gap-2.5 text-xs font-bold w-full transition-all duration-300 animate-toast`;
-      toast.innerHTML = `
-        <span class="text-base">${icon}</span>
-        <span class="flex-1">${msg}</span>
-      `;
+      const iconNode = document.createElement('span');
+      iconNode.className = 'text-base';
+      iconNode.textContent = String(icon ?? '💡').slice(0, 8);
+      const msgNode = document.createElement('span');
+      msgNode.className = 'flex-1';
+      msgNode.textContent = String(msg ?? '');
+      toast.append(iconNode, msgNode);
       container.appendChild(toast);
 
       setTimeout(() => {
@@ -1279,7 +1938,7 @@
       document.getElementById('reward-modal-xp').innerText = `+${xp} XP`;
       document.getElementById('custom-reward-modal').classList.remove('hidden');
       playSound('claim');
-      confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+      triggerConfetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
     };
 
     window.closeRewardModal = function() {
@@ -1287,7 +1946,7 @@
     };
 
     window.toggleSound = function() {
-      window.soundEnabled = !window.soundEnabled;
+      window.soundEnabled = !window.soundEnabled; localStorage.setItem(SOUND_CACHE_KEY, window.soundEnabled ? 'on' : 'off');
       const btn = document.getElementById('setting-sound-btn');
       if (window.soundEnabled) {
         btn.innerText = "ON";
@@ -1300,57 +1959,171 @@
       }
     };
 
-    setPersistence(auth, browserLocalPersistence).catch(err => console.warn(err));
+    setPersistence(auth, browserLocalPersistence).catch(err => console.warn("Auth persistence:", err));
 
     let firestoreUnsubscribe = null;
+    let suppressRemoteApplyUntil = 0;
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        window.userState.uid = user.uid;
-        window.userState.isGuest = user.isAnonymous;
-        if (user.email) window.userState.email = user.email;
+    const buildCloudPayload = (state) => {
+      const payload = persistableState(normalizeState(state, {
+        uid: null,
+        email: '',
+        isGuest: false
+      }));
+      payload.updatedAt = Date.now();
+      payload.schemaVersion = 9;
+      payload.uid = deleteField();
+      payload.email = deleteField();
+      payload.isGuest = deleteField();
+      return payload;
+    };
 
-        setupFirestoreRealtimeSync();
-      } else {
-        try {
-          await signInAnonymously(auth);
-        } catch (err) {
-          console.error("Anonymous Auth Failed", err);
-        }
+    window.saveUserToFirebase = async function(immediate = false) {
+      persistLocal();
+      const uid = window.userState.uid;
+      if (!uid || window.userState.isGuest || !window.__playzaSync.hydrated) {
+        if (uid && !window.userState.isGuest) window.__playzaSync.queued = true;
+        return;
       }
-    });
 
-    /* ADVANCED FIRESTORE REALTIME SYNC (ONSNAPSHOT) */
-    function setupFirestoreRealtimeSync() {
-      if (!window.userState.uid) return;
-      if (firestoreUnsubscribe) firestoreUnsubscribe();
+      if (!immediate) {
+        clearTimeout(window.__playzaSync.timer);
+        window.__playzaSync.timer = setTimeout(() => window.saveUserToFirebase(true), 450);
+        return;
+      }
 
-      const docRef = doc(db, 'artifacts', appId, 'users', window.userState.uid);
-      
-      firestoreUnsubscribe = onSnapshot(docRef, (docSnap) => {
-        if (docSnap.exists()) {
-          const remoteData = docSnap.data();
-          window.userState = { ...defaultState, ...remoteData, uid: window.userState.uid };
-          localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(window.userState));
-          updateUI();
-        } else {
-          setDoc(docRef, window.userState, { merge: true });
-        }
-      }, (err) => {
-        console.warn("Firestore snapshot listener error:", err);
-      });
-    }
+      if (window.__playzaSync.saving) {
+        window.__playzaSync.queued = true;
+        return;
+      }
 
-    window.saveUserToFirebase = async function() {
-      localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(window.userState));
-      if (!window.userState.uid) return;
+      window.__playzaSync.saving = true;
+      suppressRemoteApplyUntil = Date.now() + 3000;
       try {
-        const userDocRef = doc(db, 'artifacts', appId, 'users', window.userState.uid);
-        await setDoc(userDocRef, window.userState, { merge: true });
+        const userDocRef = doc(db, 'artifacts', appId, 'users', uid);
+        await setDoc(userDocRef, buildCloudPayload(window.userState), { merge: true });
+        window.__playzaSync.lastWrite = Date.now();
+        clearTimeout(window.__playzaSync.retryTimer);
       } catch (e) {
-        console.warn("Save to Firestore error:", e);
+        console.warn("PlayZa cloud save deferred.");
+        clearTimeout(window.__playzaSync.retryTimer);
+        window.__playzaSync.retryTimer = setTimeout(() => window.saveUserToFirebase(true), 2500);
+      } finally {
+        window.__playzaSync.saving = false;
+        if (window.__playzaSync.queued) {
+          window.__playzaSync.queued = false;
+          window.saveUserToFirebase(true);
+        }
       }
     };
+
+    async function hydrateSignedInUser(user) {
+      const uid = user.uid;
+      const ref = doc(db, 'artifacts', appId, 'users', uid);
+      const accountLocal = readStoredState(accountCacheKey(uid));
+      const guestLocal = window.userState.isGuest ? window.userState : null;
+
+      try {
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          window.userState = normalizeState(snap.data(), {
+            uid,
+            email: user.email || '',
+            isGuest: false
+          });
+        } else {
+          const seed = accountLocal
+            ? normalizeState(accountLocal, {uid, email:user.email || '', isGuest:false})
+            : normalizeState(guestLocal || defaultState, {uid, email:user.email || '', isGuest:false});
+          window.userState = seed;
+          await setDoc(ref, buildCloudPayload(seed), { merge: true });
+        }
+
+        window.__playzaSync.hydrated = true;
+        updateStreakState();
+        ensureDailyQuestState();
+        persistLocal();
+        setupFirestoreRealtimeSync();
+        updateUI();
+      } catch (err) {
+        console.warn("PlayZa cloud hydration unavailable; using local account state.");
+        const fallback = accountLocal || guestLocal || defaultState;
+        window.userState = normalizeState(fallback, {
+          uid,
+          email: user.email || '',
+          isGuest: false
+        });
+        window.__playzaSync.hydrated = true;
+        updateStreakState();
+        ensureDailyQuestState();
+        persistLocal();
+        updateUI();
+        setupFirestoreRealtimeSync();
+      }
+    }
+
+    function setupFirestoreRealtimeSync() {
+      if (!window.userState.uid || window.userState.isGuest) return;
+      if (firestoreUnsubscribe) firestoreUnsubscribe();
+      const uid = window.userState.uid;
+      const docRef = doc(db, 'artifacts', appId, 'users', uid);
+      firestoreUnsubscribe = onSnapshot(docRef, async (snap) => {
+        if (!snap.exists()) {
+          await setDoc(docRef, buildCloudPayload(window.userState), { merge: true });
+          window.__playzaSync.hydrated = true;
+          return;
+        }
+
+        const remote = snap.data() || {};
+        if (Date.now() < suppressRemoteApplyUntil) return;
+
+        const remoteUpdated = Number(remote.updatedAt || 0);
+        if (remoteUpdated && remoteUpdated < window.__playzaSync.lastWrite) return;
+
+        window.userState = normalizeState(remote, {
+          uid,
+          email: window.userState.email || '',
+          isGuest:false
+        });
+        updateStreakState();
+        ensureDailyQuestState();
+        persistLocal();
+        window.__playzaSync.hydrated = true;
+        updateUI();
+      }, err => console.warn("PlayZa realtime sync unavailable."));
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      queueMicrotask(async () => {
+      if (!user) {
+        window.userState = normalizeState(window.userState, {uid:null,email:'',isGuest:true});
+        window.__playzaSync.hydrated = true;
+        updateStreakState();
+        ensureDailyQuestState();
+        persistLocal();
+        updateUI();
+        return;
+      }
+
+      if (user.isAnonymous) {
+        if (firestoreUnsubscribe) {
+          firestoreUnsubscribe();
+          firestoreUnsubscribe = null;
+        }
+        window.userState = normalizeState(window.userState, {uid:null,email:'',isGuest:true});
+        window.__playzaSync.hydrated = true;
+        updateStreakState();
+        ensureDailyQuestState();
+        persistLocal();
+        updateUI();
+        return;
+      }
+
+      window.__playzaSync.hydrated = false;
+      await hydrateSignedInUser(user);
+      });
+    });
+
 
     window.switchTab = function(tabName) {
       playSound('tab');
@@ -1377,41 +2150,57 @@
       if (screen) screen.scrollTop = 0;
     };
 
-    // AVATARS LIST WITH EMOJIS & RICH GRAPHIC SVGs
+    // DATA-DRIVEN CSS AVATARS — add more objects/classes here.
     window.avatarsList = [
-      { id: "zippy_classic", name: "Zippy Fox", icon: "🦊", price: 0, desc: "Default mascot hero" },
-      { 
-        id: "cyber_robot_svg", 
-        name: "Cyber Mech AI", 
-        type: "svg",
-        svg: `<svg viewBox="0 0 64 64" class="w-full h-full"><rect x="12" y="16" width="40" height="36" rx="10" fill="#3B82F6"/><circle cx="26" cy="30" r="5" fill="#6EE7B7"/><circle cx="38" cy="30" r="5" fill="#6EE7B7"/><rect x="22" y="42" width="20" height="4" rx="2" fill="#1E293B"/><line x1="32" y1="4" x2="32" y2="16" stroke="#3B82F6" stroke-width="4"/><circle cx="32" cy="4" r="4" fill="#F43F5E"/></svg>`, 
-        price: 150, 
-        desc: "Futuristic Mech Robot Avatar" 
-      },
-      { 
-        id: "crown_king_svg", 
-        name: "Golden Crown King", 
-        type: "svg",
-        svg: `<svg viewBox="0 0 64 64" class="w-full h-full"><polygon points="12,48 18,20 28,32 32,16 36,32 46,20 52,48" fill="#F59E0B"/><circle cx="32" cy="12" r="3" fill="#EF4444"/><circle cx="18" cy="16" r="3" fill="#3B82F6"/><circle cx="46" cy="16" r="3" fill="#3B82F6"/><rect x="12" y="48" width="40" height="8" rx="3" fill="#D97706"/></svg>`, 
-        price: 250, 
-        desc: "Royal Kingdom Trivia King" 
-      },
-      { id: "glow_neon_fox", name: "Neon Aura Fox", icon: "🦊", price: "Lvl 2", desc: "Level 2 Glowing Aura Reward", glow: "glow-neon", reqLvl: 2 },
-      { id: "glow_fire_phoenix", name: "Fire Aura Phoenix", icon: "🦅", price: "Lvl 3", desc: "Level 3 Flaming Aura Reward", glow: "glow-fire", reqLvl: 3 },
-      { id: "glow_cyber_dragon", name: "Cyber Neon Dragon", icon: "🐲", price: "Lvl 5", desc: "Level 5 Cybernetic Aura", glow: "glow-neon", reqLvl: 5 },
-      { id: "glow_astral_owl", name: "Astral Glowing Owl", icon: "🦉", price: "Lvl 8", desc: "Level 8 Stellar Cosmic Aura", glow: "glow-god", reqLvl: 8 },
-      { id: "glow_quantum_god", name: "Quantum Celestial", icon: "👑", price: "Lvl 10", desc: "Level 10 Supreme Divine Aura", glow: "glow-god", reqLvl: 10 },
-      { id: "cyber_fox", name: "Cyber Fox", icon: "🎧", price: 100, desc: "Tactical neon cyber fox" },
-      { id: "ninja_cat", name: "Ninja Cat", icon: "🐱‍👤", price: 120, desc: "Silent shadow ninja warrior" },
-      { id: "astro_bear", name: "Astro Bear", icon: "🐻", price: 180, desc: "Cosmic galaxy explorer" },
-      { id: "super_panda", name: "Super Panda", icon: "🐼", price: 200, desc: "Electric lightning panda" },
-      { id: "wizard_dragon", name: "Wizard Dragon", icon: "🐲", price: 300, desc: "Mythic magic spellcaster" },
-      { id: "gamer_owl", name: "Gamer Owl", icon: "🦉", price: 350, desc: "Pro esports strategy master" },
-      { id: "golden_lion", name: "Golden Lion", icon: "🦁", price: 400, desc: "Royal trivia king" },
-      { id: "dino_champ", name: "Dino Champ", icon: "🦖", price: 450, desc: "Prehistoric quiz legend" },
-      { id: "diamond_emperor", name: "Diamond Emperor", icon: "💎", price: 500, desc: "Supreme Diamond Master", glow: "glow-god" },
-      { id: "cyber_wolf", name: "Neon Cyber Wolf", icon: "🐺", price: 280, desc: "High-tech alpha predator", glow: "glow-neon" },
-      { id: "quantum_alien", name: "Quantum Alien", icon: "👽", price: 320, desc: "Deep space intergalactic mind", glow: "glow-god" }
+      {id:"zippy_classic",name:"Zippy Fox",css:"fox",price:0,desc:"Default mascot hero"},
+      {id:"cyber_robot_svg",name:"Cyber Mech AI",css:"robot",price:150,desc:"Futuristic Mech Robot Avatar"},
+      {id:"crown_king_svg",name:"Golden Crown King",css:"crown",price:250,desc:"Royal Kingdom Trivia King"},
+      {id:"glow_neon_fox",name:"Neon Aura Fox",css:"fox",price:"Lvl 2",reqLvl:2,glow:"pz-avatar-glow",desc:"Level 2 glowing aura reward"},
+      {id:"glow_fire_phoenix",name:"Fire Aura Phoenix",css:"fire",price:"Lvl 3",reqLvl:3,glow:"pz-avatar-fireglow",desc:"Level 3 fire aura reward"},
+      {id:"glow_cyber_dragon",name:"Cyber Neon Dragon",css:"dragon",price:"Lvl 5",reqLvl:5,glow:"pz-avatar-glow",desc:"Level 5 cyber aura"},
+      {id:"glow_astral_owl",name:"Astral Glowing Owl",css:"owl",price:"Lvl 8",reqLvl:8,glow:"pz-avatar-godglow",desc:"Level 8 cosmic aura"},
+      {id:"glow_quantum_god",name:"Quantum Celestial",css:"quantum",price:"Lvl 10",reqLvl:10,glow:"pz-avatar-godglow",desc:"Level 10 supreme aura"},
+      {id:"cyber_fox",name:"Cyber Fox",css:"fox",price:100,desc:"Tactical neon fox"},
+      {id:"ninja_cat",name:"Ninja Cat",css:"cat",price:120,desc:"Silent shadow ninja warrior"},
+      {id:"astro_bear",name:"Astro Bear",css:"bear",price:180,desc:"Cosmic galaxy explorer"},
+      {id:"super_panda",name:"Super Panda",css:"panda",price:200,desc:"Electric lightning panda"},
+      {id:"wizard_dragon",name:"Wizard Dragon",css:"dragon",price:300,desc:"Mythic magic spellcaster"},
+      {id:"gamer_owl",name:"Gamer Owl",css:"owl",price:350,desc:"Pro esports strategy master"},
+      {id:"golden_lion",name:"Golden Lion",css:"lion",price:400,desc:"Royal trivia champion"},
+      {id:"dino_champ",name:"Dino Champ",css:"dino",price:450,desc:"Prehistoric quiz legend"},
+      {id:"diamond_emperor",name:"Diamond Emperor",css:"diamond",price:500,glow:"pz-avatar-godglow",desc:"Supreme diamond master"},
+      {id:"cyber_wolf",name:"Neon Cyber Wolf",css:"wolf",price:280,glow:"pz-avatar-glow",desc:"High-tech alpha predator"},
+      {id:"quantum_alien",name:"Quantum Alien",css:"alien",price:320,glow:"pz-avatar-godglow",desc:"Deep-space intergalactic mind"}
+      ,{id:"samurai_sun",name:"Sun Samurai",css:"samurai",price:220,desc:"Disciplined arena warrior"}
+      ,{id:"ice_wizard",name:"Ice Wizard",css:"ice",price:260,glow:"pz-avatar-glow",desc:"Frozen spell master"}
+      ,{id:"shadow_ninja",name:"Shadow Ninja",css:"ninja",price:300,glow:"pz-avatar-godglow",desc:"Silent stealth champion"}
+      ,{id:"space_ranger",name:"Space Ranger",css:"ranger",price:340,desc:"Cosmic quiz explorer"}
+      ,{id:"lava_knight",name:"Lava Knight",css:"lava",price:380,glow:"pz-avatar-fireglow",desc:"Molten battle guardian"}
+      ,{id:"rainbow_mage",name:"Rainbow Mage",css:"rainbow",price:420,glow:"pz-avatar-godglow",desc:"Prismatic knowledge mage"}
+      ,{id:"storm_bird",name:"Storm Bird",css:"storm",price:460,desc:"Thunder-speed trivia flyer"}
+      ,{id:"crystal_fox",name:"Crystal Fox",css:"crystal",price:520,glow:"pz-avatar-godglow",desc:"Rare crystal guardian"}
+      ,{id:"pixel_hero",name:"Pixel Hero",css:"pixel",price:180,desc:"Retro arcade champion"}
+      ,{id:"moon_cat",name:"Moon Cat",css:"mooncat",price:240,desc:"Lunar night explorer"}
+      ,{id:"solar_bot",name:"Solar Bot",css:"solarbot",price:360,glow:"pz-avatar-glow",desc:"Powered by pure sunlight"}
+      ,{id:"emerald_dragon",name:"Emerald Dragon",css:"emeralddragon",price:600,glow:"pz-avatar-godglow",desc:"Legendary green guardian"}
+      ,{id:"void_knight",name:"Void Knight",css:"voidknight",price:700,glow:"pz-avatar-godglow",desc:"Endgame arena guardian"}
+    ];
+    window.avatarMarkup = function(av, extra="") { return `<div class="pz-avatar pz-avatar--${av.css} ${av.glow||''} ${extra}"></div>`; };
+
+    // Extra achievement definitions — all conditions are data-driven and easy to extend.
+    window.extraAchievements = [
+      {id:"badge_10q",name:"Warm Up",icon:"🔥",desc:"Answer 10 questions",goal:10},
+      {id:"badge_50q",name:"Quiz Runner",icon:"🏃",desc:"Answer 50 questions",goal:50},
+      {id:"badge_100q",name:"Century Brain",icon:"💯",desc:"Answer 100 questions",goal:100},
+      {id:"badge_500q",name:"Knowledge Titan",icon:"🧠",desc:"Answer 500 questions",goal:500},
+      {id:"badge_25correct",name:"Sharp Mind",icon:"🎯",desc:"Get 25 correct answers",goal:25},
+      {id:"badge_100correct",name:"Precision Pro",icon:"🏹",desc:"Get 100 correct answers",goal:100},
+      {id:"badge_7days",name:"Weekly Flame",icon:"🔥",desc:"Reach a 7 day streak",goal:7},
+      {id:"badge_15days",name:"Streak Legend",icon:"🌋",desc:"Reach a 15 day streak",goal:15},
+      {id:"badge_10avatars",name:"Collector",icon:"🎭",desc:"Unlock 10 avatars",goal:10},
+      {id:"badge_20avatars",name:"Avatar Master",icon:"👑",desc:"Unlock 20 avatars",goal:20},
+      {id:"badge_1000xp",name:"XP Millionaire",icon:"⚡",desc:"Reach 1000 XP",goal:1000},
+      {id:"badge_5000xp",name:"XP Overlord",icon:"🌟",desc:"Reach 5000 XP",goal:5000}
     ];
 
     // DIAMOND EXCHANGE STORE ITEMS
@@ -1450,6 +2239,7 @@
       { id: "badge_shop_3", name: "Avatar Fashionist", icon: "🦊", desc: "Unlocked 3 different avatars", goal: 3 },
       { id: "badge_ultimate", name: "Ultimate Legend", icon: "🏅", desc: "Unlocked 10 other badges", goal: 10 }
     ];
+    window.badgesList.push(...window.extraAchievements);
 
     window.quizCategories = [
       {
@@ -1521,6 +2311,103 @@
       }
     ];
 
+
+    // LARGE DATA PACK — static questions are intentionally data-driven so new packs can be added safely.
+    const PLAYZA_EXTRA_PACKS = [
+      {id:"biology",title:"Biology & Life",icon:"🧬",color:"bg-emerald-600",questions:[
+        ["What is the basic unit of life?",["Atom","Cell","Tissue","Organ"],1],
+        ["Which organ pumps blood?",["Liver","Lung","Heart","Kidney"],2],
+        ["Plants make food mainly by?",["Respiration","Photosynthesis","Digestion","Fermentation"],1],
+        ["DNA is mainly found in the?",["Nucleus","Cell wall","Vacuole","Ribosome"],0],
+        ["Which blood cells fight infection?",["Red cells","White cells","Platelets","Plasma"],1],
+        ["Which vitamin is produced in skin by sunlight?",["A","B12","C","D"],3],
+        ["The powerhouse of a cell is?",["Nucleus","Mitochondria","Golgi body","Lysosome"],1],
+        ["Which gas do humans inhale for respiration?",["Oxygen","Helium","Hydrogen","Neon"],0],
+        ["A group of similar cells forms a?",["Tissue","Species","Gene","Mineral"],0],
+        ["Which part of a flower receives pollen?",["Anther","Stigma","Sepal","Petal"],1]
+      ]},
+      {id:"chemistry",title:"Chemistry Lab",icon:"⚗️",color:"bg-violet-600",questions:[
+        ["Symbol of sodium?",["So","S","Na","Sd"],2],["pH below 7 is?",["Basic","Neutral","Acidic","Metallic"],2],
+        ["Formula of carbon dioxide?",["CO","CO2","C2O","C2O2"],1],["Atomic number of hydrogen?",["1","2","8","0"],0],
+        ["Common salt is?",["NaCl","KCl","CaO","HCl"],0],["A substance with pH 7 is?",["Acidic","Neutral","Basic","Reactive"],1],
+        ["Which is a noble gas?",["Oxygen","Nitrogen","Neon","Chlorine"],2],["Rust mainly contains hydrated?",["Copper","Iron oxide","Sodium","Carbon"],1],
+        ["Water boils at sea level at?",["50°C","75°C","100°C","150°C"],2],["Smallest unit of an element retaining its properties?",["Molecule","Atom","Cell","Crystal"],1]
+      ]},
+      {id:"space",title:"Space & Cosmos",icon:"🚀",color:"bg-indigo-700",questions:[
+        ["Planet known as the Red Planet?",["Venus","Mars","Jupiter","Mercury"],1],["Our star is the?",["Moon","Sun","Sirius","Polaris"],1],
+        ["Earth's natural satellite?",["Mars","Moon","Titan","Europa"],1],["Largest planet in our solar system?",["Earth","Saturn","Jupiter","Neptune"],2],
+        ["Galaxy containing our solar system?",["Andromeda","Milky Way","Whirlpool","Sombrero"],1],["First planet from the Sun?",["Mercury","Venus","Earth","Mars"],0],
+        ["A light-year measures?",["Time","Mass","Distance","Brightness"],2],["Planet famous for its rings?",["Mercury","Saturn","Mars","Venus"],1],
+        ["The force keeping planets in orbit is?",["Friction","Gravity","Magnetism","Pressure"],1],["A group of stars forming a pattern is a?",["Constellation","Asteroid","Comet","Nebula"],0]
+      ]},
+      {id:"india",title:"India Explorer",icon:"🇮🇳",color:"bg-orange-500",questions:[
+        ["Capital of India?",["Mumbai","New Delhi","Kolkata","Chennai"],1],["National animal of India?",["Lion","Tiger","Elephant","Peacock"],1],
+        ["Currency of India?",["Rupee","Yen","Dollar","Pound"],0],["Largest Indian state by area?",["UP","Rajasthan","Maharashtra","Gujarat"],1],
+        ["Taj Mahal is in?",["Agra","Delhi","Jaipur","Lucknow"],0],["Indian national bird?",["Peacock","Eagle","Swan","Parrot"],0],
+        ["Which ocean lies south of India?",["Atlantic","Indian","Arctic","Pacific"],1],["Yoga is traditionally associated with?",["India","Brazil","Canada","Egypt"],0],
+        ["The Ganga is a major?",["River","Desert","Mountain","Island"],0],["Which city is known as the Pink City?",["Jaipur","Pune","Surat","Bhopal"],0]
+      ]},
+      {id:"english",title:"English Arena",icon:"📚",color:"bg-pink-600",questions:[
+        ["Synonym of 'rapid'?",["Slow","Fast","Quiet","Late"],1],["Antonym of 'ancient'?",["Old","Modern","Historic","Early"],1],
+        ["Plural of 'child'?",["Childs","Children","Childes","Childrens"],1],["A word that describes a noun is an?",["Adverb","Adjective","Verb","Article"],1],
+        ["Past tense of 'go'?",["Goed","Gone","Went","Going"],2],["Which is a pronoun?",["Beautiful","Run","They","Quickly"],2],
+        ["Opposite of 'expand'?",["Grow","Contract","Open","Increase"],1],["A sentence ending with ? is usually a?",["Question","Command","Statement","Title"],0],
+        ["Which word is a verb?",["Jump","Blue","Happily","Table"],0],["Comparative form of 'good'?",["Gooder","Best","Better","More good"],2]
+      ]},
+      {id:"logic",title:"Logic & Brain",icon:"🧠",color:"bg-cyan-600",questions:[
+        ["Complete: 2,4,6,8,?",["9","10","11","12"],1],["If all cats are animals, a cat is an?",["Animal","Plant","Mineral","Machine"],0],
+        ["Which does not belong?",["Apple","Mango","Carrot","Banana"],2],["5 workers do a task in 10 days; more workers generally make it?",["Slower","Faster","Impossible","Same always"],1],
+        ["If A>B and B>C, then A is?",["Less than C","Equal C","Greater than C","Unknown"],2],["Mirror image of left is?",["Left","Right","Up","Down"],1],
+        ["3,6,12,24,?",["30","36","48","60"],2],["A triangle has how many sides?",["2","3","4","5"],1],
+        ["Which is a prime number?",["9","15","17","21"],2],["If today is Monday, 3 days later is?",["Tuesday","Wednesday","Thursday","Friday"],2]
+      ]},
+      {id:"sports",title:"Sports Zone",icon:"🏆",color:"bg-red-600",questions:[
+        ["Players on a soccer team on field?",["9","10","11","12"],2],["Olympic rings traditionally have how many rings?",["4","5","6","7"],1],
+        ["Which sport uses a racket and shuttlecock?",["Tennis","Badminton","Hockey","Golf"],1],["Cricket is commonly played with a?",["Bat","Stick","Racket","Glove only"],0],
+        ["A marathon is approximately?",["10 km","21 km","42.195 km","100 km"],2],["Which sport has a goalkeeper and goals?",["Soccer","Chess","Golf","Boxing"],0],
+        ["Tennis score 'love' means?",["One","Zero","Two","Advantage"],1],["A basketball hoop is?",["Net only","Ring","Bat","Goalpost"],1],
+        ["Chess is primarily a game of?",["Speed","Strategy","Swimming","Strength"],1],["Which is a combat sport?",["Boxing","Cricket","Golf","Cycling"],0]
+      ]},
+      {id:"nature",title:"Nature Quest",icon:"🌿",color:"bg-green-600",questions:[
+        ["Largest land animal?",["Elephant","Giraffe","Rhino","Hippo"],0],["Fastest land animal?",["Horse","Cheetah","Lion","Wolf"],1],
+        ["Trees absorb mainly?",["Oxygen","Carbon dioxide","Helium","Hydrogen"],1],["A baby frog is called a?",["Cub","Tadpole","Calf","Chick"],1],
+        ["Which animal is a mammal?",["Shark","Dolphin","Frog","Lizard"],1],["Bees collect?",["Nectar","Sand","Coal","Salt"],0],
+        ["A desert receives generally?",["Heavy rain","Very little rain","Snow daily","No sunlight"],1],["Which is renewable?",["Coal","Oil","Solar energy","Gas"],2],
+        ["Rainforest biodiversity is generally?",["Low","High","Zero","Fixed"],1],["Which is an insect?",["Spider","Ant","Frog","Snail"],1]
+      ]},
+      {id:"web_dev",title:"Web Dev Arena",icon:"🌐",color:"bg-blue-700",questions:[
+        ["HTML structures a web page with?",["Markup","Database only","CPU","GPU"],0],["CSS mainly controls?",["Presentation/style","Passwords","Servers","Emails"],0],
+        ["JavaScript is commonly used for?",["Interactivity","Only images","Only fonts","Power supply"],0],["CSS selector for an id starts with?",[".","#","@","$"],1],
+        ["Which tag creates a link?",["<a>","<p>","<img>","<br>"],0],["JSON is commonly used for?",["Data interchange","Drawing circuits","Audio only","Printing"],0],
+        ["HTTP 404 means?",["OK","Not Found","Created","Redirect"],1],["Which is a version control system?",["Git","HTML","CSS","PNG"],0],
+        ["A browser renders?",["Web content","Battery","Keyboard","BIOS only"],0],["Which is a semantic HTML element?",["<article>","<fontx>","<magic>","<paint>"],0]
+      ]},
+      {id:"finance",title:"Money & Markets",icon:"💰",color:"bg-yellow-500",questions:[
+        ["Money saved for future use is?",["Savings","Debt","Expense","Tax"],0],["A budget helps track?",["Income and spending","Weather","Sports","Passwords"],0],
+        ["Interest is commonly paid on?",["Loans or savings","Shoes","Maps","Games only"],0],["A bank account can hold?",["Money","Oxygen","Pixels","Roads"],0],
+        ["Price reduction is called?",["Discount","Interest","Salary","Debt"],0],["A person who buys a product is a?",["Customer","Supplier","Bank","Broker only"],0],
+        ["Income minus expenses is?",["Net result","Weather","Password","Inventory only"],0],["Currency used in Japan?",["Yen","Rupee","Euro","Won"],0],
+        ["A receipt records a?",["Purchase","Weather event","Password","Lesson only"],0],["A loan must generally be?",["Repaid","Deleted","Printed","Ignored"],0]
+      ]}
+    ];
+    for(const pack of PLAYZA_EXTRA_PACKS){
+      const normalized={id:pack.id,title:pack.title,icon:pack.icon,color:pack.color,questions:pack.questions.map(x=>({q:x[0],options:x[1],correct:x[2]}))};
+      window.quizCategories.push(normalized);
+    }
+    // Add deterministic infinite templates to every subject, not just math/coding.
+    const infiniteTemplates={
+      biology:["Which organelle is often called the powerhouse of the cell?",["Mitochondria","Nucleus","Ribosome","Vacuole"],0],
+      chemistry:["Which particle has a negative charge?",["Proton","Neutron","Electron","Atom"],2],
+      space:["Which planet is closest to the Sun?",["Mercury","Earth","Mars","Neptune"],0],
+      india:["Which language is widely spoken in Uttar Pradesh?",["Hindi","Icelandic","Latin","Swedish"],0],
+      english:["Which is an adjective?",["Bright","Run","Quickly","Swim"],0],
+      logic:["What comes next: 1, 3, 5, 7, ?",["8","9","10","11"],1],
+      sports:["How many players start on court for one basketball team?",["4","5","6","7"],1],
+      nature:["Plants release which gas during photosynthesis?",["Oxygen","Helium","Nitrogen","Methane"],0],
+      web_dev:["Which language is used to style HTML?",["CSS","SQL","C","Bash"],0],
+      finance:["A plan for expected income and spending is a?",["Budget","Receipt","Invoice","Password"],0]
+    };
+
     // INFINITE DYNAMIC QUESTION GENERATOR ENGINE
     window.generateInfiniteQuestion = function(catId, qIndex) {
       if (catId === 'math_magic') {
@@ -1530,41 +2417,56 @@
         const difficulty = Math.floor(qIndex / 5) + 1;
         const maxNum = difficulty * 12;
 
+        const seeded = (offset = 0) => {
+          let x = Math.imul((qIndex + 1 + offset) ^ 0x9e3779b9, 0x85ebca6b) >>> 0;
+          x ^= x >>> 13;
+          x = Math.imul(x, 0xc2b2ae35) >>> 0;
+          x ^= x >>> 16;
+          return (x >>> 0) / 4294967296;
+        };
+        const seededInt = (min, max, offset = 0) => Math.floor(seeded(offset) * (max - min + 1)) + min;
+
         if (type === 'add') {
-          const a = Math.floor(Math.random() * maxNum) + 12;
-          const b = Math.floor(Math.random() * maxNum) + 8;
+          const a = seededInt(12, 12 + maxNum - 1, 1);
+          const b = seededInt(8, 8 + maxNum - 1, 2);
           qText = `What is ${a} + ${b}?`;
           correctAns = a + b;
         } else if (type === 'sub') {
-          const a = Math.floor(Math.random() * maxNum) + 25;
-          const b = Math.floor(Math.random() * (a - 5)) + 5;
+          const a = seededInt(25, 25 + maxNum - 1, 3);
+          const b = seededInt(5, Math.max(5, a - 5), 4);
           qText = `What is ${a} - ${b}?`;
           correctAns = a - b;
         } else if (type === 'mult') {
-          const a = Math.floor(Math.random() * (difficulty * 4 + 6)) + 3;
-          const b = Math.floor(Math.random() * 11) + 2;
+          const a = seededInt(3, difficulty * 4 + 8, 5);
+          const b = seededInt(2, 12, 6);
           qText = `What is ${a} × ${b}?`;
           correctAns = a * b;
         } else if (type === 'div') {
-          const b = Math.floor(Math.random() * 9) + 2;
-          const ans = Math.floor(Math.random() * 12) + 2;
+          const b = seededInt(2, 10, 7);
+          const ans = seededInt(2, 13, 8);
           const a = b * ans;
           qText = `What is ${a} ÷ ${b}?`;
           correctAns = ans;
         } else {
-          const a = Math.floor(Math.random() * (difficulty * 2 + 5)) + 4;
+          const a = seededInt(4, difficulty * 2 + 8, 9);
           qText = `What is ${a}² (${a} x ${a})?`;
           correctAns = a * a;
         }
 
         let options = [correctAns];
+        let optionSeed = 20;
         while (options.length < 4) {
-          let delta = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1);
-          let wrong = correctAns + delta;
+          const magnitude = seededInt(1, 5, optionSeed);
+          const sign = seeded(optionSeed + 7) > 0.5 ? 1 : -1;
+          let wrong = correctAns + magnitude * sign;
           if (wrong < 0) wrong = Math.abs(wrong) + 1;
           if (!options.includes(wrong)) options.push(wrong);
+          optionSeed += 1;
         }
-        options.sort(() => Math.random() - 0.5);
+        for (let i = options.length - 1; i > 0; i--) {
+          const j = Math.floor(seeded(i + 11) * (i + 1));
+          [options[i], options[j]] = [options[j], options[i]];
+        }
         return { q: qText, options: options.map(o => String(o)), correct: options.indexOf(correctAns) };
       } 
       else if (catId === 'coding_cs') {
@@ -1591,6 +2493,11 @@
       const cat = window.quizCategories.find(c => c.id === catId);
       if (cat && cat.questions && qIdx < cat.questions.length) {
         return cat.questions[qIdx];
+      }
+      const tpl = infiniteTemplates?.[catId];
+      if (tpl) {
+        const n=Math.floor(qIdx/Math.max(1,cat.questions?.length||1));
+        return {q:`${tpl[0]} • Challenge ${n+1}`, options:tpl[1].slice(), correct:tpl[2]};
       }
       return window.generateInfiniteQuestion(catId, qIdx);
     };
@@ -1643,71 +2550,36 @@
     }
 
     /* PERFECTED SPIN WHEEL WITH AUDIO TICKING ENGINE */
-    let isSpinning = false;
+    let isSpinning = false, wheelRotationDeg = 0;
+    const secureRandomIndex = (max) => {
+      if (window.crypto?.getRandomValues) {
+        const a=new Uint32Array(1); crypto.getRandomValues(a); return a[0]%max;
+      }
+      return Math.floor(Math.random()*max);
+    };
     window.spinWheelAction = async function() {
-      const u = window.userState;
-      const today = new Date().toDateString();
-
-      if (u.lastSpinDate !== today) {
-        u.lastSpinDate = today;
-        u.spinsLeftToday = 3;
-      }
-
-      if (u.spinsLeftToday <= 0) {
-        showAlertModal("Spin Limit Reached", "Daily spins completed! Come back tomorrow for 3 new spins.", "🎰");
-        return;
-      }
-
-      if (isSpinning) return;
-      isSpinning = true;
-
+      const u=window.userState, today=new Date().toDateString();
+      if(u.lastSpinDate!==today){u.lastSpinDate=today;u.spinsLeftToday=3;}
+      if(u.spinsLeftToday<=0)return showAlertModal("Spin Limit Reached","Daily spins completed! Come back tomorrow for 3 new spins.","🎰");
+      if(isSpinning)return;
+      const canvas=document.getElementById('wheel-canvas'); if(!canvas)return;
+      isSpinning=true;
+      u.spinsLeftToday--; u.wheelSpinsCount=(u.wheelSpinsCount||0)+1;
+      const n=window.wheelItems.length, index=secureRandomIndex(n), slice=360/n;
+      const targetOffset=(270-(index*slice+slice/2)+360)%360;
+      const currentNorm=((wheelRotationDeg%360)+360)%360;
+      const delta=((targetOffset-currentNorm)+360)%360;
+      wheelRotationDeg += 360*5 + delta;
+      canvas.style.transition='transform 4s cubic-bezier(.15,.9,.15,1)';
+      canvas.style.transform=`rotate(${wheelRotationDeg}deg)`;
       playSound('spin');
-      u.spinsLeftToday--;
-      u.wheelSpinsCount = (u.wheelSpinsCount || 0) + 1;
-
-      const canvas = document.getElementById('wheel-canvas');
-      const numSlices = window.wheelItems.length;
-      const selectedIndex = Math.floor(Math.random() * numSlices);
-      const sliceDeg = 360 / numSlices;
-
-      const targetRotation = 360 * 5 + (360 - (selectedIndex * sliceDeg + sliceDeg / 2));
-
-      // Synchronized audio tick effect during rotation
-      let tickCount = 0;
-      const tickInterval = setInterval(() => {
-        playSound('tick');
-        tickCount++;
-        if (tickCount > 24) clearInterval(tickInterval);
-      }, 150);
-
-      canvas.style.transform = `rotate(${targetRotation}deg)`;
-
-      setTimeout(async () => {
-        clearInterval(tickInterval);
-        isSpinning = false;
-        canvas.style.transition = 'none';
-        canvas.style.transform = `rotate(${targetRotation % 360}deg)`;
-        setTimeout(() => {
-          canvas.style.transition = 'transform 4s cubic-bezier(0.15, 0.9, 0.15, 1)';
-        }, 50);
-
-        const reward = window.wheelItems[selectedIndex];
-        let wonGems = 0, wonXp = 0;
-        if (reward.type === 'gems' || reward.type === 'box' || reward.type === 'bonus') {
-          u.gems += reward.val;
-          wonGems = reward.val;
-        }
-        if (reward.type === 'xp' || reward.type === 'box' || reward.type === 'bonus') {
-          addXp(reward.val);
-          wonXp = reward.val;
-        }
-
-        checkBadges();
-        await saveUserToFirebase();
-        updateUI();
-
-        showRewardModal(wonGems, wonXp, `🎉 Won ${reward.label}!`);
-      }, 4000);
+      let tick=0; const tickTimer=setInterval(()=>{playSound('tick');if(++tick>=25)clearInterval(tickTimer);},150);
+      await new Promise(r=>setTimeout(r,4050)); clearInterval(tickTimer); isSpinning=false;
+      const reward=window.wheelItems[index]; let wonGems=0,wonXp=0;
+      if(['gems','box','bonus'].includes(reward.type)){window.addGems(reward.val);wonGems=reward.val;}
+      if(['xp','box','bonus'].includes(reward.type)){wonXp=addXp(reward.val);}
+      checkBadges(); updateUI(); await saveUserToFirebase(true);
+      showRewardModal(wonGems,wonXp,`🎉 Won ${reward.label}!`);
     };
 
     /* DAILY MYSTERY CHEST ACTION */
@@ -1724,7 +2596,7 @@
       const rewardGems = Math.floor(Math.random() * 40) + 30;
       const rewardXp = Math.floor(Math.random() * 80) + 50;
 
-      u.gems += rewardGems;
+      window.addGems(rewardGems);
       addXp(rewardXp);
 
       await saveUserToFirebase();
@@ -1733,30 +2605,119 @@
       showRewardModal(rewardGems, rewardXp, "🎁 Mystery Chest Rewards!");
     };
 
+    window.addGems = function(amount) {
+      const u = window.userState;
+      const delta = Number(amount) || 0;
+      if (!Number.isFinite(delta)) return 0;
+      const safeDelta = Math.max(-1000000000, Math.min(1000000000, delta));
+      u.gems = clampInt(Number(u.gems || 0) + safeDelta, 0, 1000000000, 0);
+      if (safeDelta > 0) {
+        u.totalGemsEarned = clampInt(Number(u.totalGemsEarned || 0) + safeDelta, 0, 100000000000, 0);
+      }
+      return safeDelta;
+    };
+
     window.addXp = function(amount) {
       const u = window.userState;
+      const safeAmount = Math.max(0, Number(amount) || 0);
       const multiplier = u.hasXpBoost ? 2 : 1;
-      u.xp += (amount * multiplier);
-
+      const earned = safeAmount * multiplier;
+      u.xp = Math.max(0, Number(u.xp || 0)) + earned;
+      u.totalXpEarned = clampInt(Number(u.totalXpEarned || 0) + earned, 0, 100000000000, earned);
+      let leveled = false;
       while (u.xp >= u.nextLevelXp) {
         u.xp -= u.nextLevelXp;
-        u.level++;
+        u.level = Math.max(1, Number(u.level || 1) + 1);
         u.nextLevelXp = calculateNextLevelXp(u.level);
-        
-        playSound('levelup');
-        document.getElementById('levelup-num').innerText = u.level;
-        document.getElementById('levelup-modal').classList.remove('hidden');
-        confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
+        leveled = true;
       }
+      if (leveled) {
+        playSound('levelup');
+        const levelEl = document.getElementById('levelup-num');
+        if (levelEl) levelEl.innerText = u.level;
+        const modal = document.getElementById('levelup-modal');
+        if (modal) modal.classList.remove('hidden');
+        triggerConfetti({particleCount:90,spread:75,origin:{y:.55}});
+      }
+      return earned;
     };
 
     window.closeLevelUpModal = function() {
       document.getElementById('levelup-modal').classList.add('hidden');
     };
 
-    window.updateUI = function() {
+    function localDateKey(date = new Date()) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function dayDifference(fromKey, toKey) {
+      if (!fromKey || !toKey) return null;
+      const from = new Date(`${fromKey}T00:00:00`);
+      const to = new Date(`${toKey}T00:00:00`);
+      if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return null;
+      return Math.round((to - from) / 86400000);
+    }
+
+    function updateStreakState() {
       const u = window.userState;
+      const todayKey = localDateKey();
+      const last = u.lastActiveDate;
+
+      if (!last) {
+        u.streak = Math.max(1, Number(u.streak) || 1);
+        u.lastActiveDate = todayKey;
+        return true;
+      }
+      if (last === todayKey) return false;
+
+      const gap = dayDifference(last, todayKey);
+      if (gap === 1) {
+        u.streak = Math.max(1, Number(u.streak || 1) + 1);
+      } else if (u.hasStreakShield && gap > 1) {
+        u.hasStreakShield = false;
+      } else {
+        u.streak = 1;
+      }
+      u.lastActiveDate = todayKey;
+      checkBadges();
+      persistLocal();
+      if (!u.isGuest) window.saveUserToFirebase(false);
+      return true;
+    }
+
+    function ensureDailyQuestState() {
+      const u = window.userState;
+      const todayKey = localDateKey();
+      if (u.dailyQuestDate === todayKey) return false;
+      u.dailyQuestDate = todayKey;
+      u.quest1Count = 0;
+      u.quest1Claimed = false;
+      u.quest2Count = 0;
+      u.quest2Claimed = false;
+      persistLocal();
+      if (!u.isGuest) window.saveUserToFirebase(false);
+      return true;
+    }
+
+    window.updateUI = function() {
+      const u = window.userState = normalizeState(window.userState, {
+        uid: window.userState?.uid || null,
+        email: window.userState?.email || '',
+        isGuest: window.userState?.isGuest !== false
+      });
       u.nextLevelXp = calculateNextLevelXp(u.level);
+      ensureDailyQuestState();
+
+      const soundBtn = document.getElementById('setting-sound-btn');
+      if (soundBtn) {
+        soundBtn.innerText = window.soundEnabled ? 'ON' : 'OFF';
+        soundBtn.className = window.soundEnabled
+          ? 'btn-3d btn-mint px-3.5 py-1.5 rounded-xl text-xs font-bold'
+          : 'btn-3d btn-rose px-3.5 py-1.5 rounded-xl text-xs font-bold';
+      }
 
       const today = new Date().toDateString();
       if (u.lastSpinDate !== today) {
@@ -1792,11 +2753,7 @@
         el.className = el.className.replace(/\bglow-\w+/g, '').trim();
         if (currentAvatar.glow) el.classList.add(currentAvatar.glow);
 
-        if (currentAvatar.type === "svg") {
-          el.innerHTML = currentAvatar.svg;
-        } else {
-          el.innerText = currentAvatar.icon;
-        }
+        el.innerHTML = window.avatarMarkup(currentAvatar);
       };
 
       applyAvatarDisplay(avatarContainerHeader);
@@ -1823,8 +2780,8 @@
       document.getElementById('profile-xp-current').innerText = u.xp;
       document.getElementById('profile-xp-next').innerText = u.nextLevelXp;
 
-      const totalAttempted = u.totalQuestionsAttempted || u.correctAnswers || 1;
-      const accuracyCalc = u.correctAnswers > 0 ? Math.round((u.correctAnswers / totalAttempted) * 100) : 100;
+      const totalAttempted = Number(u.totalQuestionsAttempted || 0);
+      const accuracyCalc = totalAttempted > 0 ? Math.round((Number(u.correctAnswers||0) / totalAttempted) * 100) : 0;
       document.getElementById('stat-accuracy').innerText = `${Math.min(100, accuracyCalc)}%`;
 
       document.getElementById('stat-quizzes').innerText = u.quizzesPlayed;
@@ -1890,9 +2847,9 @@
       if (u.lastDailyBonus === today) return;
 
       u.lastDailyBonus = today;
-      u.gems += 50;
+      window.addGems(50);
       addXp(100);
-      await saveUserToFirebase();
+      await saveUserToFirebase(true);
       updateUI();
       showRewardModal(50, 100, "🌟 Daily Bonus Claimed!");
     };
@@ -1904,16 +2861,17 @@
         u.quest1Claimed = true;
         showToast("Claimed +50 XP Quest Reward!", "🎯");
       } else if (questId === 2 && u.quest2Count >= 1 && !u.quest2Claimed) {
-        u.gems += 30;
+        window.addGems(30);
         u.quest2Claimed = true;
         showToast("Claimed +30 Gems Quest Reward!", "💎");
       }
       checkBadges();
-      await saveUserToFirebase();
+      await saveUserToFirebase(true);
       updateUI();
     };
 
     window.attackBoss = function() {
+      playSound('click');
       const u = window.userState;
       u.bossAttacks = (u.bossAttacks || 0) + 1;
       checkBadges();
@@ -2012,7 +2970,7 @@
         return;
       }
 
-      u.gems -= cost;
+      window.addGems(-cost);
       playSound('buy');
 
       if (itemId === 'ex_streak_shield') {
@@ -2027,7 +2985,7 @@
       } else if (itemId === 'ex_mystery_chest') {
         const bonusXp = Math.floor(Math.random() * 200) + 100;
         const bonusGems = Math.floor(Math.random() * 150) + 50;
-        u.gems += bonusGems;
+        window.addGems(bonusGems);
         addXp(bonusXp);
         showRewardModal(bonusGems, bonusXp, "🎁 Mystery Vault Unlocked!");
       }
@@ -2049,7 +3007,7 @@
         grid.innerHTML += `
           <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex flex-col items-center text-center space-y-2 relative">
             <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-100 to-orange-100 border-2 border-brand-orange flex items-center justify-center text-3xl p-1 overflow-hidden ${av.glow || ''}">
-              ${av.type === 'svg' ? av.svg : av.icon}
+              ${window.avatarMarkup(av)}
             </div>
             <div>
               <h4 class="font-fredoka text-sm font-bold text-slate-800">${av.name}</h4>
@@ -2080,7 +3038,8 @@
         return;
       }
 
-      u.gems -= price;
+      if (u.unlockedAvatars.includes(avId)) { u.equippedAvatar = avId; await saveUserToFirebase(true); updateUI(); return; }
+      window.addGems(-price);
       u.unlockedAvatars.push(avId);
       u.equippedAvatar = avId;
       playSound('buy');
@@ -2092,6 +3051,8 @@
 
     window.equipAvatar = async function(avId) {
       const u = window.userState;
+      if (!u.unlockedAvatars.includes(avId) && !(window.avatarsList.find(a=>a.id===avId)?.reqLvl && u.level >= window.avatarsList.find(a=>a.id===avId).reqLvl)) return;
+      if (!u.unlockedAvatars.includes(avId)) u.unlockedAvatars.push(avId);
       u.equippedAvatar = avId;
       playSound('click');
       await saveUserToFirebase();
@@ -2151,9 +3112,26 @@
       if ((u.wheelSpinsCount || 0) >= 15) unlock("badge_wheel_15");
       if ((u.lifelinesUsed || 0) >= 5) unlock("badge_lifeline_5");
       if ((u.bossAttacks || 0) >= 3) unlock("badge_boss_3");
-      if (u.unlockedAvatars.length >= 3) unlock("badge_shop_3");
-      if (u.unlockedBadges.length >= 10) unlock("badge_ultimate");
+      if ((u.totalQuestionsAttempted||0) >= 150) unlock("badge_scholar");
+      if ((u.unlockedAvatars||[]).length >= 3) unlock("badge_shop_3");
+      if ((u.unlockedAvatars||[]).length >= 10) unlock("badge_10avatars");
+      if ((u.unlockedAvatars||[]).length >= 20) unlock("badge_20avatars");
+      if ((u.totalQuestionsAttempted||0) >= 10) unlock("badge_10q");
+      if ((u.totalQuestionsAttempted||0) >= 50) unlock("badge_50q");
+      if ((u.totalQuestionsAttempted||0) >= 100) unlock("badge_100q");
+      if ((u.totalQuestionsAttempted||0) >= 500) unlock("badge_500q");
+      if ((u.correctAnswers||0) >= 25) unlock("badge_25correct");
+      if ((u.correctAnswers||0) >= 100) unlock("badge_100correct");
+      if ((u.streak||0) >= 15) unlock("badge_15days");
+      if ((u.totalXpEarned||0) >= 1000) unlock("badge_1000xp");
+      if ((u.totalXpEarned||0) >= 5000) unlock("badge_5000xp");
+      if ((u.quest2Count||0) >= 1) unlock("badge_perfect");
+      if (u.unlockedBadges.filter(id => id !== "badge_ultimate").length >= 10) unlock("badge_ultimate");
     };
+
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, ch => ({
+      '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+    }[ch]));
 
     function renderBattleStandings() {
       const list = document.getElementById('battle-leaderboard-list');
@@ -2179,7 +3157,7 @@
                 ${item.avatar}
               </div>
               <div>
-                <h5 class="text-xs font-bold text-slate-800">${item.name} ${item.isUser ? '(You)' : ''}</h5>
+                <h5 class="text-xs font-bold text-slate-800">${escapeHtml(item.name)} ${item.isUser ? '(You)' : ''}</h5>
                 <p class="text-[10px] text-slate-400 font-semibold">${item.xp} Total Power</p>
               </div>
             </div>
@@ -2209,226 +3187,221 @@
       });
     }
 
-    /* QUIZ BATCH ENGINE WITH MID-QUIZ RESUME SUPPORT */
-    let currentQuizCatId = null;
-    let currentQuizIndex = 0;
-    let currentBatchScore = 0;
-    let currentBatchQuestions = [];
-    let selectedOptionIdx = null;
-    let quizTimerInterval = null;
-    let timeLeft = 15;
+    /* QUIZ ENGINE — deterministic question keys + instant local resume + background cloud sync */
+    let currentQuizCatId = null, currentQuizIndex = 0, currentBatchScore = 0;
+    let selectedOptionIdx = null, quizTimerInterval = null, timeLeft = 15;
+    let questionLocked = false, used5050 = false, quizAnswered = false;
+
+    const questionKey = () => `${currentQuizCatId}:${currentQuizIndex}`;
+    const saveQuizSnapshot = (extra={}) => {
+      const u = window.userState;
+      const currentQuestion = window.getQuestionForSubject(currentQuizCatId,currentQuizIndex);
+      u.activeQuizState = {
+        inProgress:true, catId:currentQuizCatId,
+        catTitle:(window.quizCategories.find(c=>c.id===currentQuizCatId)||{}).title||"Quiz",
+        currentQuestionIdx:currentQuizIndex, selectedOptionIdx,
+        timeLeft:Math.max(0,timeLeft), currentBatchScore,
+        used5050, answered:quizAnswered, locked:questionLocked,
+        questionSnapshot: currentQuestion ? {
+          q: String(currentQuestion.q || ''),
+          options: Array.isArray(currentQuestion.options) ? currentQuestion.options.map(v => String(v)) : [],
+          correct: clampInt(currentQuestion.correct, 0, 9, 0)
+        } : null,
+        savedAt:Date.now(), ...extra
+      };
+      try { localStorage.setItem(LOCAL_CACHE_KEY,JSON.stringify(u)); } catch(e) {}
+      window.saveUserToFirebase(false);
+    };
 
     window.startQuiz = function(catId) {
-      currentQuizCatId = catId;
-      const u = window.userState;
-      const solved = (u.subjectProgress && u.subjectProgress[catId]) || 0;
-      currentQuizIndex = solved;
-
-      currentBatchScore = 0;
+      playSound('click');
+      const u=window.userState;
+      if (u.activeQuizState?.inProgress && u.activeQuizState.catId===catId) return window.resumeSavedQuiz();
+      currentQuizCatId=catId;
+      currentQuizIndex=Number(u.subjectProgress?.[catId]||0);
+      currentBatchScore=0; selectedOptionIdx=null; quizAnswered=false; questionLocked=false; used5050=false;
       loadQuizQuestionBatch();
       document.getElementById('quiz-modal').classList.remove('hidden');
     };
 
     window.resumeSavedQuiz = function() {
-      const u = window.userState;
-      if (u.activeQuizState && u.activeQuizState.inProgress) {
-        currentQuizCatId = u.activeQuizState.catId;
-        currentQuizIndex = u.activeQuizState.currentQuestionIdx;
-        loadQuizQuestionBatch();
-        document.getElementById('quiz-modal').classList.remove('hidden');
-      }
+      const st=window.userState.activeQuizState;
+      if (!st?.inProgress) return;
+      currentQuizCatId=st.catId; currentQuizIndex=Number(st.currentQuestionIdx||0);
+      currentBatchScore=Number(st.currentBatchScore||0); selectedOptionIdx=st.selectedOptionIdx ?? null;
+      used5050=!!st.used5050; quizAnswered=!!st.answered; questionLocked=!!st.locked;
+      loadQuizQuestionBatch(true);
+      if (st.timeLeft != null) { timeLeft=Math.max(1,Number(st.timeLeft)); if (!quizAnswered) startQuizTimer(); }
+      document.getElementById('quiz-modal').classList.remove('hidden');
     };
 
-    function loadQuizQuestionBatch() {
-      const q = window.getQuestionForSubject(currentQuizCatId, currentQuizIndex);
-      selectedOptionIdx = null;
-
-      document.getElementById('quiz-global-qindex').innerText = currentQuizIndex + 1;
-      document.getElementById('quiz-q-index').innerText = (currentQuizIndex % 5) + 1;
-      document.getElementById('quiz-question-text').innerText = q.q;
-
-      const container = document.getElementById('quiz-options-container');
-      container.innerHTML = '';
-
-      q.options.forEach((opt, idx) => {
-        container.innerHTML += `
-          <div id="opt-${idx}" onclick="selectQuizOption(${idx})" class="option-card p-3.5 bg-white rounded-2xl border-2 border-slate-200 cursor-pointer font-bold text-xs text-slate-800 flex items-center justify-between">
-            <span>${opt}</span>
-            <div class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-[10px] text-transparent check-mark">✓</div>
-          </div>
-        `;
+    function loadQuizQuestionBatch(resume=false) {
+      const st=window.userState.activeQuizState;
+      const q=(resume && st?.questionSnapshot) ? st.questionSnapshot : window.getQuestionForSubject(currentQuizCatId,currentQuizIndex);
+      if (!q || !Array.isArray(q.options) || q.options.length<2) { showToast("Question data unavailable","⚠️"); return; }
+      if (!resume || !st || st.catId!==currentQuizCatId || Number(st.currentQuestionIdx)!==currentQuizIndex) {
+        selectedOptionIdx=null; quizAnswered=false; questionLocked=false; used5050=false; timeLeft=15;
+      }
+      document.getElementById('quiz-global-qindex').innerText=currentQuizIndex+1;
+      document.getElementById('quiz-q-index').innerText=currentQuizIndex+1;
+      document.getElementById('quiz-question-text').innerText=q.q;
+      const container=document.getElementById('quiz-options-container'); container.innerHTML='';
+      q.options.forEach((opt,idx)=>{
+        const safe=String(opt).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+        container.insertAdjacentHTML('beforeend',`<div id="opt-${idx}" onclick="selectQuizOption(${idx})" class="option-card p-3.5 bg-white rounded-2xl border-2 border-slate-200 cursor-pointer font-bold text-xs text-slate-800 flex items-center justify-between"><span>${safe}</span><div class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-[10px] text-transparent check-mark">✓</div></div>`);
       });
-
-      document.getElementById('quiz-feedback').classList.add('hidden');
-      document.getElementById('btn-quiz-next').innerText = "Check Answer";
-
-      const u = window.userState;
-      u.activeQuizState = {
-        inProgress: true,
-        catId: currentQuizCatId,
-        catTitle: (window.quizCategories.find(c => c.id === currentQuizCatId) || {}).title || "Quiz",
-        currentQuestionIdx: currentQuizIndex
-      };
-      saveUserToFirebase();
-
-      resetQuizTimer();
+      if (selectedOptionIdx!=null) document.getElementById(`opt-${selectedOptionIdx}`)?.classList.add('selected');
+      if (used5050) apply5050Visual();
+      document.getElementById('quiz-feedback').classList.toggle('hidden',!quizAnswered);
+      document.getElementById('btn-quiz-next').innerText=quizAnswered?'Next Question ➔':'Check Answer';
+      if (quizAnswered) revealAnswer(q);
+      else startQuizTimer();
+      saveQuizSnapshot();
     }
 
-    function resetQuizTimer() {
+    function startQuizTimer(){
       clearInterval(quizTimerInterval);
-      timeLeft = 15;
-      document.getElementById('quiz-timer').innerText = `${timeLeft}s`;
-
-      quizTimerInterval = setInterval(() => {
-        timeLeft--;
-        document.getElementById('quiz-timer').innerText = `${timeLeft}s`;
-        if (timeLeft <= 0) {
-          clearInterval(quizTimerInterval);
-          submitOrNextQuestion();
-        }
-      }, 1000);
+      const timer=document.getElementById('quiz-timer');
+      if(timer) timer.innerText=`${timeLeft}s`;
+      quizTimerInterval=setInterval(()=>{
+        timeLeft=Math.max(0,timeLeft-1); if(timer) timer.innerText=`${timeLeft}s`;
+        if(timeLeft<=0){clearInterval(quizTimerInterval); submitOrNextQuestion(true);}
+        else saveQuizSnapshot();
+      },1000);
     }
+    function resetQuizTimer(){ timeLeft=15; startQuizTimer(); }
 
-    window.selectQuizOption = function(idx) {
-      selectedOptionIdx = idx;
-      playSound('click');
-      for (let i = 0; i < 4; i++) {
-        const el = document.getElementById(`opt-${i}`);
-        if (el) el.classList.remove('selected');
-      }
-      const sel = document.getElementById(`opt-${idx}`);
-      if (sel) sel.classList.add('selected');
+    window.selectQuizOption=function(idx){
+      if(questionLocked) return;
+      selectedOptionIdx=idx; playSound('click');
+      document.querySelectorAll('#quiz-options-container .option-card').forEach(x=>x.classList.remove('selected'));
+      document.getElementById(`opt-${idx}`)?.classList.add('selected'); saveQuizSnapshot();
     };
 
-    window.use5050Lifeline = function() {
-      const u = window.userState;
-      if (u.gems < 10) {
-        showToast("Need 10 Gems for 50:50 Lifeline!", "💎");
-        return;
-      }
-      u.gems -= 10;
-      u.lifelinesUsed = (u.lifelinesUsed || 0) + 1;
-      const q = window.getQuestionForSubject(currentQuizCatId, currentQuizIndex);
-      let hiddenCount = 0;
-      for (let i = 0; i < 4; i++) {
-        if (i !== q.correct && hiddenCount < 2) {
-          const optEl = document.getElementById(`opt-${i}`);
-          if (optEl) optEl.classList.add('opacity-30', 'pointer-events-none');
-          hiddenCount++;
-        }
-      }
-      checkBadges();
-      saveUserToFirebase();
-      updateUI();
-      showToast("50:50 Lifeline Applied!", "🆘");
+    function apply5050Visual(){
+      const q=window.getQuestionForSubject(currentQuizCatId,currentQuizIndex); let hidden=0;
+      q.options.forEach((_,i)=>{ const el=document.getElementById(`opt-${i}`); if(el) el.classList.remove('opacity-30','pointer-events-none'); });
+      for(let i=0;i<q.options.length && hidden<2;i++) if(i!==q.correct){document.getElementById(`opt-${i}`)?.classList.add('opacity-30','pointer-events-none');hidden++;}
+    }
+    window.use5050Lifeline=function(){
+      const u=window.userState;
+      if(questionLocked||used5050)return showToast("50:50 already used on this question","🆘");
+      if(u.gems<10)return showToast("Need 10 Gems for 50:50","💎");
+      window.addGems(-10); u.lifelinesUsed=(u.lifelinesUsed||0)+1; used5050=true; apply5050Visual(); checkBadges(); saveQuizSnapshot(); updateUI(); showToast("Two wrong options removed!","🆘");
     };
-
-    window.useSkipLifeline = function() {
-      const u = window.userState;
-      if (u.gems < 15) {
-        showToast("Need 15 Gems to Skip!", "💎");
-        return;
-      }
-      u.gems -= 15;
-      u.lifelinesUsed = (u.lifelinesUsed || 0) + 1;
-      checkBadges();
-      saveUserToFirebase();
-      updateUI();
-      currentQuizIndex++;
+    window.useSkipLifeline=function(){
+      const u=window.userState;
+      if(questionLocked)return showToast("Finish this question first","⏳");
+      if(u.gems<15)return showToast("Need 15 Gems to skip","💎");
+      window.addGems(-15); u.lifelinesUsed=(u.lifelinesUsed||0)+1;
+      u.subjectProgress[currentQuizCatId]=currentQuizIndex+1; checkBadges(); saveQuizSnapshot({currentQuestionIdx:currentQuizIndex+1}); updateUI();
+      currentQuizIndex++; currentBatchScore=currentBatchScore; selectedOptionIdx=null; quizAnswered=false; questionLocked=false; used5050=false;
       loadQuizQuestionBatch();
-      showToast("Question Skipped!", "⏩");
+      showToast("Question skipped","⏩");
     };
 
-    window.submitOrNextQuestion = function() {
-      const btn = document.getElementById('btn-quiz-next');
-      const q = window.getQuestionForSubject(currentQuizCatId, currentQuizIndex);
+    function rewardForAnswer(correct, timedOut=false){
+      const u=window.userState;
+      const xp=correct?15:(timedOut?2:5), gems=correct?5:(timedOut?1:2);
+      addXp(xp); window.addGems(gems);
+      return {xp,gems};
+    }
+    function revealAnswer(q){
+      if(selectedOptionIdx!=null) document.getElementById(`opt-${selectedOptionIdx}`)?.classList.add(selectedOptionIdx===q.correct?'correct':'wrong');
+      document.getElementById(`opt-${q.correct}`)?.classList.add('correct');
+      const fb=document.getElementById('quiz-feedback');
+      fb.className=`p-3 rounded-2xl text-xs font-bold flex items-center gap-3 ${selectedOptionIdx===q.correct?'bg-emerald-100 text-emerald-900 border border-emerald-300':'bg-rose-100 text-rose-900 border border-rose-300'}`;
+      document.getElementById('feedback-title').innerText=selectedOptionIdx===q.correct?'Correct Answer!':'Incorrect';
+      document.getElementById('feedback-desc').innerText=selectedOptionIdx===q.correct?'Great! Reward added.':`Correct answer: #${q.correct+1}`;
+      fb.classList.remove('hidden');
+    }
 
-      if (btn.innerText === "Check Answer") {
+    window.submitOrNextQuestion=function(timedOut=false){
+      const btn=document.getElementById('btn-quiz-next');
+      const q = (window.userState.activeQuizState?.catId === currentQuizCatId &&
+                  Number(window.userState.activeQuizState?.currentQuestionIdx) === currentQuizIndex &&
+                  window.userState.activeQuizState?.questionSnapshot)
+        ? window.userState.activeQuizState.questionSnapshot
+        : window.getQuestionForSubject(currentQuizCatId,currentQuizIndex);
+      if(!q || questionLocked) return;
+
+      if(!quizAnswered){
         clearInterval(quizTimerInterval);
-        const u = window.userState;
-        u.totalQuestionsAttempted = (u.totalQuestionsAttempted || 0) + 1;
+        questionLocked=true;
+        quizAnswered=true;
+        const u=window.userState;
+        const correct=!timedOut && selectedOptionIdx===q.correct;
 
-        if (selectedOptionIdx === q.correct) {
-          playSound('correct');
+        u.totalQuestionsAttempted=(u.totalQuestionsAttempted||0)+1;
+        u.subjectStats[currentQuizCatId]=u.subjectStats[currentQuizCatId]||{attempted:0,correct:0};
+        u.subjectStats[currentQuizCatId].attempted++;
+        if(correct){
+          u.correctAnswers=(u.correctAnswers||0)+1;
           currentBatchScore++;
-          u.correctAnswers++;
-          addXp(15);
-          u.gems += 5;
-
-          if (timeLeft >= 10) {
-            const speedBadge = window.badgesList.find(b => b.id === 'badge_speed_demon');
-            if (speedBadge && !u.unlockedBadges.includes('badge_speed_demon')) {
-              u.unlockedBadges.push('badge_speed_demon');
-            }
-          }
-
-          const sel = document.getElementById(`opt-${selectedOptionIdx}`);
-          if (sel) sel.className = "option-card p-3.5 rounded-2xl border-2 correct font-bold text-xs flex items-center justify-between";
-
-          document.getElementById('quiz-feedback').className = "p-3 rounded-2xl text-xs font-bold flex items-center gap-3 bg-emerald-100 text-emerald-900 border border-emerald-300";
-          document.getElementById('feedback-title').innerText = "Correct Answer!";
-          document.getElementById('feedback-desc').innerText = "+15 XP & +5 Gems Earned!";
-          document.getElementById('quiz-feedback').classList.remove('hidden');
-
-          if (currentQuizCatId === 'math_magic' && u.bossHp > 0) {
-            u.bossHp = Math.max(0, u.bossHp - 15);
-            if (u.bossHp === 0 && !u.unlockedBadges.includes('badge_boss_slayer')) {
-              u.unlockedBadges.push('badge_boss_slayer');
-            }
-          }
-        } else {
+          u.subjectStats[currentQuizCatId].correct++;
+          playSound('correct'); window.playGameSfx('combo');
+        }else if(timedOut){
+          playSound('wrong'); window.playGameSfx('timeout');
+        }else{
           playSound('wrong');
-          if (selectedOptionIdx !== null) {
-            const sel = document.getElementById(`opt-${selectedOptionIdx}`);
-            if (sel) sel.className = "option-card p-3.5 rounded-2xl border-2 wrong font-bold text-xs flex items-center justify-between";
+        }
+
+        const reward=rewardForAnswer(correct,timedOut);
+        const key=questionKey();
+        if(correct && timeLeft>=10){
+          const b=u.unlockedBadges||[];
+          if(!b.includes('badge_speed_demon')) b.push('badge_speed_demon');
+        }
+        if(currentQuizCatId==='math_magic'&&correct&&u.bossHp>0){
+          u.bossHp=Math.max(0,u.bossHp-15);
+          if(u.bossHp===0&&!u.unlockedBadges.includes('badge_boss_slayer')){
+            u.unlockedBadges.push('badge_boss_slayer'); window.playGameSfx('boss');
           }
-          const correctOpt = document.getElementById(`opt-${q.correct}`);
-          if (correctOpt) correctOpt.className = "option-card p-3.5 rounded-2xl border-2 correct font-bold text-xs flex items-center justify-between";
-
-          document.getElementById('quiz-feedback').className = "p-3 rounded-2xl text-xs font-bold flex items-center gap-3 bg-rose-100 text-rose-900 border border-rose-300";
-          document.getElementById('feedback-title').innerText = "Incorrect!";
-          document.getElementById('feedback-desc').innerText = `Correct answer was option #${q.correct + 1}`;
-          document.getElementById('quiz-feedback').classList.remove('hidden');
         }
-
-        btn.innerText = "Next Question ➔";
-        saveUserToFirebase();
+        // Progress points to the currently resolved question. It is advanced only when NEXT is pressed.
+        u.subjectProgress[currentQuizCatId]=currentQuizIndex;
+        revealAnswer(q);
+        btn.innerText='Next Question ➔';
+        checkBadges();
+        saveQuizSnapshot({answerKey:key});
         updateUI();
-      } else {
-        currentQuizIndex++;
-        const u = window.userState;
-        u.subjectProgress[currentQuizCatId] = currentQuizIndex;
-
-        if ((currentQuizIndex % 5) === 0) {
-          finishQuizBatch();
-        } else {
-          loadQuizQuestionBatch();
-        }
+        return;
       }
+
+      // Endless mode: no artificial 5-question cap.
+      currentQuizIndex++;
+      window.userState.subjectProgress[currentQuizCatId]=currentQuizIndex;
+      selectedOptionIdx=null;
+      quizAnswered=false;
+      questionLocked=false;
+      used5050=false;
+      timeLeft=15;
+
+      // Every 10 questions is a milestone, not an interruption.
+      if(currentQuizIndex>0 && currentQuizIndex%10===0){
+        window.userState.quizzesPlayed=(window.userState.quizzesPlayed||0)+1;
+        window.userState.quest1Count=(window.userState.quest1Count||0)+1;
+        if(currentBatchScore>=10) window.userState.quest2Count=(window.userState.quest2Count||0)+1;
+        checkBadges();
+        saveUserToFirebase();
+        window.playGameSfx('achievement');
+        showToast(`🔥 ${currentQuizIndex} questions completed! Keep going!`,'🏆');
+      }
+
+      loadQuizQuestionBatch();
     };
 
-    function finishQuizBatch() {
+    // Kept for backwards compatibility with old UI integrations.
+    function finishQuizBatch(){
       clearInterval(quizTimerInterval);
-      const u = window.userState;
-      u.quizzesPlayed++;
-      u.quest1Count++;
-
-      if (currentBatchScore === 5) {
-        u.quest2Count++;
-        if (!u.unlockedBadges.includes('badge_perfect')) u.unlockedBadges.push('badge_perfect');
+      const u=window.userState;
+      u.quizzesPlayed=(u.quizzesPlayed||0)+1;
+      u.quest1Count=(u.quest1Count||0)+1;
+      if(currentBatchScore>=10){
+        u.quest2Count=(u.quest2Count||0)+1;
+        if(!u.unlockedBadges.includes('badge_perfect'))u.unlockedBadges.push('badge_perfect');
       }
-
-      u.activeQuizState = null;
-      checkBadges();
-      saveUserToFirebase();
-      updateUI();
-
-      document.getElementById('quiz-modal').classList.add('hidden');
-      document.getElementById('summary-xp').innerText = currentBatchScore * 15;
-      document.getElementById('summary-gems').innerText = currentBatchScore * 5;
-      document.getElementById('summary-accuracy').innerText = `${Math.round((currentBatchScore / 5) * 100)}%`;
-      document.getElementById('summary-modal').classList.remove('hidden');
-      confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+      checkBadges(); saveUserToFirebase(true); updateUI();
     }
 
     window.closeSummaryModal = function() {
@@ -2436,90 +3409,180 @@
     };
 
     window.exitQuiz = function() {
-      showAlertModal("Exit Quiz?", "Your progress will be saved automatically!", "⏸️", "Exit", () => {
+      saveQuizSnapshot();
+      showAlertModal("Pause Quiz?", "Your exact question, answer, lifelines and timer are saved.", "⏸️", "Save & Exit", () => {
         clearInterval(quizTimerInterval);
+        saveQuizSnapshot();
         document.getElementById('quiz-modal').classList.add('hidden');
         updateUI();
       }, true);
     };
 
-    /* AUTH & ACCOUNT SYNC HANDLING */
-    let authMode = 'login';
-    window.openAuthModal = function() {
+    /* AUTH & ACCOUNT SYNC HANDLING — exact login.html logic wired into the main game */
+    let authMode='login';
+    const googleProvider=new GoogleAuthProvider();
+
+    window.openAuthModal=function(){
       playSound('click');
       document.getElementById('auth-modal').classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      setTimeout(()=>document.getElementById('login-email')?.focus(),120);
     };
-    window.closeAuthModal = function() {
+    window.closeAuthModal=function(){
       document.getElementById('auth-modal').classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
     };
 
-    window.switchAuthTab = function(mode) {
-      authMode = mode;
-      playSound('click');
-      if (mode === 'login') {
-        document.getElementById('tab-btn-login').className = "flex-1 py-1.5 rounded-lg bg-white shadow-xs text-slate-800 font-bold";
-        document.getElementById('tab-btn-signup').className = "flex-1 py-1.5 rounded-lg text-slate-500 font-bold";
-        document.getElementById('name-field').classList.add('hidden');
-      } else {
-        document.getElementById('tab-btn-signup').className = "flex-1 py-1.5 rounded-lg bg-white shadow-xs text-slate-800 font-bold";
-        document.getElementById('tab-btn-login').className = "flex-1 py-1.5 rounded-lg text-slate-500 font-bold";
-        document.getElementById('name-field').classList.remove('hidden');
+    window.switchTab=function(tabName){
+      // Main game tabs are handled elsewhere; this guard keeps login's switchTab isolated.
+      if(['home','quizzes','battle','shop','profile','settings'].includes(tabName)){
+        playSound('tab');
+        const tabs=['home','quizzes','battle','shop','profile','settings'];
+        tabs.forEach(t=>{
+          const el=document.getElementById(`tab-${t}`), navBtn=document.getElementById(`nav-${t}`);
+          if(el) el.classList.toggle('hidden',t!==tabName);
+          if(navBtn) navBtn.className=t===tabName
+            ?"nav-btn flex flex-col items-center py-1 px-2.5 rounded-2xl text-brand-orange font-bold transition-all duration-200 scale-105"
+            :"nav-btn flex flex-col items-center py-1 px-2.5 rounded-2xl text-slate-400 hover:text-slate-600 transition-all duration-200";
+        });
+        document.getElementById('screen-container')?.scrollTo(0,0);
       }
     };
 
-    window.handleAuthSubmit = async function() {
-      const email = document.getElementById('auth-email').value.trim();
-      const password = document.getElementById('auth-password').value.trim();
-      const name = document.getElementById('auth-name').value.trim();
-      const errEl = document.getElementById('auth-error-msg');
-
-      if (!email || !password) {
-        errEl.innerText = "Please enter both Email and Password.";
-        errEl.classList.remove('hidden');
-        return;
+    window.switchAuthTab=function(mode){
+      authMode=mode; playSound('click');
+      const lf=document.getElementById('form-login'), sf=document.getElementById('form-signup');
+      const tl=document.getElementById('tab-login'), ts=document.getElementById('tab-signup');
+      if(!lf||!sf)return;
+      if(mode==='login'){
+        lf.classList.remove('hidden'); sf.classList.add('hidden');
+        tl.className="flex-1 py-2.5 rounded-xl font-fredoka font-bold text-sm tracking-wide transition-all bg-white text-playzaOrange shadow-sm";
+        ts.className="flex-1 py-2.5 rounded-xl font-fredoka font-bold text-sm tracking-wide text-playzaSubtext";
+        setMascotSpeech("Welcome back! 🦊");
+      }else{
+        lf.classList.add('hidden'); sf.classList.remove('hidden');
+        ts.className="flex-1 py-2.5 rounded-xl font-fredoka font-bold text-sm tracking-wide transition-all bg-white text-playzaOrange shadow-sm";
+        tl.className="flex-1 py-2.5 rounded-xl font-fredoka font-bold text-sm tracking-wide text-playzaSubtext";
+        setMascotSpeech("Join PlayZa today! 🚀");
       }
+      document.getElementById('auth-error-msg')?.classList.add('hidden');
+    };
 
-      try {
-        if (authMode === 'signup') {
-          const res = await createUserWithEmailAndPassword(auth, email, password);
-          window.userState.displayName = name || "PlayZa Adventurer";
-          window.userState.email = email;
-          window.userState.isGuest = false;
-          window.userState.uid = res.user.uid;
-        } else {
-          const res = await signInWithEmailAndPassword(auth, email, password);
-          window.userState.email = email;
-          window.userState.isGuest = false;
-          window.userState.uid = res.user.uid;
+    window.handleAuth=async function(event,type){
+      event.preventDefault();
+      const submitBtn=document.getElementById(type==='login'?'btn-login-submit':'btn-signup-submit');
+      const original=submitBtn?.innerText||'';
+      if(submitBtn){submitBtn.disabled=true;submitBtn.innerText='LOADING...';}
+      try{
+        if(type==='signup'){
+          const name=document.getElementById('signup-name').value.trim();
+          const email=document.getElementById('signup-email').value.trim();
+          const pass=document.getElementById('signup-pass').value;
+          const res=await createUserWithEmailAndPassword(auth,email,pass);
+          if(name) await updateProfile(res.user,{displayName:name});
+          playSound('correct'); window.playGameSfx('achievement'); triggerConfetti();
+          showToast('Account Created! High Five! 🦊','🦊'); closeAuthModal();
+        }else{
+          const email=document.getElementById('login-email').value.trim();
+          const pass=document.getElementById('login-pass').value;
+          const res=await signInWithEmailAndPassword(auth,email,pass);
+          playSound('correct'); showToast('Awesome! Welcome back 🎉','🎉'); closeAuthModal();
         }
-
-        await saveUserToFirebase();
-        closeAuthModal();
-        showToast("Account Synced Successfully!", "☁️");
         updateUI();
-      } catch (err) {
-        errEl.innerText = err.message || "Authentication Failed!";
-        errEl.classList.remove('hidden');
+      }catch(err){
+        console.error(err);
+        const code=err?.code||'';
+        let msg=err?.message||'Authentication failed.';
+        if(code==='auth/wrong-password'||code==='auth/invalid-credential')msg='Oops! Wrong email or password.';
+        else if(code==='auth/email-already-in-use')msg='That email is already registered!';
+        else if(code==='auth/weak-password')msg='Password must be at least 6 characters!';
+        else if(code==='auth/invalid-email')msg='Please enter a valid email address.';
+        showToast(msg,'❌'); setMascotSpeech('Oops! Try again! 😯'); mascotSad(); playSound('wrong');
+      }finally{
+        if(submitBtn){submitBtn.disabled=false;submitBtn.innerText=original;}
       }
+    };
+
+    window.handleGoogleSignIn=async function(){
+      try{
+        playSound('click');
+        const res=await signInWithPopup(auth,googleProvider);
+        playSound('correct'); window.playGameSfx('achievement'); triggerConfetti();
+        showToast('Connected with Google! 🚀','🚀'); closeAuthModal(); updateUI();
+      }catch(err){
+        if(err?.code!=='auth/popup-closed-by-user'){
+          console.error(err); showToast('Google Sign-In failed or was closed.','❌');
+        }
+      }
+    };
+
+    window.openForgotModal=function(){
+      playSound('click');
+      document.getElementById('forgot-modal')?.classList.remove('hidden');
+      const e=document.getElementById('login-email')?.value;
+      if(e)document.getElementById('reset-email').value=e;
+    };
+    window.closeForgotModal=function(){document.getElementById('forgot-modal')?.classList.add('hidden');};
+    window.handleResetPassword=async function(e){
+      e.preventDefault();
+      const email=document.getElementById('reset-email').value.trim();
+      try{
+        await sendPasswordResetEmail(auth,email);
+        playSound('correct'); closeForgotModal(); showToast('Reset email sent! Check inbox 📩','📩');
+      }catch(err){playSound('wrong');showToast('Could not send reset email. Check the email.','❌');}
     };
 
     window.saveNewNickname = async function() {
-      const name = document.getElementById('setting-name-input').value.trim();
-      if (!name) return;
+      const input = document.getElementById('setting-name-input');
+      const name = sanitizeName(input?.value || '');
+      if (!name) {
+        showToast("Please enter a valid nickname.", "✏️");
+        return;
+      }
       window.userState.displayName = name;
-      await saveUserToFirebase();
+      if (input) input.value = name;
+      await saveUserToFirebase(true);
       updateUI();
       showToast("Nickname Updated!", "✏️");
     };
 
     window.forceCloudSyncAction = async function() {
-      await saveUserToFirebase();
+      if (window.userState.isGuest || !window.userState.uid) {
+        showAlertModal("Connect Account", "Sign in first to enable secure cloud sync.", "☁️");
+        return;
+      }
+      await saveUserToFirebase(true);
       showToast("Cloud Sync Complete!", "☁️");
     };
 
+    window.handleSignOut = async function() {
+      try {
+        if (firestoreUnsubscribe) {
+          firestoreUnsubscribe();
+          firestoreUnsubscribe = null;
+        }
+        persistLocal();
+        window.__playzaSync.hydrated = false;
+        await signOut(auth);
+        window.userState = normalizeState(defaultState, {uid:null,email:'',isGuest:true});
+        updateStreakState();
+        ensureDailyQuestState();
+        persistLocal();
+        updateUI();
+        showToast("Signed out safely. Guest mode is ready.", "👋");
+      } catch (err) {
+        console.warn("PlayZa sign-out failed.");
+        showToast("Could not sign out right now.", "⚠️");
+      }
+    };
+
     window.resetLocalCache = function() {
-      showAlertModal("Reset Cache?", "This will clear local cache data. Continue?", "⚠️", "Reset", () => {
-        localStorage.removeItem(LOCAL_CACHE_KEY);
+      showAlertModal("Reset Device Cache?", "This clears PlayZa gameplay data stored on this device. Your signed-in cloud account is not deleted.", "⚠️", "Reset", () => {
+        try {
+          localStorage.removeItem(GUEST_CACHE_KEY);
+          localStorage.removeItem(LEGACY_CACHE_KEY);
+          if (window.userState?.uid) localStorage.removeItem(accountCacheKey(window.userState.uid));
+        } catch (_) {}
         location.reload();
       }, true);
     };
@@ -2539,7 +3602,7 @@
   <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('./sw.js', { scope: './' })
                 .then(function(registration) {
                     console.log('Service Worker successfully register ho gaya, scope hai: ', registration.scope);
                 }, function(err) {
@@ -2547,6 +3610,104 @@
                 });
             });
         }
-    </script>
+    
+    window.showGameBanner=function(title,text,icon='🏆'){
+      const b=document.getElementById('pz-banner'); if(!b)return;
+      document.getElementById('pz-banner-title').textContent=title;
+      document.getElementById('pz-banner-text').textContent=text;
+      document.getElementById('pz-banner-icon').textContent=icon;
+      b.classList.remove('hidden'); window.playGameSfx('achievement');
+      clearTimeout(window.__pzBannerTimer); window.__pzBannerTimer=setTimeout(()=>b.classList.add('hidden'),4500);
+    };
+
+    // Login-screen compatibility handlers
+    window.toggleAudio=function(){
+      window.soundEnabled=!window.soundEnabled;
+      localStorage.setItem('playza_sound',window.soundEnabled?'on':'off');
+      const btn=document.getElementById('btn-sound');
+      if(btn) btn.innerHTML=window.soundEnabled
+        ? '<i class="fa-solid fa-volume-high text-sm"></i>'
+        : '<i class="fa-solid fa-volume-xmark text-sm"></i>';
+      if(window.soundEnabled) playSound('click');
+    };
+    window.togglePassword=function(inputId,btn){
+      playSound('click');
+      const input=document.getElementById(inputId), icon=btn?.querySelector('i');
+      if(!input)return;
+      input.type=input.type==='password'?'text':'password';
+      if(icon)icon.className=input.type==='password'?'fa-solid fa-eye':'fa-solid fa-eye-slash';
+    };
+    window.enterGuestMode=async function(){
+      if (firestoreUnsubscribe) {
+        firestoreUnsubscribe();
+        firestoreUnsubscribe = null;
+      }
+      try {
+        if (auth.currentUser && !auth.currentUser.isAnonymous) await signOut(auth);
+      } catch (_) {}
+      window.__playzaSync.hydrated = true;
+      window.userState = normalizeState(window.userState, {uid:null,email:'',isGuest:true});
+      window.userState.displayName='Guest Explorer';
+      persistLocal();
+      closeAuthModal();
+      playSound('correct'); window.playGameSfx('achievement');
+      showToast('Guest mode enabled — progress stays on this device.','🚀');
+      updateUI();
+    };
+    const __foxHead=document.getElementById('fox-head'), __pL=document.getElementById('fox-pupil-left'),
+      __pR=document.getElementById('fox-pupil-right'), __eL=document.getElementById('fox-ear-left'),
+      __eR=document.getElementById('fox-ear-right'), __speech=document.getElementById('mascot-speech');
+    window.setMascotSpeech=function(t){if(__speech)__speech.textContent=t;};
+    const savePlayZaBeforeHide = () => {
+      try {
+        if (document.visibilityState === 'hidden') {
+          if (window.saveQuizSnapshot && window.userState?.activeQuizState?.inProgress) window.saveQuizSnapshot();
+          else if (window.saveUserToFirebase) window.saveUserToFirebase(false);
+        }
+      } catch (_) {}
+    };
+    document.addEventListener('visibilitychange', savePlayZaBeforeHide, { passive: true });
+    window.addEventListener('pagehide', savePlayZaBeforeHide, { passive: true });
+
+    window.mascotFocus=function(type){
+      playSound('focus');
+      if(type==='pass'){
+        if(__eL)__eL.style.transform='rotate(45deg) translate(25px,20px)';
+        if(__eR)__eR.style.transform='rotate(-45deg) translate(-25px,20px)';
+        window.setMascotSpeech("I'm not looking! 🙈");
+      }else window.setMascotSpeech(type==='name'?"Great name! 🌟":"Type email! 📧");
+    };
+    window.mascotLookTrack=function(el){
+      const x=(Math.min(el.value.length,25)-12)*.4;
+      if(__pL)__pL.style.transform=`translate(${x}px,3px)`;
+      if(__pR)__pR.style.transform=`translate(${x}px,3px)`;
+    };
+    window.mascotReset=function(){
+      if(__pL)__pL.style.transform='translate(0,0)';
+      if(__pR)__pR.style.transform='translate(0,0)';
+      if(__eL)__eL.style.transform='rotate(0deg)';
+      if(__eR)__eR.style.transform='rotate(0deg)';
+      if(__foxHead)__foxHead.style.transform='rotate(0deg) translateY(0)';
+    };
+    window.mascotCelebrate=function(){
+      if(__foxHead)__foxHead.style.transform='translateY(-8px)';
+      if(__eL)__eL.style.transform='rotate(-15deg)';
+      if(__eR)__eR.style.transform='rotate(15deg)';
+      setTimeout(window.mascotReset,1500);
+    };
+    window.mascotSad=function(){
+      if(__foxHead)__foxHead.style.transform='rotate(-8deg) translateY(5px)';
+      setTimeout(window.mascotReset,1200);
+    };
+    window.triggerMascotTrick=function(){
+      playSound('click');
+      if(__foxHead){
+        __foxHead.style.transition='transform .6s ease';
+        __foxHead.style.transform='rotate(360deg)';
+        setTimeout(()=>{__foxHead.style.transition='';window.mascotReset();},700);
+      }
+      window.setMascotSpeech('Wheee! PlayZa Fox! 🦊');
+    };
+</script>
 </body>
 </html>
