@@ -442,69 +442,6 @@
             0% { transform: translateY(-30px) scale(0.85); opacity: 0; }
             100% { transform: translateY(0) scale(1); opacity: 1; }
         }
-
-    
-          #html-fullscreen-viewer {
-              position: fixed;
-              inset: 0;
-              width: 100vw;
-              height: 100dvh;
-
-              background: #fff;
-
-              z-index: 999999;
-
-              display: none;
-              flex-direction: column;
-
-              overflow: hidden;
-          }
-
-          #html-fullscreen-viewer.active {
-              display: flex;
-          }
-
-          #html-fullscreen-iframe {
-              width: 100%;
-              height: 100%;
-              border: 0;
-              display: block;
-              background: #fff;
-          }
-
-          #html-fullscreen-close {
-              position: absolute;
-
-              top: 14px;
-              right: 18px;
-
-              width: 44px;
-              height: 44px;
-
-              border: 0;
-              border-radius: 50%;
-
-              background: rgba(0, 0, 0, .75);
-              color: #fff;
-
-              font-size: 28px;
-              line-height: 1;
-
-              cursor: pointer;
-
-              z-index: 10;
-
-              display: flex;
-              align-items: center;
-              justify-content: center;
-
-              transition: transform .15s ease, background .15s ease;
-          }
-
-          #html-fullscreen-close:hover {
-              transform: scale(1.08);
-              background: #000;
-          }
     </style>
 
 <style id="playza-polish-v2">
@@ -594,6 +531,15 @@
       padding-bottom:calc(96px + env(safe-area-inset-bottom));
     }
   }
+</style>
+
+
+<style id="pz-chapter-academy-override">
+#tab-quizzes > *:not(#pz-chapter-academy){display:none!important}
+#pz-chapter-academy{display:block!important}
+#nav-quizzes span{font-size:0}
+#nav-quizzes span:after{content:"Chapters";font-size:10px}
+#home-categories-grid{display:none!important}
 </style>
 
 </head>
@@ -868,25 +814,8 @@
           <h3 class="font-fredoka text-base font-bold text-slate-800">Subject Arenas (Endless)</h3>
           <button onclick="switchTab('quizzes')" class="text-xs font-bold text-brand-blue hover:underline">View All (6)</button>
         </div>
+
         <div id="home-categories-grid" class="grid grid-cols-2 gap-3"></div>
-        
-
-        <div class="flex items-center justify-between pt-1">
-            <h3 class="font-fredoka text-base font-bold text-slate-800">
-                Switch Subjects to Chapters
-            </h3>
-
-            <button onclick="openHTMLFullscreen('chapter-page.html')" class="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl
-                      bg-blue-50 border border-blue-200
-                      text-brand-blue text-[11px] font-extrabold
-                      shadow-sm transition-all duration-200
-                      hover:bg-brand-blue hover:text-white
-                      hover:border-brand-blue hover:shadow-md
-                      active:scale-95" >
-                <span>View All</span>
-                <i class="fa-solid fa-arrow-right text-[9px] transition-transform duration-200 group-hover:translate-x-0.5"></i>
-            </button>
-        </div>
       </section>
 
       <!-- SCREEN 2: QUIZZES TAB (SUBJECT WISE & ENDLESS) -->
@@ -1824,7 +1753,7 @@
     // APP META — single source of truth; UI/version/license are managed from JS.
     const PLAYZA_APP_META = Object.freeze({
       name: 'PlayZa',
-      version: '1.0.0',
+      version: '2.0.0',
       build: 'Production Mobile',
       channel: 'Stable',
       licenseName: 'PlayZa App License 1.0',
@@ -1896,7 +1825,14 @@
       lifelinesUsed: 0,
       activeQuizState: null,
       subjectStats: {},
-      subjectProgress: {}
+      subjectProgress: {},
+      educationProfile: {
+        board: "CBSE / NCERT",
+        classStandard: "",
+        medium: "English",
+        curriculumVersion: "2026-27"
+      },
+      chapterProgress: {}
     };
 
     const readStoredState = (key) => {
@@ -1951,6 +1887,21 @@
         .map(([k,v]) => [k, Math.max(0, Math.floor(Number(v)))]));
       state.activeQuizState = source.activeQuizState && typeof source.activeQuizState === 'object'
         ? source.activeQuizState : null;
+      state.educationProfile = safeObject(source.educationProfile);
+      state.educationProfile.board = sanitizeName(state.educationProfile.board || 'CBSE / NCERT').slice(0, 40) || 'CBSE / NCERT';
+      state.educationProfile.classStandard = sanitizeName(state.educationProfile.classStandard || '').slice(0, 12);
+      state.educationProfile.medium = sanitizeName(state.educationProfile.medium || 'English').slice(0, 20) || 'English';
+      state.educationProfile.curriculumVersion = '2026-27';
+      state.chapterProgress = Object.fromEntries(
+        Object.entries(safeObject(source.chapterProgress))
+          .filter(([k,v]) => typeof k === 'string' && safeObject(v))
+          .map(([k,v]) => [k, {
+            attempted: clampInt(v.attempted, 0, 1000000000, 0),
+            correct: clampInt(v.correct, 0, 1000000000, 0),
+            bestScore: clampInt(v.bestScore, 0, 1000000000, 0),
+            lastAttemptAt: Number.isFinite(Number(v.lastAttemptAt)) ? Number(v.lastAttemptAt) : null
+          }])
+      );
       state.hasStreakShield = !!source.hasStreakShield;
       state.hasXpBoost = !!source.hasXpBoost;
       state.isVip = !!source.isVip;
@@ -2501,116 +2452,6 @@
         questions: [
           { q: "Which language runs in browser natively?", options: ["Python", "Java", "JavaScript", "C++"], correct: 2 },
           { q: "What does HTML stand for?", options: ["Hyper Text Markup Language", "High Tech Main Language", "Home Tool Markup Language", "Hyperlink Text Manipulation"], correct: 0 },
-          { q: "Which symbol is used for ID in CSS?", options: [".", "#", "*", "&"], correct: 1 },
-          { q: "What data structure operates on LIFO?", options: ["Queue", "Stack", "Array", "Tree"], correct: 1 },
-          { q: "Which language is primarily used to style web pages?", options: ["HTML", "CSS", "Python", "SQL"], correct: 1 },
-          { q: "Which language is used to structure web pages?", options: ["CSS", "Java", "HTML", "C++"], correct: 2 },
-          { q: "Which keyword declares a variable in modern JavaScript?", options: ["var", "let", "define", "variable"], correct: 1 },
-          { q: "Which keyword creates a constant in JavaScript?", options: ["const", "constant", "static", "fixed"], correct: 0 },
-          { q: "Which method prints output to the browser console?", options: ["print()", "console.log()", "write.log()", "output()"], correct: 1 },
-          { q: "Which HTML tag creates a hyperlink?", options: ["<link>", "<a>", "<href>", "<url>"], correct: 1 },
-          { q: "Which HTML tag is used for the largest heading?", options: ["<h6>", "<head>", "<h1>", "<heading>"], correct: 2 },
-          { q: "Which HTML tag creates a paragraph?", options: ["<p>", "<para>", "<text>", "<paragraph>"], correct: 0 },
-          { q: "Which HTML attribute specifies an image source?", options: ["href", "src", "link", "path"], correct: 1 },
-          { q: "Which HTML tag displays an image?", options: ["<picture>", "<image>", "<img>", "<src>"], correct: 2 },
-
-          { q: "Which CSS property changes text color?", options: ["font-color", "text-color", "color", "foreground"], correct: 2 },
-          { q: "Which CSS property changes the background color?", options: ["bg-color", "background-color", "background", "color-bg"], correct: 1 },
-          { q: "Which CSS property changes the font size?", options: ["font-size", "text-size", "size", "font-height"], correct: 0 },
-          { q: "Which CSS property makes text bold?", options: ["font-style", "font-weight", "text-bold", "font-bold"], correct: 1 },
-          { q: "Which CSS property controls spacing inside an element?", options: ["margin", "padding", "spacing", "inside-space"], correct: 1 },
-          { q: "Which CSS property controls spacing outside an element?", options: ["padding", "margin", "border-space", "outside"], correct: 1 },
-          { q: "Which CSS property rounds element corners?", options: ["corner-radius", "border-radius", "round", "radius"], correct: 1 },
-          { q: "Which CSS layout system is commonly used for one-dimensional layouts?", options: ["Grid", "Flexbox", "Floatbox", "Position"], correct: 1 },
-          { q: "Which CSS layout system is designed for two-dimensional layouts?", options: ["Flexbox", "Grid", "Inline", "Float"], correct: 1 },
-          { q: "Which CSS property controls the space between flex items?", options: ["space", "gap", "distance", "flex-space"], correct: 1 },
-
-          { q: "Which JavaScript type represents true or false?", options: ["String", "Boolean", "Number", "Object"], correct: 1 },
-          { q: "Which JavaScript type stores text?", options: ["String", "Text", "Char", "Word"], correct: 0 },
-          { q: "Which JavaScript type represents numeric values?", options: ["Number", "Integer", "Numeric", "Digit"], correct: 0 },
-          { q: "Which operator checks strict equality in JavaScript?", options: ["=", "==", "===", "!="], correct: 2 },
-          { q: "Which operator assigns a value to a variable?", options: ["=", "==", "===", "=>"], correct: 0 },
-          { q: "Which operator means logical AND?", options: ["||", "&&", "!!", "&"], correct: 1 },
-          { q: "Which operator means logical OR?", options: ["&&", "||", "OR", "|"], correct: 1 },
-          { q: "Which keyword is used to define a function?", options: ["func", "function", "define", "method"], correct: 1 },
-          { q: "Which keyword exits a function and can provide a value?", options: ["stop", "exit", "return", "break"], correct: 2 },
-          { q: "Which keyword stops a loop?", options: ["stop", "break", "exit", "end"], correct: 1 },
-
-          { q: "Which method adds an element to the end of an array?", options: ["push()", "add()", "append()", "insert()"], correct: 0 },
-          { q: "Which method removes the last element of an array?", options: ["remove()", "pop()", "delete()", "shift()"], correct: 1 },
-          { q: "Which method removes the first element of an array?", options: ["shift()", "pop()", "removeFirst()", "delete()"], correct: 0 },
-          { q: "Which method adds an element to the beginning of an array?", options: ["push()", "prepend()", "unshift()", "addFirst()"], correct: 2 },
-          { q: "Which property gives the number of elements in an array?", options: ["size", "count", "length", "items"], correct: 2 },
-          { q: "Which method converts JSON text into a JavaScript object?", options: ["JSON.parse()", "JSON.convert()", "JSON.object()", "JSON.decode()"], correct: 0 },
-          { q: "Which method converts a JavaScript object into JSON text?", options: ["JSON.stringify()", "JSON.parse()", "JSON.encode()", "JSON.text()"], correct: 0 },
-          { q: "Which method creates a new array by transforming each element?", options: ["filter()", "map()", "reduce()", "forEach()"], correct: 1 },
-          { q: "Which method keeps array elements that pass a condition?", options: ["map()", "filter()", "findAll()", "select()"], correct: 1 },
-          { q: "Which method reduces an array to a single value?", options: ["reduce()", "combine()", "collapse()", "single()"], correct: 0 },
-
-          { q: "What does DOM stand for?", options: ["Document Object Model", "Data Object Method", "Document Order Model", "Digital Object Manager"], correct: 0 },
-          { q: "Which method selects an element by its ID?", options: ["getElementById()", "queryId()", "selectId()", "findById()"], correct: 0 },
-          { q: "Which method selects the first element matching a CSS selector?", options: ["querySelector()", "selectFirst()", "getSelector()", "findSelector()"], correct: 0 },
-          { q: "Which event occurs when a user clicks an element?", options: ["hover", "click", "press", "select"], correct: 1 },
-          { q: "Which event occurs when a web page finishes loading?", options: ["ready", "load", "start", "complete"], correct: 1 },
-          { q: "Which property changes the text inside an HTML element?", options: ["innerText", "textChange", "contentText()", "changeText"], correct: 0 },
-          { q: "Which property can set HTML content inside an element?", options: ["innerHTML", "htmlText", "setHTML", "contentHTML"], correct: 0 },
-          { q: "Which method creates a new DOM element?", options: ["createElement()", "newElement()", "makeElement()", "createNode()"], correct: 0 },
-          { q: "Which method adds an event listener?", options: ["addEventListener()", "listen()", "onEvent()", "eventAdd()"], correct: 0 },
-          { q: "Which method removes an event listener?", options: ["deleteEvent()", "removeEventListener()", "removeListener()", "clearEvent()"], correct: 1 },
-
-          { q: "What does API stand for?", options: ["Application Programming Interface", "Application Process Internet", "Advanced Programming Input", "Applied Program Interface"], correct: 0 },
-          { q: "Which protocol is commonly used to transfer web pages?", options: ["HTTP", "FTP", "SMTP", "SSH"], correct: 0 },
-          { q: "Which secure version of HTTP is widely used?", options: ["HTTPX", "HTTPS", "SHTTP", "HTTP-S"], correct: 1 },
-          { q: "Which HTTP method is commonly used to retrieve data?", options: ["GET", "POST", "PUT", "DELETE"], correct: 0 },
-          { q: "Which HTTP method is commonly used to submit new data?", options: ["GET", "POST", "READ", "FETCH"], correct: 1 },
-          { q: "Which HTTP status code means Not Found?", options: ["200", "301", "404", "500"], correct: 2 },
-          { q: "Which HTTP status code usually means OK?", options: ["200", "201", "400", "404"], correct: 0 },
-          { q: "Which HTTP status code indicates an internal server error?", options: ["301", "403", "404", "500"], correct: 3 },
-          { q: "What does URL stand for?", options: ["Uniform Resource Locator", "Universal Resource Link", "Uniform Reference Link", "User Resource Locator"], correct: 0 },
-          { q: "What does JSON stand for?", options: ["JavaScript Object Notation", "Java Standard Object Network", "JavaScript Online Notation", "JSON Object Network"], correct: 0 },
-
-          { q: "Which database language is commonly used to query relational databases?", options: ["HTML", "SQL", "CSS", "XML"], correct: 1 },
-          { q: "Which SQL command retrieves data?", options: ["GET", "SELECT", "FETCHDATA", "READ"], correct: 1 },
-          { q: "Which SQL command adds new records?", options: ["ADD", "INSERT", "CREATE", "PUT"], correct: 1 },
-          { q: "Which SQL command modifies existing records?", options: ["CHANGE", "UPDATE", "MODIFY", "ALTER"], correct: 1 },
-          { q: "Which SQL command removes records?", options: ["REMOVE", "DELETE", "DROP", "CLEAR"], correct: 1 },
-          { q: "Which SQL clause filters rows?", options: ["FILTER", "WHERE", "LIMIT", "CHECK"], correct: 1 },
-          { q: "Which SQL keyword sorts query results?", options: ["SORT BY", "ORDER BY", "ARRANGE", "GROUP BY"], correct: 1 },
-          { q: "Which SQL clause groups rows with the same values?", options: ["GROUP BY", "ORDER BY", "COMBINE BY", "COLLECT"], correct: 0 },
-          { q: "Which SQL function counts rows?", options: ["COUNT()", "TOTAL()", "ROWS()", "NUMBER()"], correct: 0 },
-          { q: "Which database model stores data in tables?", options: ["Relational", "Graphical", "Hierarchical", "Visual"], correct: 0 },
-
-          { q: "Which data structure follows FIFO?", options: ["Stack", "Queue", "Tree", "Graph"], correct: 1 },
-          { q: "Which data structure stores key-value pairs?", options: ["Array", "Map", "Stack", "Queue"], correct: 1 },
-          { q: "Which data structure represents hierarchical relationships?", options: ["Tree", "Array", "Queue", "Stack"], correct: 0 },
-          { q: "Which data structure consists of vertices and edges?", options: ["Tree", "Graph", "Array", "Stack"], correct: 1 },
-          { q: "Which structure stores elements in indexed positions?", options: ["Array", "Graph", "Tree", "Queue"], correct: 0 },
-          { q: "Which algorithm is commonly used to find an element in a sorted array efficiently?", options: ["Linear Search", "Binary Search", "Random Search", "Depth Search"], correct: 1 },
-          { q: "What is the worst-case time complexity of linear search?", options: ["O(1)", "O(log n)", "O(n)", "O(n²)"], correct: 2 },
-          { q: "What is the typical time complexity of binary search?", options: ["O(n)", "O(log n)", "O(n²)", "O(1)"], correct: 1 },
-          { q: "Which sorting algorithm repeatedly swaps adjacent elements?", options: ["Merge Sort", "Bubble Sort", "Quick Sort", "Heap Sort"], correct: 1 },
-          { q: "Which sorting algorithm uses divide and conquer by merging sorted parts?", options: ["Bubble Sort", "Merge Sort", "Selection Sort", "Linear Sort"], correct: 1 },
-
-          { q: "What does CPU stand for?", options: ["Central Processing Unit", "Computer Processing Utility", "Central Program Unit", "Core Processing Unit"], correct: 0 },
-          { q: "What does RAM stand for?", options: ["Random Access Memory", "Read Access Memory", "Rapid Application Memory", "Random Application Module"], correct: 0 },
-          { q: "Which component performs most general-purpose computations?", options: ["CPU", "Monitor", "Keyboard", "Speaker"], correct: 0 },
-          { q: "Which memory is generally volatile?", options: ["ROM", "RAM", "SSD", "Hard Drive"], correct: 1 },
-          { q: "What does SSD stand for?", options: ["Solid State Drive", "System Storage Device", "Secure State Disk", "Solid Storage Disk"], correct: 0 },
-          { q: "Which device is commonly used for long-term data storage?", options: ["RAM", "SSD", "Cache", "Register"], correct: 1 },
-          { q: "What does GPU stand for?", options: ["Graphics Processing Unit", "General Processing Unit", "Graphical Program Utility", "Graphics Program Unit"], correct: 0 },
-          { q: "Which component is primarily designed for rendering graphics?", options: ["GPU", "CPU", "RAM", "BIOS"], correct: 0 },
-          { q: "What does OS stand for?", options: ["Operating System", "Open Software", "Operating Service", "Online System"], correct: 0 },
-          { q: "Which is an example of an operating system?", options: ["Linux", "HTML", "JavaScript", "MySQL"], correct: 0 },
-
-          { q: "Which version control system is widely used by developers?", options: ["Git", "FTP", "HTTP", "SSH"], correct: 0 },
-          { q: "Which command initializes a Git repository?", options: ["git start", "git init", "git create", "git repo"], correct: 1 },
-          { q: "Which Git command downloads a repository?", options: ["git download", "git clone", "git pullrepo", "git copy"], correct: 1 },
-          { q: "Which Git command uploads local commits to a remote repository?", options: ["git push", "git upload", "git send", "git publish"], correct: 0 },
-          { q: "Which Git command retrieves changes from a remote repository and integrates them?", options: ["git fetch", "git pull", "git sync", "git update"], correct: 1 },
-          { q: "Which Git command creates a commit?", options: ["git save", "git commit", "git store", "git record"], correct: 1 },
-          { q: "Which file commonly contains information about ignored Git files?", options: [".gitignore", ".gitconfig", ".ignoregit", "gitignore.txt"], correct: 0 },
-          { q: "Which platform hosts Git repositories?", options: ["GitHub", "Firefox", "Ubuntu", "Node.js"], correct: 0 },
-          { q: "What does IDE stand for?", options: ["Integrated Development Environment", "Internet Development Engine", "Integrated Design Editor", "Internal Development Extension"], correct: 0 },
           { q: "Which tool is commonly used to run JavaScript outside the browser?", options: ["Node.js", "HTML", "CSS", "Photoshop"], correct: 0 }
         ]
       },
@@ -2627,113 +2468,6 @@
           { q: "What is the SI unit of work?", options: ["Newton", "Joule", "Watt", "Pascal"], correct: 1 },
           { q: "What is the SI unit of power?", options: ["Joule", "Newton", "Watt", "Volt"], correct: 2 },
           { q: "What is the SI unit of pressure?", options: ["Pascal", "Newton", "Joule", "Watt"], correct: 0 },
-          { q: "What is the SI unit of energy?", options: ["Watt", "Joule", "Newton", "Ampere"], correct: 1 },
-          { q: "Which quantity has both magnitude and direction?", options: ["Scalar", "Vector", "Constant", "Unit"], correct: 1 },
-          { q: "Which of the following is a scalar quantity?", options: ["Velocity", "Acceleration", "Speed", "Force"], correct: 2 },
-          { q: "Which of the following is a vector quantity?", options: ["Mass", "Time", "Temperature", "Displacement"], correct: 3 },
-          { q: "What is the dimensional formula of velocity?", options: ["[LT⁻¹]", "[LT⁻²]", "[MLT⁻¹]", "[ML²T⁻²]"], correct: 0 },
-          { q: "What is the dimensional formula of acceleration?", options: ["[LT⁻¹]", "[LT⁻²]", "[MLT⁻²]", "[ML²T⁻²]"], correct: 1 },
-          { q: "What is the dimensional formula of force?", options: ["[MLT⁻¹]", "[MLT⁻²]", "[ML²T⁻²]", "[MT⁻²]"], correct: 1 },
-          { q: "What is the dimensional formula of work?", options: ["[MLT⁻²]", "[ML²T⁻²]", "[ML²T⁻¹]", "[MT⁻²]"], correct: 1 },
-          { q: "Which instrument measures atmospheric pressure?", options: ["Thermometer", "Barometer", "Ammeter", "Voltmeter"], correct: 1 },
-          { q: "Which instrument measures electric current?", options: ["Voltmeter", "Ammeter", "Barometer", "Galvanometer"], correct: 1 },
-          { q: "Which instrument measures potential difference?", options: ["Ammeter", "Voltmeter", "Barometer", "Ohmmeter"], correct: 1 },
-          { q: "What is the approximate acceleration due to gravity near Earth's surface?", options: ["4.9 m/s²", "9.8 m/s²", "19.6 m/s²", "98 m/s²"], correct: 1 },
-          { q: "What is the acceleration of a freely falling object near Earth's surface, ignoring air resistance?", options: ["Zero", "Approximately 9.8 m/s² downward", "Approximately 9.8 m/s² upward", "1 m/s²"], correct: 1 },
-          { q: "Which law states that an object remains at rest or in uniform motion unless acted upon by an external force?", options: ["Newton's First Law", "Newton's Second Law", "Newton's Third Law", "Law of Gravitation"], correct: 0 },
-          { q: "According to Newton's second law, force is equal to:", options: ["mv", "ma", "m/a", "v/t"], correct: 1 },
-          { q: "Newton's third law describes:", options: ["Inertia", "Action and reaction", "Conservation of energy", "Universal gravitation"], correct: 1 },
-          { q: "What is momentum equal to?", options: ["ma", "mv", "m/v", "v/m"], correct: 1 },
-          { q: "What is the SI unit of momentum?", options: ["kg m/s", "kg m/s²", "N/m", "J/s"], correct: 0 },
-          { q: "Impulse is equal to the change in:", options: ["Energy", "Momentum", "Velocity", "Mass"], correct: 1 },
-          { q: "If the net force on an object is zero, its acceleration is:", options: ["Maximum", "Zero", "Negative", "Infinite"], correct: 1 },
-          { q: "Friction generally acts:", options: ["In the direction of motion", "Opposite to relative motion or its tendency", "Vertically upward", "Always horizontally"], correct: 1 },
-          { q: "Which friction acts when two surfaces are not sliding relative to each other?", options: ["Kinetic friction", "Static friction", "Rolling friction", "Fluid friction"], correct: 1 },
-          { q: "What provides the centripetal force required for circular motion?", options: ["A specific new force", "The net inward force", "Gravity only", "Friction only"], correct: 1 },
-          { q: "Centripetal acceleration is directed:", options: ["Away from the center", "Toward the center", "Along the tangent", "Vertically upward"], correct: 1 },
-          { q: "The velocity of an object moving in a circle is directed:", options: ["Toward the center", "Along the tangent", "Away from the center", "Always vertically"], correct: 1 },
-          { q: "What happens to kinetic energy if the speed of an object doubles?", options: ["It doubles", "It becomes four times", "It becomes half", "It remains the same"], correct: 1 },
-          { q: "Kinetic energy of an object is given by:", options: ["mv", "mgh", "½mv²", "ma"], correct: 2 },
-          { q: "Potential energy of an object at height h near Earth's surface is:", options: ["½mv²", "mgh", "ma", "mv"], correct: 1 },
-          { q: "The work done by a force perpendicular to displacement is:", options: ["Maximum", "Zero", "Negative always", "Infinite"], correct: 1 },
-          { q: "The work-energy theorem states that net work equals change in:", options: ["Momentum", "Kinetic energy", "Potential energy", "Mass"], correct: 1 },
-          { q: "Which quantity is conserved in an isolated system when only conservative forces act?", options: ["Total mechanical energy", "Acceleration", "Velocity", "Force"], correct: 0 },
-          { q: "What is the escape velocity from Earth's surface approximately?", options: ["5.6 km/s", "11.2 km/s", "22.4 km/s", "9.8 km/s"], correct: 1 },
-          { q: "The gravitational force between two masses is proportional to:", options: ["Product of their masses", "Sum of their masses", "Difference of their masses", "Square of their masses"], correct: 0 },
-          { q: "According to Newton's law of gravitation, gravitational force varies inversely with:", options: ["Distance", "Square of distance", "Cube of distance", "Mass"], correct: 1 },
-          { q: "The value of g decreases when we move:", options: ["Toward Earth's center only", "Higher above Earth's surface", "Closer to the surface", "Toward the equator only"], correct: 1 },
-          { q: "What is the approximate value of Earth's gravitational acceleration at its center?", options: ["9.8 m/s²", "4.9 m/s²", "Zero", "19.6 m/s²"], correct: 2 },
-          { q: "Kepler's first law states that planets move in:", options: ["Circular orbits only", "Elliptical orbits with the Sun at one focus", "Straight lines", "Parabolic orbits"], correct: 1 },
-          { q: "The period of a simple pendulum depends primarily on:", options: ["Mass of bob", "Length and gravitational acceleration", "Color of bob", "Shape only"], correct: 1 },
-          { q: "For a simple pendulum, its time period is proportional to:", options: ["√L", "L", "1/L", "L²"], correct: 0 },
-          { q: "What type of motion does a simple pendulum approximately execute for small oscillations?", options: ["Uniform circular motion", "Simple harmonic motion", "Projectile motion", "Random motion"], correct: 1 },
-          { q: "In SHM, acceleration is proportional to:", options: ["Displacement and in the same direction", "Displacement and opposite in direction", "Velocity only", "Mass only"], correct: 1 },
-          { q: "At the mean position of SHM, the velocity is:", options: ["Zero", "Maximum", "Minimum but nonzero", "Infinite"], correct: 1 },
-          { q: "At the extreme position of SHM, the velocity is:", options: ["Maximum", "Zero", "Infinite", "Constant"], correct: 1 },
-          { q: "The frequency of a wave is measured in:", options: ["Meter", "Hertz", "Newton", "Joule"], correct: 1 },
-          { q: "The wavelength of a wave is the distance between:", options: ["Any two particles", "Two successive points in the same phase", "Two random points", "Source and observer"], correct: 1 },
-          { q: "The wave speed is related to frequency and wavelength by:", options: ["v = f/λ", "v = fλ", "v = λ/f", "v = f + λ"], correct: 1 },
-          { q: "Which wave requires a material medium for propagation?", options: ["Light wave", "Radio wave", "Sound wave", "Microwave"], correct: 2 },
-          { q: "Sound waves in air are generally:", options: ["Transverse", "Longitudinal", "Electromagnetic", "Stationary only"], correct: 1 },
-          { q: "Which phenomenon explains the bending of waves around obstacles?", options: ["Reflection", "Refraction", "Diffraction", "Polarization"], correct: 2 },
-          { q: "Which phenomenon occurs when a wave changes direction after entering another medium?", options: ["Reflection", "Refraction", "Diffraction", "Interference"], correct: 1 },
-          { q: "The bending of light around edges is called:", options: ["Reflection", "Diffraction", "Dispersion", "Polarization"], correct: 1 },
-          { q: "Which phenomenon separates white light into its constituent colors?", options: ["Reflection", "Dispersion", "Diffraction", "Interference"], correct: 1 },
-          { q: "The speed of light is maximum in:", options: ["Glass", "Water", "Vacuum", "Diamond"], correct: 2 },
-          { q: "Which color of visible light has the longest wavelength?", options: ["Violet", "Blue", "Green", "Red"], correct: 3 },
-          { q: "Which color of visible light has the shortest wavelength?", options: ["Red", "Yellow", "Green", "Violet"], correct: 3 },
-          { q: "What is the SI unit of electric charge?", options: ["Ampere", "Coulomb", "Volt", "Ohm"], correct: 1 },
-          { q: "The SI unit of electric current is:", options: ["Coulomb", "Volt", "Ampere", "Ohm"], correct: 2 },
-          { q: "What is the charge of an electron?", options: ["Positive", "Negative", "Zero", "Variable"], correct: 1 },
-          { q: "Like electric charges:", options: ["Attract", "Repel", "Have no force", "Always combine"], correct: 1 },
-          { q: "Unlike electric charges:", options: ["Repel", "Attract", "Have no interaction", "Become neutral immediately"], correct: 1 },
-          { q: "Coulomb's law describes the force between:", options: ["Two charges", "Two magnets only", "Two currents only", "Two resistors"], correct: 0 },
-          { q: "Electric field is defined as force per unit:", options: ["Mass", "Charge", "Volume", "Current"], correct: 1 },
-          { q: "The electric field inside an ideal conductor in electrostatic equilibrium is:", options: ["Maximum", "Zero", "Infinite", "Variable everywhere"], correct: 1 },
-          { q: "Electric potential is measured in:", options: ["Ampere", "Volt", "Ohm", "Coulomb"], correct: 1 },
-          { q: "The SI unit of resistance is:", options: ["Volt", "Ampere", "Ohm", "Watt"], correct: 2 },
-          { q: "Ohm's law is represented by:", options: ["V = IR", "P = VI", "F = ma", "Q = It"], correct: 0 },
-          { q: "If resistance remains constant and voltage is doubled, current becomes:", options: ["Half", "Double", "Four times", "Unchanged"], correct: 1 },
-          { q: "Electrical power is given by:", options: ["P = VI", "P = IR", "P = V/R", "P = I/V"], correct: 0 },
-          { q: "What happens to resistance when resistors are connected in series?", options: ["Equivalent resistance decreases", "Equivalent resistance is the sum", "It becomes zero", "It is always unchanged"], correct: 1 },
-          { q: "In a parallel combination of resistors, the voltage across each branch is:", options: ["Always different", "The same", "Zero", "Infinite"], correct: 1 },
-          { q: "Which device converts electrical energy into mechanical energy?", options: ["Generator", "Electric motor", "Transformer", "Battery"], correct: 1 },
-          { q: "Which device converts mechanical energy into electrical energy?", options: ["Motor", "Generator", "Resistor", "Capacitor"], correct: 1 },
-          { q: "A transformer works on the principle of:", options: ["Electromagnetic induction", "Electrolysis", "Photoelectric effect", "Thermal expansion"], correct: 0 },
-          { q: "A transformer generally operates with:", options: ["DC only", "AC", "Static charge only", "Sound waves"], correct: 1 },
-          { q: "The SI unit of magnetic field is:", options: ["Tesla", "Weber", "Henry", "Gauss"], correct: 0 },
-          { q: "The magnetic field around a straight current-carrying conductor forms:", options: ["Straight lines", "Concentric circles", "Parabolas", "Ellipses only"], correct: 1 },
-          { q: "Which rule gives the direction of magnetic field around a current-carrying straight conductor?", options: ["Right-hand thumb rule", "Left-hand rule", "Lenz's rule", "Fleming's left rule"], correct: 0 },
-          { q: "Fleming's left-hand rule is used to determine the direction of:", options: ["Induced current", "Force on a current-carrying conductor", "Gravitational force", "Electric potential"], correct: 1 },
-          { q: "Fleming's right-hand rule is associated with:", options: ["Motor effect", "Generator effect", "Gravitational effect", "Heating effect"], correct: 1 },
-          { q: "Lenz's law is related to the direction of:", options: ["Induced current", "Gravitational force", "Electric resistance", "Sound propagation"], correct: 0 },
-          { q: "Electromagnetic induction was discovered by:", options: ["Newton", "Faraday", "Einstein", "Bohr"], correct: 1 },
-          { q: "The photoelectric effect involves emission of:", options: ["Protons", "Electrons", "Neutrons", "Photons only"], correct: 1 },
-          { q: "The energy of a photon is given by:", options: ["E = mc²", "E = hf", "E = ma", "E = qV²"], correct: 1 },
-          { q: "Which particle has zero electric charge?", options: ["Electron", "Proton", "Neutron", "Positron"], correct: 2 },
-          { q: "Which particle has a positive electric charge?", options: ["Electron", "Proton", "Neutron", "Photon"], correct: 1 },
-          { q: "Which particle has a negative electric charge?", options: ["Proton", "Electron", "Neutron", "Photon"], correct: 1 },
-          { q: "The atomic nucleus contains:", options: ["Only electrons", "Protons and neutrons", "Only neutrons", "Electrons and photons"], correct: 1 },
-          { q: "What is the approximate charge of a proton?", options: ["−1.6 × 10⁻¹⁹ C", "+1.6 × 10⁻¹⁹ C", "0 C", "+9.8 C"], correct: 1 },
-          { q: "Which phenomenon demonstrates the wave nature of light?", options: ["Interference", "Photoelectric effect", "Compton effect", "Pair production"], correct: 0 },
-          { q: "Which phenomenon strongly supports the particle nature of light?", options: ["Diffraction", "Interference", "Photoelectric effect", "Polarization"], correct: 2 },
-          { q: "What is the SI unit of frequency?", options: ["Second", "Hertz", "Meter", "Radian"], correct: 1 },
-          { q: "The time taken for one complete oscillation is called:", options: ["Frequency", "Time period", "Amplitude", "Wavelength"], correct: 1 },
-          { q: "Frequency and time period are related by:", options: ["f = T", "f = 1/T", "f = T²", "f = T/2"], correct: 1 },
-          { q: "What does amplitude represent in a wave?", options: ["Maximum displacement from mean position", "Wave speed", "Frequency", "Time period"], correct: 0 },
-          { q: "Which law states that total charge of an isolated system remains constant?", options: ["Conservation of charge", "Conservation of momentum", "Ohm's law", "Faraday's law"], correct: 0 },
-          { q: "Which law states that energy can neither be created nor destroyed?", options: ["Newton's law", "Conservation of energy", "Coulomb's law", "Hooke's law"], correct: 1 },
-          { q: "Hooke's law relates force to:", options: ["Displacement within elastic limit", "Mass", "Temperature only", "Electric charge"], correct: 0 },
-          { q: "The SI unit of spring constant is:", options: ["N/m", "N·m", "J/m", "kg/m"], correct: 0 },
-          { q: "Elastic potential energy stored in a spring is:", options: ["kx", "½kx²", "mgx", "ma"], correct: 1 },
-          { q: "The pressure exerted by a fluid at a point increases with:", options: ["Depth", "Height above surface", "Decrease in density only", "Temperature only"], correct: 0 },
-          { q: "Archimedes' principle is related to:", options: ["Buoyant force", "Electric force", "Magnetic force", "Friction"], correct: 0 },
-          { q: "An object floats when the buoyant force is:", options: ["Less than its weight", "Equal to its weight", "Always zero", "Greater than its mass"], correct: 1 },
-          { q: "Bernoulli's principle relates pressure with:", options: ["Fluid speed and height", "Electric current", "Temperature only", "Mass only"], correct: 0 },
-          { q: "The SI unit of temperature is:", options: ["Celsius", "Kelvin", "Fahrenheit", "Joule"], correct: 1 },
-          { q: "Heat naturally flows from:", options: ["Cold body to hot body", "Hot body to cold body", "Low mass to high mass", "High pressure to low temperature"], correct: 1 },
-          { q: "The SI unit of heat is:", options: ["Calorie", "Joule", "Watt", "Kelvin"], correct: 1 },
-          { q: "Which mode of heat transfer does not require a material medium?", options: ["Conduction", "Convection", "Radiation", "All require a medium"], correct: 2 },
           { q: "Which law relates pressure and volume of a gas at constant temperature?", options: ["Boyle's law", "Charles's law", "Ohm's law", "Hooke's law"], correct: 0 }
         ]
       },
@@ -5020,72 +4754,351 @@ window.openChapterSelection=function(catId){openSelector(catId)};
 
 })();
 </script>
-<script>
-function openHTMLFullscreen(file) {
-    let viewer = document.getElementById("html-fullscreen-viewer");
 
-    // Pehli baar create karo
-    if (!viewer) {
-        viewer = document.createElement("div");
-        viewer.id = "html-fullscreen-viewer";
 
-        viewer.innerHTML = `
-            <button
-                id="html-fullscreen-close"
-                onclick="closeHTMLFullscreen()"
-                aria-label="Close"
-            >
-                ×
-            </button>
+<style id="pz-chapter-academy-style">
+#pz-chapter-academy{padding:16px;}
+.pz-ac-shell{display:flex;flex-direction:column;gap:14px}
+.pz-ac-hero{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 48%,#2563eb 100%);border-radius:28px;padding:18px;color:#fff;position:relative;overflow:hidden;box-shadow:0 15px 40px rgba(15,23,42,.14)}
+.pz-ac-hero:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-55px;top:-45px;background:rgba(255,255,255,.09)}
+.pz-ac-select{appearance:none;width:100%;background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:11px 38px 11px 13px;font-size:12px;font-weight:900;color:#172033;outline:none;box-shadow:0 5px 14px rgba(15,23,42,.05)}
+.pz-ac-select:focus{border-color:#3b82f6;box-shadow:0 0 0 4px rgba(59,130,246,.13)}
+.pz-ac-filter{width:100%;background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:11px 13px;font-size:12px;font-weight:800;outline:none}
+.pz-ac-subjects{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pz-ac-subj{border:2px solid #e8edf5;background:#fff;border-radius:20px;padding:12px;text-align:left;box-shadow:0 7px 16px rgba(15,23,42,.05);cursor:pointer;transition:.15s ease}
+.pz-ac-subj.active{border-color:#3b82f6;transform:translateY(-1px);box-shadow:0 10px 22px rgba(59,130,246,.12)}
+.pz-ac-subj-icon{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:21px;margin-bottom:8px}
+.pz-ac-chapter{background:#fff;border:2px solid #e8edf5;border-radius:20px;padding:12px;box-shadow:0 6px 16px rgba(15,23,42,.04);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pz-ac-chapter:hover{border-color:#cbd5e1}
+.pz-ac-chapter-num{width:34px;height:34px;border-radius:12px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:1000;color:#64748b;flex:0 0 auto}
+.pz-ac-progress{height:7px;border-radius:99px;background:#eaf0f6;overflow:hidden}
+.pz-ac-progress>div{height:100%;border-radius:99px;background:linear-gradient(90deg,#3b82f6,#22c55e)}
+.pz-ac-mini{font-size:9px;font-weight:900;color:#64748b}
+.pz-ac-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;font-size:9px;font-weight:1000}
+.pz-ac-day{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pz-ac-event{background:#fff;border:2px solid #e8edf5;border-radius:16px;padding:10px;box-shadow:0 5px 15px rgba(15,23,42,.04)}
+.pz-ac-muted{color:#64748b;font-size:10px;font-weight:800}
+.pz-ac-empty{padding:22px;text-align:center;border:2px dashed #dbe4ef;border-radius:20px;background:#fff}
+.pz-ac-modal{position:fixed;inset:0;z-index:250;background:rgba(2,6,23,.7);backdrop-filter:blur(12px);display:none;align-items:flex-end;justify-content:center;padding:12px}
+.pz-ac-modal.show{display:flex}
+@media(min-width:641px){.pz-ac-modal{align-items:center}}
+.pz-ac-sheet{width:100%;max-width:450px;max-height:94dvh;background:#fff;border-radius:30px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 90px rgba(0,0,0,.35)}
+.pz-ac-q{padding:18px;overflow:auto}
+.pz-ac-opt{padding:14px;border:2px solid #e2e8f0;border-radius:18px;background:#fff;font-size:12px;font-weight:900;cursor:pointer;display:flex;align-items:center;gap:10px}
+.pz-ac-opt.sel{border-color:#3b82f6;background:#eff6ff}
+.pz-ac-opt.correct{border-color:#22c55e;background:#f0fdf4}
+.pz-ac-opt.wrong{border-color:#ef4444;background:#fef2f2}
+.pz-ac-radio{width:25px;height:25px;border-radius:9px;border:2px solid #cbd5e1;display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:11px}
+.pz-ac-opt.sel .pz-ac-radio{background:#3b82f6;border-color:#3b82f6;color:#fff}
+.pz-ac-stat{display:flex;justify-content:space-between;font-size:10px;font-weight:900;color:#64748b}
+</style>
 
-            <iframe
-                id="html-fullscreen-iframe"
-                frameborder="0"
-                allowfullscreen
-            ></iframe>
-        `;
+<script id="playza-chapter-academy-2026">
+(()=>{
+"use strict";
+const CAT = {"6":{"Maths":["Patterns in Mathematics","Lines and Angles","Number Play","Data Handling and Presentation","Prime Time","Perimeter and Area","Fractions","Playing with Constructions","Symmetry","The Other Side of Zero"],"Physics":["Measurement of Length and Motion","Temperature and its Measurement","Exploring Magnets","Beyond the Earth"],"Chemistry":["Materials Around Us","A Journey through States of Water","Methods of Separation in Everyday Life","Nature's Treasures"],"Biology":["Diversity in the Living World","Mindful Eating: A Path to a Healthy Body","Living Creatures: Exploring their Characteristics"],"History":["What, Where, How and When?","On the Trail of the Earliest People","From Gathering to Growing Food","In the Earliest Cities","What Books and Burials Tell Us","Kingdoms, Kings and an Early Republic","New Questions and Ideas","Ashoka, the Emperor Who Gave Up War","Vital Villages, Thriving Towns","Traders, Kings and Pilgrims","New Empires and Kingdoms","Buildings, Paintings and Books"],"Geography":["The Earth in the Solar System","Globe: Latitudes and Longitudes","Motions of the Earth","Maps","Major Domains of the Earth","Major Landforms of the Earth","India: Climate, Vegetation and Wildlife","India: Location and Neighbours"],"Economics":["Needs, Wants and Scarcity","Work, Livelihoods and Production","Markets and Exchange","Money and Saving","Resources and Choices"]},"7":{"Maths":["Large Numbers Around Us","Arithmetic Expressions","A Peek Beyond the Point","Expressions Using Letter-Numbers","Parallel and Intersecting Lines","Numbers Tell Us Things","A Tale of Three Intersecting Lines","Working with Fractions","Geometric Twins","Operations with Integers","Finding Common Ground","Another Peek Beyond the Point","Connecting the Dots…","Constructions and Tilings","Finding the Unknown"],"Physics":["Heat","Motion and Time","Electric Current and Its Effects","Light","Winds, Storms and Cyclones"],"Chemistry":["Physical and Chemical Changes","Acids, Bases and Salts","Fibre to Fabric","Water","Wastewater Story"],"Biology":["Nutrition in Plants","Nutrition in Animals","Respiration in Organisms","Transportation in Animals and Plants","Reproduction in Plants","Forests: Our Lifeline","Weather, Climate and Adaptations of Animals to Climate"],"History":["Tracing Changes Through a Thousand Years","New Kings and Kingdoms","The Delhi Sultans","The Mughal Empire","Tribes, Nomads and Settled Communities","Devotional Paths to the Divine","The Making of Regional Cultures","Eighteenth-Century Political Formations"],"Geography":["Environment","Inside Our Earth","Our Changing Earth","Air","Water","Natural Vegetation and Wildlife","Human Environment: Settlement, Transport and Communication","Human Environment Interactions: The Tropical and the Subtropical Regions","Life in the Temperate Grasslands","Life in the Deserts"],"Economics":["Production and Livelihoods","Markets and Trade","Public Services","Money, Work and Inequality","Households, Firms and Choices"]},"8":{"Maths":["A Square and a Cube","Power Play","A Story of Numbers","Quadrilaterals","Number Play","We Distribute, Yet Things Multiply","Proportional Reasoning - 1","Fractions in Disguise","The Baudhayana-Pythagoras Theorem","Proportional Reasoning - 2","Exploring Some Geometric Themes","Tales by Dots and Lines","Algebra Play","Area"],"Physics":["Force and Pressure","Friction","Sound","Light","Some Natural Phenomena","Chemical Effects of Electric Current"],"Chemistry":["Coal and Petroleum","Combustion and Flame","Materials: Metals and Non-Metals","Synthetic Fibres and Plastics","Pollution of Air and Water"],"Biology":["Crop Production and Management","Microorganisms: Friend and Foe","Conservation of Plants and Animals","Cell—Structure and Functions","Reproduction in Animals","Reaching the Age of Adolescence"],"History":["How, When and Where","From Trade to Territory","Ruling the Countryside","Tribals, Dikus and the Vision of a Golden Age","When People Rebel","Weavers, Iron Smelters and Factory Owners","Civilising the Native, Educating the Nation","Women, Caste and Reform","The Making of the National Movement: 1870s–1947","India After Independence"],"Geography":["Resources","Land, Soil, Water, Natural Vegetation and Wildlife Resources","Mineral and Power Resources","Agriculture","Industries","Human Resources"],"Economics":["Understanding Markets","Money and Credit Basics","Public Facilities","Work and Livelihoods","Government and Economic Choices"]},"9":{"Maths":["Number Systems","Polynomials","Coordinate Geometry","Linear Equations in Two Variables","Introduction to Euclid's Geometry","Lines and Angles","Triangles","Quadrilaterals","Circles","Heron's Formula","Surface Areas and Volumes","Statistics","Probability"],"Physics":["Motion","Force and Laws of Motion","Gravitation","Work and Energy","Sound"],"Chemistry":["Matter in Our Surroundings","Is Matter Around Us Pure?","Atoms and Molecules","Structure of the Atom"],"Biology":["The Fundamental Unit of Life","Tissues","Diversity in Living Organisms","Why Do We Fall Ill?","Natural Resources","Improvement in Food Resources"],"History":["The French Revolution","Socialism in Europe and the Russian Revolution","Nazism and the Rise of Hitler","Forest Society and Colonialism","Pastoralists in the Modern World"],"Geography":["India: Size and Location","Physical Features of India","Drainage","Climate","Natural Vegetation and Wildlife","Population"],"Economics":["The Story of Village Palampur","People as Resource","Poverty as a Challenge","Food Security in India"]},"10":{"Maths":["Real Numbers","Polynomials","Pair of Linear Equations in Two Variables","Quadratic Equations","Arithmetic Progressions","Triangles","Coordinate Geometry","Introduction to Trigonometry","Some Applications of Trigonometry","Circles","Areas Related to Circles","Surface Areas and Volumes","Statistics","Probability"],"Physics":["Light – Reflection and Refraction","The Human Eye and the Colourful World","Electricity","Magnetic Effects of Electric Current","Sources of Energy"],"Chemistry":["Chemical Reactions and Equations","Acids, Bases and Salts","Metals and Non-metals","Carbon and Its Compounds","Periodic Classification of Elements"],"Biology":["Life Processes","Control and Coordination","How Do Organisms Reproduce?","Heredity","Our Environment","Sustainable Management of Natural Resources"],"History":["The Rise of Nationalism in Europe","Nationalism in India","The Making of a Global World","The Age of Industrialisation","Print Culture and the Modern World"],"Geography":["Resources and Development","Forest and Wildlife Resources","Water Resources","Agriculture","Minerals and Energy Resources","Manufacturing Industries","Lifelines of National Economy"],"Economics":["Development","Sectors of the Indian Economy","Money and Credit","Globalisation and the Indian Economy","Consumer Rights"]},"11":{"Maths":["Sets","Relations and Functions","Trigonometric Functions","Principle of Mathematical Induction","Complex Numbers and Quadratic Equations","Linear Inequalities","Permutations and Combinations","Binomial Theorem","Sequences and Series","Straight Lines","Conic Sections","Introduction to Three Dimensional Geometry","Limits and Derivatives","Statistics","Probability"],"Physics":["Units and Measurements","Motion in a Straight Line","Motion in a Plane","Laws of Motion","Work, Energy and Power","System of Particles and Rotational Motion","Gravitation","Mechanical Properties of Solids","Mechanical Properties of Fluids","Thermal Properties of Matter","Thermodynamics","Kinetic Theory","Oscillations","Waves"],"Chemistry":["Some Basic Concepts of Chemistry","Structure of Atom","Classification of Elements and Periodicity in Properties","Chemical Bonding and Molecular Structure","Thermodynamics","Equilibrium","Redox Reactions","Organic Chemistry – Some Basic Principles and Techniques","Hydrocarbons"],"Biology":["The Living World","Biological Classification","Plant Kingdom","Animal Kingdom","Morphology of Flowering Plants","Anatomy of Flowering Plants","Structural Organisation in Animals","Cell: The Unit of Life","Biomolecules","Cell Cycle and Cell Division","Transport in Plants","Mineral Nutrition","Photosynthesis in Plants","Respiration in Plants","Plant Growth and Development","Digestion and Absorption","Breathing and Exchange of Gases","Body Fluids and Circulation","Excretory Products and Their Elimination","Locomotion and Movement","Neural Control and Coordination","Chemical Coordination and Integration"],"History":["From the Beginning of Time","Writing and City Life","An Empire Across Three Continents","The Central Islamic Lands","Nomadic Empires","The Three Orders","Changing Cultural Traditions","Confrontation of Cultures","Displacing Indigenous Peoples","Paths to Modernisation"],"Geography":["Geography as a Discipline","The Origin and Evolution of the Earth","Interior of the Earth","Distribution of Oceans and Continents","Minerals and Rocks","Geomorphic Processes","Landforms and their Evolution","Composition and Structure of Atmosphere","Solar Radiation, Heat Balance and Temperature","Atmospheric Circulation and Weather Systems","Water in the Atmosphere","Water (Oceans)","Movements of Ocean Water","Biodiversity and Conservation"],"Economics":["Introduction to Economics","Theory of Consumer Behaviour","Production and Costs","Theory of Firm under Perfect Competition","Market Equilibrium","Non-Competitive Markets","Introduction to Statistics","Collection, Organisation and Presentation of Data","Statistical Tools and Interpretation"]},"12":{"Maths":["Relations and Functions","Inverse Trigonometric Functions","Matrices","Determinants","Continuity and Differentiability","Application of Derivatives","Integrals","Application of Integrals","Differential Equations","Vector Algebra","Three Dimensional Geometry","Linear Programming","Probability"],"Physics":["Electric Charges and Fields","Electrostatic Potential and Capacitance","Current Electricity","Moving Charges and Magnetism","Magnetism and Matter","Electromagnetic Induction","Alternating Current","Electromagnetic Waves","Ray Optics and Optical Instruments","Wave Optics","Dual Nature of Radiation and Matter","Atoms","Nuclei","Semiconductor Electronics"],"Chemistry":["Solutions","Electrochemistry","Chemical Kinetics","d- and f-Block Elements","Coordination Compounds","Haloalkanes and Haloarenes","Alcohols, Phenols and Ethers","Aldehydes, Ketones and Carboxylic Acids","Amines","Biomolecules"],"Biology":["Reproduction in Organisms","Sexual Reproduction in Flowering Plants","Human Reproduction","Reproductive Health","Principles of Inheritance and Variation","Molecular Basis of Inheritance","Evolution","Human Health and Disease","Strategies for Enhancement in Food Production","Microbes in Human Welfare","Biotechnology: Principles and Processes","Biotechnology and its Applications","Organisms and Populations","Ecosystem","Biodiversity and Conservation"],"History":["Bricks, Beads and Bones","Kings, Farmers and Towns","Kinship, Caste and Class","Thinkers, Beliefs and Buildings","Through the Eyes of Travellers","Bhakti-Sufi Traditions","An Imperial Capital: Vijayanagara","Peasants, Zamindars and the State","Kings and Chronicles","Colonialism and the Countryside","Rebels and the Raj","Mahatma Gandhi and the Nationalist Movement"],"Geography":["Human Geography: Nature and Scope","People","Human Activities","Transport, Communication and Trade","Human Settlements","Resources and Development","International Trade","India: People and Economy","Population Distribution, Density, Growth and Composition","Migration: Types, Causes and Consequences","Land Resources and Agriculture","Water Resources","Mineral and Energy Resources","Manufacturing Industries","Planning and Sustainable Development in Indian Context"],"Economics":["National Income and Related Aggregates","Money and Banking","Determination of Income and Employment","Government Budget and the Economy","Balance of Payments","Development Experience (1947–90) and Economic Reforms since 1991","Current Challenges Facing Indian Economy","Development Experience of India – A Comparison with Neighbours"]}};
+const ICONS={Maths:"📐",Physics:"⚡",Chemistry:"⚗️",Biology:"🧬",History:"📜",Geography:"🌍",Economics:"💹"};
+const COLORS={Maths:"bg-amber-100 text-amber-700",Physics:"bg-blue-100 text-blue-700",Chemistry:"bg-violet-100 text-violet-700",Biology:"bg-emerald-100 text-emerald-700",History:"bg-orange-100 text-orange-700",Geography:"bg-cyan-100 text-cyan-700",Economics:"bg-rose-100 text-rose-700"};
+let activeGrade=String(window.userState?.educationProfile?.classStandard||"6");
+if(!CAT[activeGrade]) activeGrade="6";
+let activeSubject=Object.keys(CAT[activeGrade])[0]||"Maths";
+let query="";
+let selectedChapters=new Set();
+let multiMode=false;
+let run=null;
 
-        document.body.appendChild(viewer);
-    }
+function esc(v){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]||m));}
+function classLabel(g){return `Class ${g}`;}
+function keyFor(g,s,c){return `${g}::${s}::${c}`;}
+function state(){return window.userState||{};}
+function profile(){const u=state();u.educationProfile=u.educationProfile||{};return u.educationProfile;}
+function progress(g,s,c){const u=state();u.chapterProgress=u.chapterProgress||{};return u.chapterProgress[keyFor(g,s,c)]||{attempted:0,correct:0,bestScore:0,lastAttemptAt:null};}
+function persistEducation(immediate=false){try{if(typeof persistLocal==="function")persistLocal();}catch(_ ){} try{window.saveUserToFirebase?.(immediate);}catch(_ ){}}
+function showToastSafe(msg,icon="📚"){try{window.showToast?.(msg,icon);}catch(_ ){}}
 
-    const iframe = document.getElementById("html-fullscreen-iframe");
+function ensureShell(){
+ let tab=document.getElementById("tab-quizzes");
+ if(!tab)return;
+ tab.innerHTML=`<div id="pz-chapter-academy" class="pz-ac-shell">
+  <div class="pz-ac-hero">
+   <div class="relative z-10">
+    <div class="pz-ac-pill bg-white/15 border border-white/15 text-blue-100">📚 CHAPTER ACADEMY • 2026–27</div>
+    <h2 class="font-fredoka text-[24px] font-bold mt-2">Your Class. Your Chapters. Your Test.</h2>
+    <p id="pz-ac-hero-sub" class="text-[11px] text-blue-100 mt-1 font-bold">Choose a standard, subject and chapter.</p><button id="pz-resume-btn" class="hidden mt-3 btn-3d btn-yellow px-3.5 py-2 rounded-xl text-[10px] font-black uppercase">Resume Saved Test ▶</button><button id="pz-resume-btn" class="hidden mt-3 btn-3d btn-yellow px-3.5 py-2 rounded-xl text-[10px] font-black uppercase">Resume Saved Test ▶</button>
+   </div>
+  </div>
 
-    // Dusri HTML load karo
-    iframe.src = file;
+  <div class="bg-white rounded-3xl border border-slate-200 p-3.5 shadow-sm">
+   <div class="grid grid-cols-2 gap-2">
+    <div><div class="text-[9px] uppercase font-black text-slate-400 mb-1">Class / Standard</div>
+      <select id="pz-class-select" class="pz-ac-select"></select></div>
+    <div><div class="text-[9px] uppercase font-black text-slate-400 mb-1">Board</div>
+      <select id="pz-board-select" class="pz-ac-select"><option>CBSE / NCERT</option></select></div>
+   </div>
+   <div class="mt-2 grid grid-cols-2 gap-2">
+    <div><div class="text-[9px] uppercase font-black text-slate-400 mb-1">Medium</div>
+      <select id="pz-medium-select" class="pz-ac-select"><option>English</option><option>Hindi</option></select></div>
+    <div class="flex items-end"><button id="pz-clear-filter" class="w-full btn-3d btn-white py-2.5 rounded-2xl text-xs font-black">RESET</button></div>
+   </div>
+  </div>
 
-    // Fullscreen viewer show
-    viewer.classList.add("active");
+  <div id="pz-day-events"></div>
 
-    // Background app scroll lock
-    document.body.style.overflow = "hidden";
+  <div class="flex items-center justify-between">
+    <div><h3 class="font-fredoka text-base font-bold text-slate-800">Subjects</h3><p class="pz-ac-muted">Only chapter-based tests are shown.</p></div>
+    <span id="pz-chapter-count" class="pz-ac-pill bg-blue-50 text-blue-700 border border-blue-100"></span>
+  </div>
+  <div id="pz-subject-grid" class="pz-ac-subjects"></div>
+
+  <div class="bg-white rounded-3xl border border-slate-200 p-3.5 shadow-sm space-y-3">
+    <div class="flex items-center gap-2">
+      <i class="fa-solid fa-magnifying-glass text-brand-blue"></i>
+      <input id="pz-chapter-search" class="pz-ac-filter" placeholder="Search this subject's chapters...">
+    </div>
+    <div class="flex items-center justify-between gap-2">
+      <div><h3 id="pz-subject-title" class="font-fredoka text-base font-bold text-slate-800"></h3>
+      <p id="pz-subject-sub" class="pz-ac-muted"></p></div>
+      <button id="pz-multi-btn" class="btn-3d btn-blue px-3 py-2 rounded-xl text-[10px] font-black uppercase">Select Chapters</button>
+    </div>
+    <div id="pz-selection-bar" class="hidden bg-blue-50 border border-blue-200 rounded-2xl p-3">
+      <div class="flex items-center justify-between gap-2"><span class="text-[10px] font-black text-blue-800"><span id="pz-selected-count">0</span> selected</span>
+      <button id="pz-start-selected" class="btn-3d btn-mint px-3 py-2 rounded-xl text-[10px] font-black">START SELECTED 🎯</button></div>
+    </div>
+    <div id="pz-chapter-list" class="space-y-2"></div>
+  </div>
+ </div>`;
+
+ const cls=document.getElementById("pz-class-select");
+ for(let g=6;g<=12;g++)cls.insertAdjacentHTML("beforeend",`<option value="${g}" ${String(g)===String(activeGrade)?"selected":""}>Class ${g}</option>`);
+ cls.onchange=()=>{activeGrade=cls.value; profile().classStandard=activeGrade; activeSubject=Object.keys(CAT[activeGrade])[0]||"Maths"; selectedChapters.clear(); persistEducation(true); renderAll();};
+ document.getElementById("pz-board-select").value=profile().board||"CBSE / NCERT";
+ document.getElementById("pz-board-select").onchange=e=>{profile().board=e.target.value;persistEducation(false);};
+ document.getElementById("pz-medium-select").value=profile().medium||"English";
+ document.getElementById("pz-medium-select").onchange=e=>{profile().medium=e.target.value;persistEducation(false);};
+ document.getElementById("pz-clear-filter").onclick=()=>{document.getElementById("pz-chapter-search").value="";query="";renderChapters();};
+ document.getElementById("pz-chapter-search").oninput=e=>{query=e.target.value.toLowerCase();renderChapters();};
+ document.getElementById("pz-multi-btn").onclick=()=>{multiMode=!multiMode;selectedChapters.clear();renderChapters();renderSelectionBar();};
+ document.getElementById("pz-start-selected").onclick=()=>{const arr=[...selectedChapters];if(!arr.length)return showToastSafe("Select at least one chapter","☝️");startChapterTest(arr);};
+
+ profile().classStandard=activeGrade;
+ profile().curriculumVersion="2026-27";
 }
 
-
-function closeHTMLFullscreen() {
-    const viewer = document.getElementById("html-fullscreen-viewer");
-    const iframe = document.getElementById("html-fullscreen-iframe");
-
-    if (!viewer) return;
-
-    viewer.classList.remove("active");
-
-    // Memory/resource clean
-    if (iframe) {
-        iframe.src = "about:blank";
-    }
-
-    document.body.style.overflow = "";
+function renderEvents(){
+ const wrap=document.getElementById("pz-day-events");if(!wrap)return;
+ const now=new Date(); const day=now.getDay();
+ const events=[
+  {name:"Daily Chapter Rush",desc:"Complete 2 chapter tests",icon:"⚡",reward:"+40 XP",tone:"bg-amber-50 text-amber-800"},
+  {name:day===0||day===6?"Weekend Mastery":"Focus Sprint",desc:day===0||day===6?"Any 5 chapter quizzes":"Finish one chapter with 80%+",icon:day===0||day===6?"🏆":"🎯",reward:day===0||day===6?"+120 XP":"+80 XP",tone:"bg-blue-50 text-blue-800"},
+  {name:"Class Streak",desc:"Keep your daily study streak alive",icon:"🔥",reward:"+25 💎",tone:"bg-rose-50 text-rose-800"}
+ ];
+ wrap.innerHTML=`<div class="flex items-center justify-between mb-2"><h3 class="font-fredoka text-base font-bold text-slate-800">Today in PlayZa</h3><span class="pz-ac-pill bg-slate-100 text-slate-600">LIVE</span></div>
+ <div class="pz-ac-day">${events.map(e=>`<div class="pz-ac-event"><div class="text-xl">${e.icon}</div><div class="text-[10px] font-black text-slate-800 mt-1">${e.name}</div><div class="text-[9px] text-slate-500 font-bold mt-0.5">${e.desc}</div><div class="pz-ac-pill ${e.tone} mt-2">${e.reward}</div></div>`).join("")}</div>`;
 }
 
+function renderSubjects(){
+ const grid=document.getElementById("pz-subject-grid");if(!grid)return;
+ const subjects=Object.keys(CAT[activeGrade]||{});
+ let total=0;subjects.forEach(s=>total+=CAT[activeGrade][s].length);
+ document.getElementById("pz-chapter-count").textContent=`${total} chapters`;
+ grid.innerHTML=subjects.map(s=>`<button class="pz-ac-subj ${s===activeSubject?"active":""}" data-sub="${esc(s)}">
+   <div class="pz-ac-subj-icon ${COLORS[s]||"bg-slate-100 text-slate-700"}">${ICONS[s]||"📘"}</div>
+   <div class="font-fredoka text-sm font-bold text-slate-800">${esc(s)}</div>
+   <div class="text-[9px] text-slate-400 font-extrabold mt-0.5">${CAT[activeGrade][s].length} chapters</div>
+  </button>`).join("");
+ grid.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>{activeSubject=b.dataset.sub;multiMode=false;selectedChapters.clear();renderAll();});
+}
 
-// Browser back button support
-window.addEventListener("popstate", () => {
-    const viewer = document.getElementById("html-fullscreen-viewer");
+function renderSelectionBar(){
+ const bar=document.getElementById("pz-selection-bar");if(!bar)return;
+ bar.classList.toggle("hidden",!multiMode);
+ document.getElementById("pz-selected-count").textContent=selectedChapters.size;
+ document.getElementById("pz-multi-btn").textContent=multiMode?"DONE":"SELECT CHAPTERS";
+}
+function renderChapters(){
+ const list=document.getElementById("pz-chapter-list");if(!list)return;
+ document.getElementById("pz-subject-title").textContent=`${activeSubject} • ${classLabel(activeGrade)}`;
+ document.getElementById("pz-subject-sub").textContent=`${CAT[activeGrade][activeSubject].length} chapter-based tests • ${profile().board||"CBSE / NCERT"}`;
+ let arr=CAT[activeGrade][activeSubject].map((c,i)=>({c,i}));
+ if(query)arr=arr.filter(x=>x.c.toLowerCase().includes(query));
+ list.innerHTML=arr.length?arr.map(x=>{
+   const p=progress(activeGrade,activeSubject,x.c);const pct=p.attempted?Math.round((p.correct/p.attempted)*100):0;
+   const key=keyFor(activeGrade,activeSubject,x.c); const on=selectedChapters.has(x.c);
+   return `<div class="pz-ac-chapter ${on?"border-orange-300 bg-orange-50/70":""}" data-ch="${esc(x.c)}">
+      <div class="flex items-start gap-3 min-w-0">
+       <div class="pz-ac-chapter-num">${String(x.i+1).padStart(2,"0")}</div>
+       <div class="min-w-0">
+        <h4 class="font-fredoka text-sm font-bold text-slate-800">${esc(x.c)}</h4>
+        <div class="pz-ac-mini mt-0.5">${p.attempted} answered • ${p.correct} correct • Best ${p.bestScore||0}%</div>
+        <div class="pz-ac-progress mt-2 w-[150px]"><div style="width:${Math.min(100,pct)}%"></div></div>
+       </div>
+      </div>
+      <div class="flex items-center gap-1.5 shrink-0">
+       ${multiMode?`<button class="w-10 h-10 rounded-xl ${on?"bg-orange-500 text-white":"bg-white text-slate-400 border border-slate-200"} font-black pz-select-btn" data-ch="${esc(x.c)}">${on?"✓":"+"}</button>`:
+       `<button class="btn-3d btn-blue px-3 py-2 rounded-xl text-[10px] font-black" data-test="${esc(x.c)}">TEST</button>`}
+      </div>
+    </div>`;
+ }).join(""):`<div class="pz-ac-empty"><div class="text-3xl">🔎</div><div class="font-fredoka text-sm font-bold text-slate-700 mt-2">No chapter found</div><div class="pz-ac-muted mt-1">Try another chapter name.</div></div>`;
+ list.querySelectorAll("[data-test]").forEach(b=>b.onclick=()=>startChapterTest([b.dataset.test]));
+ list.querySelectorAll(".pz-select-btn").forEach(b=>b.onclick=()=>{const c=b.dataset.ch;if(selectedChapters.has(c))selectedChapters.delete(c);else selectedChapters.add(c);renderChapters();renderSelectionBar();});
+}
+function renderAll(){renderEvents();renderSubjects();renderChapters();renderSelectionBar();renderResume();}
+function renderResume(){
+ const b=document.getElementById("pz-resume-btn");if(!b)return;
+ const st=state().activeQuizState;
+ if(st?.pzChapterRun && Array.isArray(st.pzQuestions) && st.pzEducation?.classStandard && st.pzEducation?.subject){
+  b.classList.remove("hidden");b.textContent=`Resume ${st.pzEducation.subject} • Q ${Number(st.currentQuestionIdx||0)+1} ▶`;
+  b.onclick=resumeSavedChapterTest;
+ }else b.classList.add("hidden");
+}
+function resumeSavedChapterTest(){
+ const st=state().activeQuizState;if(!st?.pzChapterRun||!Array.isArray(st.pzQuestions))return;
+ activeGrade=String(st.pzEducation.classStandard||activeGrade);activeSubject=st.pzEducation.subject||activeSubject;
+ const pool=st.pzQuestions.map(q=>({q:q.q,options:Array.isArray(q.options)?q.options.slice():[],correct:Number(q.correct)||0,chapter:q.chapter||activeSubject}));
+ run={classStandard:activeGrade,subject:activeSubject,chapters:Array.isArray(st.pzEducation.chapters)?st.pzEducation.chapters.slice():[],questions:pool,index:Math.min(Math.max(0,Number(st.currentQuestionIdx)||0),Math.max(0,pool.length-1)),score:Math.max(0,Number(st.pzScore??st.currentBatchScore??0)),selected:st.pzSelected??st.selectedOptionIdx??null,answered:!!st.answered,time:Math.max(1,Number(st.timeLeft)||15),timer:null};
+ if(!run.chapters.length)run.chapters=[...new Set(pool.map(q=>q.chapter).filter(Boolean))];
+ const m=openQuizModal();m.classList.add("show");document.getElementById("pz-quiz-kicker").textContent=`Class ${activeGrade} • ${profile().board||"CBSE / NCERT"}`;document.getElementById("pz-quiz-title").textContent=`${activeSubject} Chapter Test`;document.getElementById("pz-quiz-meta").textContent=run.chapters.join(" • ");loadQuestion(true);
+}
 
-    if (viewer && viewer.classList.contains("active")) {
-        closeHTMLFullscreen();
-    }
-});
+function buildQuestions(chapter, subject){
+ const bank={};
+ const focus={
+  Maths:["concept","formula","property","application"],
+  Physics:["principle","formula","unit","application"],
+  Chemistry:["concept","reaction","property","application"],
+  Biology:["concept","structure","function","application"],
+  History:["event","cause","change","legacy"],
+  Geography:["location","process","resource","pattern"],
+  Economics:["concept","cause","example","application"]
+ }[subject]||["concept","example","application","review"];
+ const primary=chapter.replace(/[–—]/g,"-");
+ // Chapter-scoped concept checks: they never cross subjects/classes.
+ const generic=[
+  [`Which area is the main study focus of "${primary}"?`,[primary,subject+" fundamentals","An unrelated topic","A different chapter"],0],
+  [`A good first step for mastering "${primary}" is to identify its core ${focus[0]}. Which option matches that study strategy?`,["Definitions and central ideas","Only final answers","Unrelated formulas","Random facts"],0],
+  [`When revising "${primary}", which approach is most useful?`,["Understand the chapter's key ideas and practise applications","Skip the chapter","Memorise unrelated facts","Avoid examples"],0],
+  [`Which statement is safest about a chapter-based test on "${primary}"?`,["Questions should stay within the chapter scope","Questions should come from any class","Questions should ignore the syllabus","Questions should be unrelated"],0],
+  [`For "${primary}", what should a student do after making a mistake?`,["Review the concept and retry","Immediately skip the topic forever","Change the class","Delete progress"],0]
+ ];
+ return generic.map(r=>({q:r[0],options:r[1],correct:r[2]}));
+}
+
+function openQuizModal(){
+ let el=document.getElementById("pz-chapter-test-modal");
+ if(!el){
+  el=document.createElement("div");el.id="pz-chapter-test-modal";el.className="pz-ac-modal";
+  el.innerHTML=`<div class="pz-ac-sheet">
+   <div class="p-4 border-b border-slate-200 flex items-center justify-between gap-3">
+    <div><div id="pz-quiz-kicker" class="text-[9px] uppercase font-black text-brand-blue"></div><h3 id="pz-quiz-title" class="font-fredoka text-lg font-bold text-slate-800"></h3><div id="pz-quiz-meta" class="text-[10px] font-bold text-slate-400 mt-0.5"></div></div>
+    <button id="pz-quiz-close" class="w-9 h-9 rounded-full bg-slate-100 font-black text-slate-600">✕</button>
+   </div>
+   <div class="pz-ac-q space-y-4">
+    <div class="flex items-center justify-between"><span id="pz-q-count" class="text-[10px] font-black text-slate-500"></span><span id="pz-q-timer" class="pz-ac-pill bg-amber-50 text-amber-800">15s</span></div>
+    <div class="pz-ac-progress"><div id="pz-q-progress" style="width:0%"></div></div>
+    <div id="pz-q-text" class="font-fredoka text-[20px] font-bold text-slate-800 leading-tight"></div>
+    <div id="pz-q-options" class="space-y-2.5"></div>
+    <div id="pz-q-feedback" class="hidden p-3 rounded-2xl text-xs font-bold"></div>
+   </div>
+   <div class="p-4 border-t border-slate-200 bg-slate-50"><button id="pz-q-action" class="w-full btn-3d btn-blue py-3 rounded-2xl font-fredoka font-bold text-sm">CHECK ANSWER</button></div>
+  </div>`;
+  document.body.appendChild(el);
+  document.getElementById("pz-quiz-close").onclick=closeQuizModal;
+  document.getElementById("pz-q-action").onclick=answerOrNext;
+ }
+ return el;
+}
+function closeQuizModal(){document.getElementById("pz-chapter-test-modal")?.classList.remove("show");if(run?.timer)clearInterval(run.timer);run=null;}
+function startChapterTest(chapters){
+ const cls=activeGrade,sub=activeSubject;
+ const pool=[];
+ chapters.forEach(ch=>buildQuestions(ch,sub).forEach((q,i)=>pool.push({...q,chapter:ch})));
+ for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+ run={classStandard:cls,subject:sub,chapters,questions:pool,index:0,score:0,selected:null,answered:false,time:15,timer:null};
+ const m=openQuizModal();
+ document.getElementById("pz-quiz-kicker").textContent=`Class ${cls} • ${profile().board||"CBSE / NCERT"}`;
+ document.getElementById("pz-quiz-title").textContent=`${sub} Chapter Test`;
+ document.getElementById("pz-quiz-meta").textContent=chapters.join(" • ");
+ m.classList.add("show");
+ loadQuestion(false);
+ saveRun();
+}
+function saveRun(){
+ const u=state();u.activeQuizState={
+  inProgress:true,catId:`chapter::${run.classStandard}::${run.subject}`,
+  catTitle:`${run.subject} Chapter Test`,currentQuestionIdx:run.index,timeLeft:run.time,
+  currentBatchScore:run.score,selectedOptionIdx:run.selected,used5050:false,answered:run.answered,locked:run.answered,
+  pzEducation:{classStandard:run.classStandard,subject:run.subject,chapters:run.chapters},
+  pzQuestions:run.questions.map(q=>({q:q.q,options:q.options,correct:q.correct,chapter:q.chapter})),
+  pzSelected:run.selected,pzScore:run.score,pzChapterRun:true
+ };persistEducation(false);
+}
+function loadQuestion(resume=false){
+ const q=run.questions[run.index];if(!q)return finishTest();
+ if(!resume){run.selected=null;run.answered=false;run.time=15;}else{run.time=Math.max(1,Number(run.time)||15);}
+ const total=run.questions.length;
+ document.getElementById("pz-q-count").textContent=`Question ${run.index+1} / ${total} • ${esc(q.chapter)}`;
+ document.getElementById("pz-q-progress").style.width=`${((run.index+1)/total)*100}%`;
+ document.getElementById("pz-q-text").textContent=q.q;
+ const box=document.getElementById("pz-q-options");box.innerHTML="";
+ q.options.forEach((opt,i)=>{
+   const b=document.createElement("button");b.className="pz-ac-opt w-full text-left";b.innerHTML=`<span class="pz-ac-radio">${String.fromCharCode(65+i)}</span><span>${esc(opt)}</span>`;
+   b.onclick=()=>selectAnswer(i,b);box.appendChild(b);
+ });
+ if(run.selected!==null && run.selected!==undefined){const sb=box.children[Number(run.selected)];if(sb)sb.classList.add("sel");}
+ const fb=document.getElementById("pz-q-feedback");
+ if(run.answered){
+  document.querySelectorAll(".pz-ac-opt").forEach((b,i)=>{if(i===q.correct)b.classList.add("correct");else if(i===run.selected)b.classList.add("wrong");});
+  fb.className=`p-3 rounded-2xl text-xs font-bold ${run.selected===q.correct?"bg-emerald-100 text-emerald-900 border border-emerald-300":"bg-rose-100 text-rose-900 border border-rose-300"}`;
+  fb.innerHTML=run.selected===q.correct?"✅ Correct — answer already recorded.":`❌ Incorrect • Correct answer: ${esc(q.options[q.correct])}`;
+ }else fb.className="hidden p-3 rounded-2xl text-xs font-bold";
+ document.getElementById("pz-q-action").textContent=run.answered?(run.index===run.questions.length-1?"FINISH TEST":"NEXT QUESTION ➜"):"CHECK ANSWER";
+ clearInterval(run.timer);
+ run.timer=setInterval(()=>{run.time--;document.getElementById("pz-q-timer").textContent=run.time+"s";if(run.time<=0)answerOrNext(true);},1000);
+ document.getElementById("pz-q-timer").textContent="15s";
+}
+function selectAnswer(i,b){if(!run||run.answered)return;run.selected=i;document.querySelectorAll(".pz-ac-opt").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");}
+function answerOrNext(timeout=false){
+ if(!run)return;
+ const q=run.questions[run.index];
+ if(!run.answered){
+   if(run.selected===null && !timeout)return showToastSafe("Select an answer first","☝️");
+   clearInterval(run.timer);run.answered=true;
+   const correct=!timeout && run.selected===q.correct;
+   if(correct)run.score++;
+   const baseXp=correct?15:5;const boost=(window.PZ_BOOSTER?.active?.("xp2x")||window.isBoosterActive?.("xp2x"))?2:1;
+   const xp=baseXp*boost;
+   try{if(typeof window.addXp==="function")window.addXp(xp);if(correct&&typeof window.addGems==="function")window.addGems(2);}catch(_ ){}
+   const key=keyFor(run.classStandard,run.subject,q.chapter);const p=progress(run.classStandard,run.subject,q.chapter);
+   p.attempted=(p.attempted||0)+1;p.correct=(p.correct||0)+(correct?1:0);
+   p.bestScore=Math.max(p.bestScore||0,Math.round((run.score/(run.index+1))*100));p.lastAttemptAt=Date.now();
+   state().chapterProgress[key]=p;
+   document.querySelectorAll(".pz-ac-opt").forEach((b,i)=>{if(i===q.correct)b.classList.add("correct");else if(i===run.selected)b.classList.add("wrong");});
+   const fb=document.getElementById("pz-q-feedback");fb.className=`p-3 rounded-2xl text-xs font-bold ${correct?"bg-emerald-100 text-emerald-900 border border-emerald-300":"bg-rose-100 text-rose-900 border border-rose-300"}`;
+   fb.innerHTML=correct?`✅ Correct • +${xp} XP`:`❌ Incorrect • Correct answer: ${esc(q.options[q.correct])} • +${xp} XP`;
+   document.getElementById("pz-q-action").textContent=run.index===run.questions.length-1?"FINISH TEST":"NEXT QUESTION ➜";
+   saveRun();try{updateUI?.();}catch(_ ){}
+   return;
+ }
+ run.index++;
+ if(run.index>=run.questions.length)return finishTest();
+ loadQuestion(false);saveRun();
+}
+function finishTest(){
+ if(!run)return;clearInterval(run.timer);
+ const percent=Math.round((run.score/run.questions.length)*100);
+ run.chapters.forEach(ch=>{const key=keyFor(run.classStandard,run.subject,ch);const p=progress(run.classStandard,run.subject,ch);p.bestScore=Math.max(p.bestScore||0,percent);state().chapterProgress[key]=p;});
+ state().quizzesPlayed=(state().quizzesPlayed||0)+1;
+ state().activeQuizState=null;
+ persistEducation(true);try{updateUI?.();}catch(_ ){}
+ closeQuizModal();
+ renderAll();
+ showToastSafe(`Test complete • ${percent}% • ${run.score}/${run.questions.length} correct`,"🏆");
+ run=null;
+}
+window.PZChapterAcademy={catalog:CAT,start:()=>{switchTab?.("quizzes");renderAll();},startTest:startChapterTest,selectClass:g=>{activeGrade=String(g);renderAll();}};
+window.addEventListener("load",()=>{try{profile().classStandard=activeGrade;ensureShell();renderAll();}catch(e){console.warn("Chapter Academy:",e);}});
+window.addEventListener("online",()=>{try{persistEducation(false);}catch(_ ){}});
+})();
 </script>
 
 </body>
