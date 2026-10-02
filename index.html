@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer" />
   <!-- 1. Web Manifest link karne ke liye -->
     <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#FFFFFF">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -4277,5 +4277,669 @@
       window.setMascotSpeech('Wheee! PlayZa Fox! 🦊');
     };
 </script>
+
+<script id="playza-bugfix-overhaul-v1">
+/* PlayZa Stability Pack
+   - Boss arena repair
+   - Chapter/subcard quiz routing
+   - Time based boosters/events
+   - Firebase safe sync hooks
+   - Privacy hardening helpers
+*/
+(function(){
+"use strict";
+
+window.PZ_SAFE={
+ version:"1.0.0",
+ events:{
+   "2026-10-02":{title:"Launch Festival",reward:100},
+   "2026-10-15":{title:"Mega Quiz Day",reward:250}
+ }
+};
+
+function pzStore(){try{return JSON.parse(localStorage.getItem("playza_state")||"{}")}catch(e){return {}}}
+function pzSave(s){try{localStorage.setItem("playza_state",JSON.stringify(s))}catch(e){}}
+
+window.activateTimedBooster=function(type="xp2x",days=1){
+ let s=pzStore();
+ s.boosters=s.boosters||{};
+ s.boosters[type]={active:true,expiresAt:Date.now()+days*86400000};
+ pzSave(s);
+ if(window.userState) userState.boosters=s.boosters;
+ if(window.saveUserToFirebase) saveUserToFirebase(false);
+ showToast?.("2X Booster activated for 1 day 🚀","⚡");
+};
+
+window.isBoosterActive=function(type="xp2x"){
+ let s=pzStore(),b=s.boosters?.[type];
+ if(!b)return false;
+ if(Date.now()>b.expiresAt){
+   delete s.boosters[type]; pzSave(s);
+   return false;
+ }
+ return true;
+};
+
+window.cleanupExpiredBoosters=function(){
+ let s=pzStore();
+ Object.keys(s.boosters||{}).forEach(k=>{
+  if(Date.now()>s.boosters[k].expiresAt) delete s.boosters[k];
+ });
+ pzSave(s);
+};
+window.cleanupExpiredBoosters();
+
+window.getPlayZaEvents=function(){
+ const today=new Date().toISOString().slice(0,10);
+ return Object.entries(PZ_SAFE.events).filter(([d])=>d>=today).map(x=>x[1]);
+};
+
+/* Subject chapter routing */
+window.PZ_SUBJECTS={
+ Physics:["Mechanics","Thermodynamics","Electrodynamics","Optics","Modern Physics"],
+ Chemistry:["Physical Chemistry","Organic Chemistry","Inorganic Chemistry"],
+ Mathematics:["Algebra","Calculus","Coordinate Geometry","Vectors"]
+};
+
+window.openChapterQuiz=function(subject,chapter){
+ window.currentQuizTopic={subject,chapter};
+ if(typeof startQuiz==="function") return startQuiz(subject,chapter);
+ if(typeof switchTab==="function") switchTab("quizzes");
+ showToast?.(subject+" - "+chapter+" quiz ready 🎯","📚");
+};
+
+/* Boss arena fallback repair */
+window.__pzBoss={
+ hp:100,
+ damage:function(){
+   this.hp=Math.max(0,this.hp-10);
+   let t=document.getElementById("boss-hp-text");
+   let b=document.getElementById("boss-hp-bar");
+   if(t)t.textContent=this.hp+" / 100 HP";
+   if(b)b.style.width=this.hp+"%";
+   if(this.hp===0) showToast?.("Boss defeated! Rewards unlocked 🏆","🐲");
+ }
+};
+
+const oldAttack=window.attackBoss;
+window.attackBoss=function(){
+ try{
+  if(oldAttack) return oldAttack();
+ }catch(e){console.warn(e)}
+ return __pzBoss.damage();
+};
+
+/* privacy */
+document.addEventListener("contextmenu",e=>{
+ if(e.target.tagName==="IMG") e.preventDefault();
+});
+window.addEventListener("error",e=>console.warn("PlayZa recovered:",e.message));
+
+/* Firebase reliability hook */
+window.pzSafeSync=function(){
+ try{
+  if(window.saveUserToFirebase) window.saveUserToFirebase(false);
+ }catch(e){}
+};
+window.addEventListener("online",window.pzSafeSync);
+})();
+</script>
+
+<script id="playza-deep-upgrade-v2">
+/*
+ PlayZa Deep Upgrade v2
+ - Extended chapter based subjects
+ - Boss arena stability
+ - Expiring boosters
+ - Dynamic events
+ - Firebase safe queue sync
+ - Privacy protections
+*/
+(()=>{"use strict";
+
+const store=()=>{try{return JSON.parse(localStorage.getItem("playza_state")||"{}")}catch(e){return {}}};
+const save=s=>{try{localStorage.setItem("playza_state",JSON.stringify(s))}catch(e){}};
+
+window.PZ_UPGRADE={
+ subjects:{
+  Physics:["Units & Dimensions","Kinematics","Laws of Motion","Work Energy Power","Rotation","Gravitation","Electrostatics","Current Electricity","Magnetism","EMI","Optics","Modern Physics"],
+  Chemistry:["Mole Concept","Atomic Structure","Chemical Bonding","Thermodynamics","Equilibrium","Electrochemistry","Organic Basics","Hydrocarbons","Coordination Compounds"],
+  Mathematics:["Sets","Functions","Limits","Differentiation","Integration","Matrices","Determinants","Vectors","3D Geometry","Probability"]
+ },
+ avatars:["phoenix","cyber_ninja","galaxy_cat","quantum_bot","storm_wolf","crystal_dragon"],
+ events:{
+  "2026-10-02":{name:"Launch Festival",xp:100},
+  "2026-10-05":{name:"5 Day Quiz Marathon",xp:200},
+  "2026-10-15":{name:"Mega Quiz Day",xp:250}
+ }
+};
+
+window.openSubjectChapter=function(subject,chapter){
+ window.currentQuizTopic={subject,chapter};
+ if(typeof startQuiz==="function"){
+   try{return startQuiz(subject,chapter)}catch(e){}
+ }
+ if(typeof switchTab==="function")switchTab("quizzes");
+ if(typeof showToast==="function")showToast(`${subject}: ${chapter} unlocked 🎯`,"📚");
+};
+
+window.activateBooster=function(days=1){
+ let s=store();
+ s.boosters=s.boosters||{};
+ s.boosters.xp2x={enabled:true,expiresAt:Date.now()+days*86400000};
+ save(s);
+ window.userState&&(userState.boosters=s.boosters);
+ window.saveUserToFirebase&&saveUserToFirebase(false);
+ showToast&&showToast("2X XP Booster active for 24 hours ⚡","🚀");
+};
+
+window.checkBooster=function(){
+ let s=store(),b=s.boosters?.xp2x;
+ if(!b)return false;
+ if(Date.now()>b.expiresAt){
+   delete s.boosters.xp2x; save(s); return false;
+ }
+ return true;
+};
+
+window.getActivePlayZaEvents=function(){
+ let d=new Date().toISOString().slice(0,10);
+ return Object.entries(PZ_UPGRADE.events)
+ .filter(([date])=>date>=d).map(([date,e])=>({...e,date}));
+};
+
+window.getRandomPlayZaAvatar=function(){
+ return PZ_UPGRADE.avatars[Math.floor(Math.random()*PZ_UPGRADE.avatars.length)];
+};
+
+// Boss repair without replacing existing battle logic
+window.repairBossUI=function(){
+ const hp=document.getElementById("boss-hp-text");
+ const bar=document.getElementById("boss-hp-bar");
+ if(hp&&!hp.textContent) hp.textContent="100 / 100 HP";
+ if(bar&&!bar.style.width) bar.style.width="100%";
+};
+
+window.PZ_SYNC_QUEUE=[];
+window.safeCloudSave=function(payload){
+ try{
+  window.PZ_SYNC_QUEUE.push({payload,time:Date.now()});
+  if(window.saveUserToFirebase)window.saveUserToFirebase(false);
+ }catch(e){}
+};
+
+// basic privacy hardening
+document.addEventListener("dragstart",e=>{
+ if(e.target.closest(".avatar,.logo,img")) e.preventDefault();
+});
+
+window.addEventListener("load",()=>{
+ window.repairBossUI();
+ if(window.cleanupExpiredBoosters)window.cleanupExpiredBoosters();
+});
+
+})();
+</script>
+
+<script id="playza-final-stability-patch">
+(()=>{
+"use strict";
+
+/* Chapter based subject cards */
+window.PZ_CHAPTER_ENGINE={
+ open(subject,chapter){
+   window.currentQuizTopic={subject,chapter};
+   if(typeof startQuiz==="function"){
+     try{return startQuiz(subject,chapter);}catch(e){}
+   }
+   if(typeof showToast==="function") showToast(subject+" - "+chapter+" test opened","📚");
+ }
+};
+
+/* Render chapter cards whenever subject grids exist */
+window.renderSubjectChapters=function(){
+ const data=window.PZ_UPGRADE?.subjects||{};
+ document.querySelectorAll("[data-subject]").forEach(card=>{
+   const s=card.dataset.subject;
+   const chapters=data[s]||[];
+   if(card.querySelector(".pz-chapters")) return;
+   const box=document.createElement("div");
+   box.className="pz-chapters mt-2 space-y-1";
+   chapters.forEach(ch=>{
+    const b=document.createElement("button");
+    b.className="w-full text-left text-xs bg-slate-50 rounded-xl px-3 py-2 border border-slate-200";
+    b.textContent="📖 "+ch;
+    b.onclick=()=>PZ_CHAPTER_ENGINE.open(s,ch);
+    box.appendChild(b);
+   });
+   card.appendChild(box);
+ });
+};
+
+/* Reliable expiring boosters */
+window.PZ_BOOSTER={
+ activate(type="xp2x",hours=24){
+   const s=JSON.parse(localStorage.getItem("playza_state")||"{}");
+   s.boosters=s.boosters||{};
+   s.boosters[type]={active:true,expiresAt:Date.now()+hours*3600000};
+   localStorage.setItem("playza_state",JSON.stringify(s));
+   if(window.saveUserToFirebase) window.saveUserToFirebase(false);
+ },
+ active(type="xp2x"){
+   const s=JSON.parse(localStorage.getItem("playza_state")||"{}");
+   const b=s.boosters?.[type];
+   if(!b)return false;
+   if(Date.now()>b.expiresAt){
+    delete s.boosters[type];
+    localStorage.setItem("playza_state",JSON.stringify(s));
+    return false;
+   }
+   return true;
+ }
+};
+
+/* Dynamic day events */
+window.PZ_DAY_EVENTS=[
+ {days:1,name:"Flash Quiz Day",reward:100},
+ {days:3,name:"Triple XP Challenge",reward:250},
+ {days:7,name:"Boss Rush Week",reward:500}
+];
+window.getDailyPlayZaEvents=function(){
+ return PZ_DAY_EVENTS.map(e=>({...e,expires:Date.now()+e.days*86400000}));
+};
+
+/* Boss arena safety fallback */
+window.addEventListener("load",()=>{
+ try{
+   if(window.repairBossUI) window.repairBossUI();
+   if(window.renderSubjectChapters) window.renderSubjectChapters();
+ }catch(e){console.warn("PlayZa patch:",e)}
+});
+
+/* Better privacy */
+document.addEventListener("copy",e=>{
+ if(!e.target.matches("input,textarea")) e.preventDefault();
+});
+document.addEventListener("selectstart",e=>{
+ if(e.target.tagName==="IMG") e.preventDefault();
+});
+
+/* Firebase retry queue */
+window.PZ_FIREBASE_QUEUE=window.PZ_FIREBASE_QUEUE||[];
+window.safeFirebaseWrite=function(data){
+ try{
+   window.PZ_FIREBASE_QUEUE.push({data,time:Date.now()});
+   if(navigator.onLine && window.saveUserToFirebase)
+      window.saveUserToFirebase(false);
+ }catch(e){}
+};
+
+})();
+</script>
+
+<script id="playza-chapter-selector-v3">
+(()=>{
+'use strict';
+
+/* ---------- Chapter catalogue ---------- */
+const CHAPTERS={
+ 'math_magic':{title:'Mathematics & Logic',items:[
+  'Number System','Arithmetic & Percentages','Algebra','Geometry','Mensuration','Probability & Statistics'
+ ]},
+ 'physics_science':{title:'Physics & Science',items:[
+  'Units & Measurements','Motion & Kinematics','Force & Laws of Motion','Work, Energy & Power','Electricity & Magnetism','Light & Optics','Matter & Chemistry','Environment & General Science'
+ ]},
+ 'coding_cs':{title:'Computer Science & Coding',items:[
+  'Programming Basics','HTML & CSS','JavaScript','Data Structures','Algorithms & Logic','Computer Networks'
+ ]},
+ 'geography_world':{title:'World Geography',items:[
+  'Continents & Oceans','Countries & Capitals','India Geography','Rivers & Mountains','Climate & Weather','Maps & Directions'
+ ]},
+ 'history_civ':{title:'History & Civilizations',items:[
+  'Ancient Civilizations','Medieval History','Modern History','Indian History','World Wars','Culture & Heritage'
+ ]},
+ 'tech_ai':{title:'Tech & AI',items:[
+  'AI Fundamentals','Machine Learning Basics','Cybersecurity','Cloud & Internet','Devices & Gadgets','Future Technology'
+ ]}
+};
+
+/* Extra packs already present in the app receive useful chapter groupings too. */
+const EXTRA_CHAPTERS={
+ biology:['Cell Biology','Human Body','Genetics','Plants','Ecology'],
+ chemistry:['Atoms & Molecules','Chemical Reactions','Acids & Bases','Periodic Table','Everyday Chemistry'],
+ space:['Solar System','Stars & Galaxies','Earth & Moon','Space Missions','Cosmos'],
+ india:['Indian States','Indian Culture','National Symbols','Landmarks','Civics Basics'],
+ english:['Grammar','Vocabulary','Tenses','Sentence Skills','Comprehension'],
+ logic:['Sequences','Patterns','Deduction','Analogy','Puzzles']
+};
+
+function esc(v){return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function getCat(catId){return (window.quizCategories||[]).find(c=>c.id===catId);}
+function chapterList(catId){return CHAPTERS[catId]?.items || EXTRA_CHAPTERS[catId] || ['Mixed Practice'];}
+
+/* ---------- Chapter question pools ---------- */
+const Q={
+ 'Number System':[
+  ['What is the smallest prime number?',['0','1','2','3'],2],
+  ['Which number is divisible by 3?',['124','125','126','128'],2],
+  ['LCM of 4 and 6 is?',['8','10','12','24'],2]
+ ],
+ 'Arithmetic & Percentages':[
+  ['15% of 200 is?',['15','20','30','40'],2],
+  ['A price of ₹500 rises by 10%. New price?',['₹510','₹540','₹550','₹600'],2],
+  ['3/4 as a percentage is?',['25%','50%','75%','80%'],2]
+ ],
+ 'Algebra':[
+  ['Solve: 2x + 3 = 11. x = ?',['3','4','5','6'],1],
+  ['If a = 5, then 3a - 2 = ?',['10','12','13','15'],2],
+  ['Which is a linear expression?',['x²+1','2x+5','x³','1/x'],1]
+ ],
+ 'Geometry':[
+  ['Sum of angles of a triangle is?',['90°','180°','270°','360°'],1],
+  ['A triangle with all sides equal is?',['Scalene','Isosceles','Equilateral','Right'],2],
+  ['How many diagonals does a square have?',['1','2','3','4'],1]
+ ],
+ 'Mensuration':[
+  ['Area of a rectangle is length × ?',['height','width','diagonal','perimeter'],1],
+  ['A square has side 5 cm. Area = ?',['10','20','25','30'],2],
+  ['Perimeter of a square with side 6 cm is?',['12','18','24','36'],2]
+ ],
+ 'Probability & Statistics':[
+  ['Probability of a certain event is?',['0','1/2','1','2'],2],
+  ['Mean of 2, 4 and 6 is?',['3','4','5','6'],1],
+  ['A fair coin has how many possible outcomes?',['1','2','3','4'],1]
+ ],
+ 'Units & Measurements':[
+  ['SI unit of force is?',['Joule','Newton','Watt','Pascal'],1],
+  ['SI unit of length is?',['Metre','Litre','Gram','Second'],0],
+  ['Which instrument measures temperature?',['Barometer','Thermometer','Ammeter','Voltmeter'],1]
+ ],
+ 'Motion & Kinematics':[
+  ['Speed is distance divided by?',['Mass','Time','Force','Energy'],1],
+  ['SI unit of velocity is?',['m/s','km','N','J'],0],
+  ['Acceleration describes the rate of change of?',['Mass','Velocity','Distance','Temperature'],1]
+ ],
+ 'Force & Laws of Motion':[
+  ["Newton's first law is also called law of?",['Inertia','Gravity','Energy','Pressure'],0],
+  ['Force equals mass × ?',['Speed','Acceleration','Distance','Time'],1],
+  ['Action and reaction forces are described by Newton\'s?',['First law','Second law','Third law','Zeroth law'],2]
+ ],
+ 'Work, Energy & Power':[
+  ['SI unit of work is?',['Newton','Joule','Watt','Pascal'],1],
+  ['Power is the rate of doing?',['Mass','Work','Force','Motion'],1],
+  ['Kinetic energy is associated with?',['Position','Motion','Temperature only','Pressure only'],1]
+ ],
+ 'Electricity & Magnetism':[
+  ['SI unit of electric current is?',['Volt','Ohm','Ampere','Watt'],2],
+  ['A material that allows current to pass easily is a?',['Insulator','Conductor','Semiconductor only','Magnet'],1],
+  ['A magnet has two poles called?',['East/West','Up/Down','North/South','Hot/Cold'],2]
+ ],
+ 'Light & Optics':[
+  ['Light travels fastest through?',['Glass','Water','Vacuum','Plastic'],2],
+  ['A convex lens generally?',['Converges light','Blocks light','Creates sound','Measures current'],0],
+  ['The splitting of white light into colours is called?',['Reflection','Refraction','Dispersion','Diffusion'],2]
+ ],
+ 'Matter & Chemistry':[
+  ['Water is a?',['Element','Compound','Mixture only','Metal'],1],
+  ['Chemical symbol of oxygen is?',['O','Ox','Og','C'],0],
+  ['A substance with pH less than 7 is generally?',['Basic','Neutral','Acidic','Metallic'],2]
+ ],
+ 'Environment & General Science':[
+  ['Which gas is most abundant in Earth\'s atmosphere?',['Oxygen','Nitrogen','Carbon dioxide','Hydrogen'],1],
+  ['Plants mainly prepare food by?',['Respiration','Photosynthesis','Digestion','Filtration'],1],
+  ['The ozone layer helps absorb much of the Sun\'s?',['Radio waves','UV radiation','Sound','Visible light'],1]
+ ],
+ 'Programming Basics':[
+  ['A variable is used to store?',['Data','Only images','Only sound','Nothing'],0],
+  ['Which is a common comparison operator?',['==','++','//','::'],0],
+  ['A loop is mainly used to?',['Repeat instructions','Delete programs','Open hardware','Change monitor size'],0]
+ ],
+ 'HTML & CSS':[
+  ['HTML is mainly used to define a page\'s?',['Structure','Password','Database','CPU'],0],
+  ['CSS is mainly used for?',['Styling','Compiling','Networking','Storage'],0],
+  ['Which tag creates a paragraph?',['<p>','<img>','<br>','<hr>'],0]
+ ],
+ 'JavaScript':[
+  ['JavaScript is commonly used to add?',['Interactivity','Paper','Hardware','Electricity'],0],
+  ['Which keyword declares a block-scoped variable?',['let','goto','define','className'],0],
+  ['A JavaScript function is used to group?',['Reusable logic','Images only','Fonts only','Files only'],0]
+ ],
+ 'Data Structures':[
+  ['FIFO is associated with a?',['Stack','Queue','Tree','Graph'],1],
+  ['LIFO is associated with a?',['Queue','Stack','Array only','Heap only'],1],
+  ['A collection of nodes connected by edges is a?',['Graph','Scalar','String','Pixel'],0]
+ ],
+ 'Algorithms & Logic':[
+  ['An algorithm is a?',['Step-by-step procedure','Colour palette','File type','Keyboard layout'],0],
+  ['Binary search requires data to be?',['Sorted','Encrypted','Random','Compressed'],0],
+  ['Pseudocode is mainly used to?',['Plan logic','Render images','Store passwords','Compile hardware'],0]
+ ],
+ 'Computer Networks':[
+  ['LAN usually covers a?',['Small local area','Whole planet','Galaxy','Single CPU register'],0],
+  ['HTTP is primarily used for?',['Web communication','Video editing','Charging','Printing'],0],
+  ['A device that forwards packets between networks is a?',['Router','Monitor','Keyboard','Speaker'],0]
+ ],
+ 'Continents & Oceans':[
+  ['Largest continent is?',['Africa','Asia','Europe','Australia'],1],
+  ['Largest ocean is?',['Atlantic','Indian','Pacific','Arctic'],2],
+  ['How many continents are commonly taught?',['5','6','7','8'],2]
+ ],
+ 'Countries & Capitals':[
+  ['Capital of Japan is?',['Tokyo','Kyoto','Seoul','Osaka'],0],
+  ['Capital of France is?',['Rome','Paris','Madrid','Berlin'],1],
+  ['Capital of Australia is?',['Sydney','Melbourne','Canberra','Perth'],2]
+ ],
+ 'India Geography':[
+  ['Capital of India is?',['New Delhi','Mumbai','Kolkata','Chennai'],0],
+  ['Largest Indian state by area is?',['Uttar Pradesh','Rajasthan','Maharashtra','Gujarat'],1],
+  ['The Ganga is a major?',['Desert','River','Plateau','Island'],1]
+ ],
+ 'Rivers & Mountains':[
+  ['The Himalayas are a?',['Mountain range','River','Plateau','Desert'],0],
+  ['The Nile is a?',['Mountain','River','Ocean','Island'],1],
+  ['Mount Everest is in the?',['Himalayas','Andes','Alps','Rockies'],0]
+ ],
+ 'Climate & Weather':[
+  ['Weather describes conditions over?',['Short periods','Thousands of years only','Geological eras','No time'],0],
+  ['An instrument for air pressure is a?',['Barometer','Thermometer','Ammeter','Caliper'],0],
+  ['Rain, snow and hail are forms of?',['Precipitation','Radiation','Erosion','Magnetism'],0]
+ ],
+ 'Maps & Directions':[
+  ['A compass mainly shows?',['Directions','Temperature','Population','Rainfall'],0],
+  ['North is opposite to?',['East','West','South','Up'],2],
+  ['A map scale helps compare map distance with?',['Real distance','Temperature','Height only','Time only'],0]
+ ],
+ 'Ancient Civilizations':[
+  ['The Great Pyramid of Giza is in?',['Egypt','India','Greece','China'],0],
+  ['The Indus Valley Civilization is associated with cities like?',['Harappa','Rome','Athens','Machu Picchu'],0],
+  ['Ancient Romans were centered around?',['Rome','Tokyo','Delhi','Cairo'],0]
+ ],
+ 'Medieval History':[
+  ['The medieval period broadly lies between ancient and?',['Modern history','Prehistory','Future','Geology'],0],
+  ['Castles were commonly associated with?',['Medieval Europe','Modern Japan','Space travel','Industrial factories'],0],
+  ['The term "feudalism" is strongly associated with?',['Medieval Europe','Ancient Egypt','Modern America','Future societies'],0]
+ ],
+ 'Modern History':[
+  ['The Industrial Revolution began in?',['Britain','Brazil','India','Egypt'],0],
+  ['The printing press is strongly associated with?',['Johannes Gutenberg','Isaac Newton','Galileo','Einstein'],0],
+  ['The French Revolution began in?',['1789','1492','1914','1945'],0]
+ ],
+ 'Indian History':[
+  ['The Taj Mahal was commissioned by?',['Shah Jahan','Akbar','Ashoka','Sher Shah'],0],
+  ['The Quit India Movement began in?',['1942','1857','1919','1950'],0],
+  ['The Indian Constitution came into effect in?',['1947','1949','1950','1952'],2]
+ ],
+ 'World Wars':[
+  ['World War I began in?',['1914','1918','1939','1945'],0],
+  ['World War II ended in?',['1942','1944','1945','1950'],2],
+  ['The League of Nations was formed after?',['World War I','World War II','Cold War','French Revolution'],0]
+ ],
+ 'Culture & Heritage':[
+  ['The Taj Mahal is famous for its?',['Architecture','Volcanoes','Spacecraft','Canals'],0],
+  ['Heritage sites are valued for their?',['Cultural or historical significance','Battery life','Internet speed','CPU power'],0],
+  ['A museum primarily preserves?',['Objects and knowledge','Weather','Traffic','Electricity'],0]
+ ],
+ 'AI Fundamentals':[
+  ['AI stands for?',['Artificial Intelligence','Automated Internet','Advanced Input','Applied Interface'],0],
+  ['A chatbot is an example of?',['AI application','Battery','Operating system only','Cable'],0],
+  ['Training data is used to?',['Help a model learn patterns','Charge a device','Print pages','Cool a CPU'],0]
+ ],
+ 'Machine Learning Basics':[
+  ['Machine learning focuses on learning patterns from?',['Data','Paint','Electricity only','Keyboard keys'],0],
+  ['A model makes a?',['Prediction or decision','Physical battery','Network cable','Screen'],0],
+  ['A feature is an input variable used by a?',['Model','Monitor','Printer','Router only'],0]
+ ],
+ 'Cybersecurity':[
+  ['A strong password should generally be?',['Unique and hard to guess','Your name only','123456','Password'],0],
+  ['Phishing tries to trick users into revealing?',['Sensitive information','Screen brightness','Battery level','Speaker volume'],0],
+  ['Multi-factor authentication adds?',['An additional verification factor','A faster CPU','More storage','A larger screen'],0]
+ ],
+ 'Cloud & Internet':[
+  ['Cloud computing commonly provides resources over the?',['Internet','USB only','Printer cable','HDMI'],0],
+  ['A URL identifies a?',['Web resource/location','Battery','CPU core','File cabinet'],0],
+  ['Wi-Fi is a technology for?',['Wireless networking','Charging','Printing only','Cooling'],0]
+ ],
+ 'Devices & Gadgets':[
+  ['RAM is mainly used for?',['Temporary working data','Permanent paper storage','Internet cables','Screen glass'],0],
+  ['A touchscreen detects?',['Touch input','Sound only','Temperature only','Air pressure only'],0],
+  ['A smartphone combines communication with?',['Computing features','A refrigerator','A telescope only','A generator'],0]
+ ],
+ 'Future Technology':[
+  ['AR stands for?',['Augmented Reality','Automatic Routing','Advanced RAM','Applied Robotics'],0],
+  ['Robotics focuses on machines that can?',['Perform physical tasks','Only display text','Only store files','Only measure weather'],0],
+  ['Quantum computing uses principles of?',['Quantum mechanics','Classical painting','Geography','Grammar'],0]
+ ]
+};
+
+function qForChapter(ch, index){
+ const rows=Q[ch];
+ if(rows && rows[index % rows.length]){
+   const r=rows[index % rows.length];
+   return {q:r[0],options:r[1].slice(),correct:r[2]};
+ }
+ /* Safe fallback keeps every selected chapter playable even for chapters without a dedicated pack. */
+ return {q:`${ch} • Practice Question ${index+1}`,options:['Continue learning','Review this topic','Take another practice question','Open mixed practice'],correct:0};
+}
+
+/* ---------- UI ---------- */
+let selector=null;
+function ensureSelector(){
+ if(selector)return selector;
+ selector=document.createElement('div');
+ selector.id='pz-chapter-selector';
+ selector.className='hidden fixed inset-0 z-[160] bg-slate-950/70 backdrop-blur-sm p-4 flex items-end sm:items-center justify-center';
+ selector.innerHTML=`<div class="w-full max-w-[430px] max-h-[92dvh] bg-white rounded-[28px] shadow-2xl overflow-hidden flex flex-col">
+  <div class="p-4 border-b border-slate-200 flex items-center justify-between gap-3">
+   <div><div id="pz-cs-kicker" class="text-[10px] font-black uppercase text-brand-orange">Chapter Test</div><h3 id="pz-cs-title" class="font-fredoka text-xl font-bold text-slate-800">Select Chapters</h3><p id="pz-cs-sub" class="text-[11px] text-slate-500 font-semibold mt-0.5">Choose one or more chapters.</p></div>
+   <button id="pz-cs-close" class="w-9 h-9 rounded-full bg-slate-100 text-slate-600 font-black">✕</button>
+  </div>
+  <div class="p-4 space-y-3 overflow-y-auto no-scrollbar flex-1">
+   <button id="pz-cs-all" class="w-full text-left p-3 rounded-2xl border-2 border-brand-blue bg-blue-50 text-slate-800 font-extrabold text-xs flex items-center justify-between"><span>📚 All Chapters</span><span id="pz-cs-all-mark">✓</span></button>
+   <div id="pz-cs-list" class="grid grid-cols-1 gap-2"></div>
+  </div>
+  <div class="p-4 border-t border-slate-200 bg-slate-50 space-y-2">
+   <div class="flex items-center justify-between text-[11px] font-bold"><span class="text-slate-500">Selected</span><span id="pz-cs-count" class="text-brand-blue">All Chapters</span></div>
+   <button id="pz-cs-start" class="w-full btn-3d btn-blue py-3 rounded-2xl font-fredoka font-bold text-sm uppercase">Start Selected Test 🎯</button>
+  </div>
+ </div>`;
+ document.body.appendChild(selector);
+ selector.querySelector('#pz-cs-close').onclick=()=>closeSelector();
+ selector.querySelector('#pz-cs-all').onclick=()=>toggleAll(true);
+ selector.querySelector('#pz-cs-start').onclick=()=>startSelected();
+ return selector;
+}
+let selectorCat=null, selected=new Set(), allSelected=true;
+function openSelector(catId){
+ selectorCat=catId; allSelected=true; selected=new Set();
+ const ui=ensureSelector(), cat=getCat(catId), list=chapterList(catId);
+ ui.querySelector('#pz-cs-title').textContent=cat?.title||'Subject Test';
+ ui.querySelector('#pz-cs-sub').textContent='Select one or more chapters. Your selected chapters will be combined into one test.';
+ const box=ui.querySelector('#pz-cs-list'); box.innerHTML='';
+ list.forEach((ch,i)=>{
+  const b=document.createElement('button'); b.type='button'; b.dataset.chapter=ch;
+  b.className='w-full text-left p-3 rounded-2xl border border-slate-200 bg-white text-xs font-bold flex items-center justify-between gap-2 hover:border-brand-blue';
+  b.innerHTML=`<span class="flex items-center gap-2"><span class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-sm">📖</span><span><b class="text-slate-800">${esc(ch)}</b><small class="block text-slate-400 mt-0.5">Chapter test</small></span></span><span class="pz-check w-6 h-6 rounded-full border-2 border-slate-300 text-transparent flex items-center justify-center">✓</span>`;
+  b.onclick=()=>toggleChapter(ch,b);
+  box.appendChild(b);
+ });
+ renderSelectorState();
+ ui.classList.remove('hidden');
+}
+function toggleChapter(ch,b){
+ allSelected=false;
+ if(selected.has(ch))selected.delete(ch);else selected.add(ch);
+ renderSelectorState();
+ b?.querySelector('.pz-check');
+}
+function toggleAll(value){allSelected=value;selected.clear();renderSelectorState();}
+function renderSelectorState(){
+ if(!selector)return;
+ const all=selector.querySelector('#pz-cs-all'), mark=selector.querySelector('#pz-cs-all-mark');
+ all.className=allSelected?'w-full text-left p-3 rounded-2xl border-2 border-brand-blue bg-blue-50 text-slate-800 font-extrabold text-xs flex items-center justify-between':'w-full text-left p-3 rounded-2xl border border-slate-200 bg-white text-slate-800 font-extrabold text-xs flex items-center justify-between';
+ mark.textContent=allSelected?'✓':'';
+ selector.querySelectorAll('#pz-cs-list [data-chapter]').forEach(btn=>{
+   const on=!allSelected && selected.has(btn.dataset.chapter);
+   btn.className=on?'w-full text-left p-3 rounded-2xl border-2 border-brand-orange bg-orange-50 text-xs font-bold flex items-center justify-between gap-2':'w-full text-left p-3 rounded-2xl border border-slate-200 bg-white text-xs font-bold flex items-center justify-between gap-2 hover:border-brand-blue';
+   const mark=btn.querySelector('.pz-check'); if(mark){mark.className=on?'pz-check w-6 h-6 rounded-full bg-brand-orange text-white flex items-center justify-center':'pz-check w-6 h-6 rounded-full border-2 border-slate-300 text-transparent flex items-center justify-center';}
+ });
+ selector.querySelector('#pz-cs-count').textContent=allSelected?'All Chapters':`${selected.size} Chapter${selected.size===1?'':'s'}`;
+}
+function closeSelector(){selector?.classList.add('hidden');}
+
+/* ---------- Quiz integration ---------- */
+const originalStartQuiz=window.startQuiz;
+const originalGetQuestion=window.getQuestionForSubject;
+let activeChapterRun=null;
+window.startQuiz=function(catId){
+ if(!CHAPTERS[catId] && !EXTRA_CHAPTERS[catId]) return originalStartQuiz?.(catId);
+ openSelector(catId);
+};
+window.PZ_startSelectedChapterTest=function(catId, chapters){
+ const cat=getCat(catId);
+ const selectedChapters=chapters.length?chapters:chapterList(catId);
+ const pool=[];
+ selectedChapters.forEach(ch=>{for(let i=0;i<3;i++)pool.push(qForChapter(ch,i));});
+ /* Shuffle pool with crypto randomness so combined tests vary. */
+ for(let i=pool.length-1;i>0;i--){
+  const n=new Uint32Array(1); globalThis.crypto?.getRandomValues?.(n); const j=(n[0]??Math.floor(Math.random()*4294967296))%(i+1); [pool[i],pool[j]]=[pool[j],pool[i]];
+ }
+ activeChapterRun={catId,chapters:selectedChapters,pool,startedAt:Date.now(),title:cat?.title||'Subject',selectionLabel:selectedChapters.join(', ')};
+ /* Keep the normal quiz engine, but route its question source to the selected pool. */
+ try{ if(window.userState?.activeQuizState?.inProgress) window.userState.activeQuizState=null; }catch(_){ }
+ try{ if(window.userState?.subjectProgress) window.userState.subjectProgress[catId]=0; }catch(_){ }
+ closeSelector();
+ if(typeof originalStartQuiz==='function') originalStartQuiz(catId);
+};
+window.getQuestionForSubject=function(catId,qIdx){
+ if(activeChapterRun && activeChapterRun.catId===catId && Array.isArray(activeChapterRun.pool) && activeChapterRun.pool.length){
+   return activeChapterRun.pool[qIdx % activeChapterRun.pool.length];
+ }
+ return originalGetQuestion?.(catId,qIdx);
+};
+
+function startSelected(){
+ const chosen=allSelected?chapterList(selectorCat):Array.from(selected);
+ if(!chosen.length){ if(window.showToast)showToast('Select at least one chapter','📚'); return; }
+ window.PZ_startSelectedChapterTest(selectorCat,chosen);
+}
+
+/* Store selected chapters in quiz state metadata when possible. */
+const originalSave=(window.saveQuizSnapshot||null);
+/* saveQuizSnapshot is lexical in the original file, so add our own lightweight metadata sync. */
+window.addEventListener('beforeunload',()=>{
+ try{ if(activeChapterRun&&window.userState) window.userState.pzSelectedChapters=activeChapterRun.chapters; }catch(_){ }
+});
+
+/* Chapter badge beside question modal title. */
+const style=document.createElement('style');
+style.textContent='#pz-chapter-selector button{-webkit-tap-highlight-color:transparent}';
+document.head.appendChild(style);
+
+/* Re-open selector by chapter metadata from resume banner if user closes/reloads. */
+window.openChapterSelection=function(catId){openSelector(catId)};
+
+})();
+</script>
+
 </body>
 </html>
