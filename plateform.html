@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <title>JNR Corporation — Projects & Platforms</title>
+
+  <script src="https://cdn.tailwindcss.com" referrerpolicy="no-referrer"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              orange:'#FF5B00',
+              'orange-dark':'#D94B00',
+              mint:'#58CC02',
+              blue:'#1CB0F6',
+              purple:'#9333EA',
+              'purple-dark':'#7E22CE',
+              yellow:'#FFD000',
+              rose:'#F43F5E',
+              appbg:'#F4F7FB'
+            }
+          },
+          fontFamily: {
+            fredoka:['Fredoka','sans-serif'],
+            nunito:['Nunito','sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;min-height:100%}
+    body{font-family:'Nunito',sans-serif;background:#090d16;overflow-x:hidden;color:#172033}
+    button,input{font:inherit}
+    button{touch-action:manipulation}
+
+    .mobile-frame{
+      max-width:450px;width:100%;height:100dvh;max-height:940px;
+      border-radius:36px;overflow:hidden;position:relative;
+      background:#F4F7FB;
+      box-shadow:0 30px 80px rgba(0,0,0,.70),0 0 0 12px #1e293b;
+    }
+    @media(max-width:640px){
+      .mobile-frame{max-width:100%;height:100dvh;max-height:100dvh;border-radius:0;box-shadow:none}
+    }
+
+    .no-scrollbar::-webkit-scrollbar{display:none}
+    .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+
+    .btn-3d{position:relative;transition:transform .10s ease,box-shadow .10s ease,filter .10s ease;cursor:pointer}
+    .btn-3d:active{transform:translateY(4px)!important;box-shadow:none!important}
+
+    .btn-orange{
+      background:linear-gradient(180deg,#FF7A18,#E85C00);
+      box-shadow:0 5px 0 #B33E00,0 8px 18px rgba(255,91,0,.24);color:#fff
+    }
+    .btn-blue{
+      background:linear-gradient(180deg,#1CB0F6,#1193D4);
+      box-shadow:0 5px 0 #0C74A9,0 8px 18px rgba(28,176,246,.22);color:#fff
+    }
+
+    .game-card{
+      box-shadow:0 7px 0 rgba(15,23,42,.06),0 12px 28px rgba(15,23,42,.06)
+    }
+    .project-card{
+      transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease
+    }
+    .project-card:hover{
+      transform:translateY(-2px);
+      border-color:#CBD5E1;
+      box-shadow:0 9px 0 rgba(15,23,42,.055),0 18px 32px rgba(15,23,42,.08)
+    }
+
+    .playza-input{
+      border:2px solid #E2E8F0;border-bottom:4px solid #CBD5E1;
+      border-radius:16px;transition:.18s;background:#FAFAFA
+    }
+    .playza-input:focus{
+      outline:none;border-color:#3B82F6;border-bottom-color:#1899D6;
+      background:#fff;box-shadow:0 0 0 4px rgba(28,176,246,.11)
+    }
+
+    .filter-chip{
+      border:2px solid #E2E8F0;border-bottom:4px solid #CBD5E1;
+      background:#fff;border-radius:13px;padding:8px 11px;
+      font-size:9px;font-weight:900;color:#64748B;transition:.14s;white-space:nowrap
+    }
+    .filter-chip.active{
+      border-color:#FF5B00;border-bottom-color:#B33E00;
+      background:#FFF7ED;color:#E85C00
+    }
+    .filter-chip:active{transform:translateY(2px)}
+
+    .hero{
+      background:
+        radial-gradient(circle at 92% 8%,rgba(255,208,0,.20),transparent 29%),
+        radial-gradient(circle at 7% 88%,rgba(28,176,246,.18),transparent 30%),
+        linear-gradient(135deg,#111827 0%,#312E81 53%,#7E22CE 100%);
+    }
+    .hero-grid{
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+      background-size:32px 32px
+    }
+
+    .brand-logo{
+      width:42px;height:42px;object-fit:contain;padding:4px;border-radius:13px;
+      background:#fff;border:2px solid #E2E8F0;box-shadow:0 4px 12px rgba(15,23,42,.08)
+    }
+
+    .platform-icon{
+      width:54px;height:54px;border-radius:17px;display:flex;align-items:center;justify-content:center;
+      font-size:24px;flex:0 0 auto
+    }
+
+    .status-pill{
+      font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;
+      padding:5px 7px;border-radius:8px;display:inline-flex;align-items:center;gap:4px
+    }
+    .status-live{background:#ECFDF5;color:#047857}
+    .status-beta{background:#F5F3FF;color:#6D28D9}
+    .status-building{background:#FFF7ED;color:#C2410C}
+    .status-paused{background:#F1F5F9;color:#64748B}
+
+    .modal-backdrop{
+      background:rgba(2,6,23,.62);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)
+    }
+    .modal{
+      max-height:min(86dvh,760px);overflow-y:auto;
+      box-shadow:0 35px 90px rgba(0,0,0,.27)
+    }
+    .modal::-webkit-scrollbar{display:none}
+    .modal{-ms-overflow-style:none;scrollbar-width:none}
+
+    .mini-stat{
+      background:#fff;border:1px solid #E2E8F0;border-radius:18px;padding:11px 12px;
+      box-shadow:0 5px 14px rgba(15,23,42,.045)
+    }
+
+    .fade-in{animation:fadeIn .25s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation:none!important;transition:none!important}
+    }
+  </style>
+</head>
+
+<body class="h-full flex items-center justify-center p-0 sm:p-4">
+  <div class="mobile-frame flex flex-col">
+
+    <!-- PlayZa-style app header, but JNR is the primary brand -->
+    <header class="bg-white/95 backdrop-blur-md px-4 py-3 flex items-center justify-between shadow-sm z-30 border-b border-slate-200 shrink-0">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-11 h-11 rounded-2xl bg-white border-2 border-slate-200 flex items-center justify-center shadow-sm p-0.5 overflow-hidden">
+          <img src="logo.png" alt="JNR Corporation" class="w-full h-full object-contain" />
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-1.5">
+            <span class="font-fredoka text-base font-bold text-slate-800 truncate">JNR Corporation</span>
+            <span class="bg-slate-900 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase">HQ</span>
+          </div>
+          <p class="text-[9px] text-slate-400 font-extrabold">Projects & Platforms</p>
+        </div>
+      </div>
+
+      <button type="button" onclick="goBack()" aria-label="Go back"
+        class="w-9 h-9 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold active:scale-95 transition">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+    </header>
+
+    <main class="flex-1 overflow-y-auto no-scrollbar">
+
+      <!-- HERO -->
+      <section class="hero hero-grid p-4">
+        <div class="rounded-3xl bg-black/10 border border-white/10 p-5 relative overflow-hidden">
+          <div class="absolute -right-10 -bottom-12 w-36 h-36 rounded-full bg-white/10 blur-2xl"></div>
+
+          <div class="relative z-10">
+            <div class="inline-flex items-center gap-1.5 bg-white/12 border border-white/15 text-cyan-100 text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              JNR Corporation
+            </div>
+
+            <div class="flex items-end justify-between gap-3 mt-4">
+              <div>
+                <h1 class="font-fredoka text-3xl font-bold leading-[1.02] text-white">
+                  Built under<br><span class="text-cyan-300">JNR.</span>
+                </h1>
+                <p class="text-[10px] text-slate-300 font-bold leading-relaxed mt-2 max-w-[260px]">
+                  Discover the digital platforms, products and projects created under JNR Corporation.
+                </p>
+              </div>
+
+              <div class="w-20 h-20 rounded-[22px] bg-white shadow-xl p-2 shrink-0">
+                <img src="logo.png" alt="JNR logo" class="w-full h-full object-contain" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 mt-5">
+              <div class="rounded-2xl bg-white/10 border border-white/10 p-2.5">
+                <p id="platform-count" class="font-fredoka text-xl font-bold text-white">0</p>
+                <p class="text-[8px] text-slate-300 font-black uppercase mt-0.5">Platforms</p>
+              </div>
+              <div class="rounded-2xl bg-white/10 border border-white/10 p-2.5">
+                <p id="project-count" class="font-fredoka text-xl font-bold text-white">0</p>
+                <p class="text-[8px] text-slate-300 font-black uppercase mt-0.5">Projects</p>
+              </div>
+              <div class="rounded-2xl bg-white/10 border border-white/10 p-2.5">
+                <p id="live-count" class="font-fredoka text-xl font-bold text-white">0</p>
+                <p class="text-[8px] text-slate-300 font-black uppercase mt-0.5">Live</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEARCH / FILTER -->
+      <section class="px-4 pt-4">
+        <div class="bg-white rounded-3xl p-3 border border-slate-200 game-card">
+          <div class="playza-input h-11 flex items-center gap-2 px-3">
+            <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
+            <input id="search" type="search"
+              class="w-full bg-transparent outline-none text-[11px] font-extrabold text-slate-700 placeholder-slate-300"
+              placeholder="Search JNR projects..." autocomplete="off" />
+          </div>
+
+          <div class="flex gap-2 overflow-x-auto no-scrollbar mt-3 pb-1">
+            <button class="filter-chip active" data-filter="all">ALL</button>
+            <button class="filter-chip" data-filter="project">PROJECTS</button>
+            <button class="filter-chip" data-filter="platform">PLATFORMS</button>
+            <button class="filter-chip" data-filter="tool">TOOLS</button>
+            <button class="filter-chip" data-filter="community">COMMUNITY</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURED PLAYZA -->
+      <section class="px-4 pt-4">
+        <div class="flex items-center justify-between gap-3 mb-2.5">
+          <div>
+            <p class="text-[8px] font-black uppercase tracking-[.16em] text-brand-orange">JNR Project</p>
+            <h2 class="font-fredoka text-lg font-bold text-slate-800 mt-0.5">Featured</h2>
+          </div>
+          <span class="text-[8px] font-black text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">Under JNR</span>
+        </div>
+
+        <article id="featured-card"
+          class="rounded-3xl border-2 border-orange-200 bg-gradient-to-br from-orange-50 via-white to-violet-50 p-4 game-card">
+        </article>
+      </section>
+
+      <!-- ALL PLATFORMS -->
+      <section class="px-4 pt-5 pb-5">
+        <div class="flex items-end justify-between gap-3 mb-2.5">
+          <div>
+            <p class="text-[8px] font-black uppercase tracking-[.16em] text-brand-blue">JNR Ecosystem</p>
+            <h2 class="font-fredoka text-lg font-bold text-slate-800 mt-0.5">Projects & Platforms</h2>
+          </div>
+          <span id="shown-count" class="text-[8px] font-black text-slate-400">0 shown</span>
+        </div>
+
+        <div id="platform-grid" class="grid grid-cols-1 gap-3"></div>
+
+        <div id="empty-state" class="hidden bg-white rounded-3xl border border-slate-200 p-8 text-center game-card">
+          <div class="mx-auto w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </div>
+          <h3 class="font-fredoka text-base font-bold text-slate-800 mt-3">Nothing found</h3>
+          <p class="text-[9px] text-slate-400 font-bold mt-1">Try another search or category.</p>
+        </div>
+      </section>
+
+      <!-- INFO -->
+      <section class="px-4 pb-5">
+        <div class="rounded-3xl bg-slate-900 text-white p-4 game-card">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-cyan-300 shrink-0">
+              <i class="fa-solid fa-building text-sm"></i>
+            </div>
+            <div>
+              <p class="font-fredoka text-base font-bold">JNR Corporation</p>
+              <p class="text-[9px] text-slate-300 font-bold leading-relaxed mt-1">
+                This is the central showcase for JNR Corporation's digital ecosystem. Platform information is maintained by JNR in the page code.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="px-4 pb-6 text-center">
+        <img src="logo.png" alt="JNR Corporation" class="w-9 h-9 object-contain mx-auto rounded-xl border border-slate-200 bg-white p-1" />
+        <p class="font-fredoka text-xs font-bold text-slate-700 mt-2">JNR Corporation</p>
+        <p class="text-[8px] font-bold text-slate-400 mt-0.5">Projects • Platforms • Digital Products</p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- VIEW-ONLY DETAILS MODAL -->
+  <div id="details-modal" class="fixed inset-0 hidden items-center justify-center z-[100] p-4 modal-backdrop">
+    <div class="modal w-full max-w-md rounded-[28px] bg-white p-5">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div id="modal-icon" class="platform-icon bg-slate-100 text-slate-700">◈</div>
+          <div class="min-w-0">
+            <p id="modal-type" class="text-[8px] font-black uppercase tracking-widest text-brand-blue">Project</p>
+            <h2 id="modal-name" class="font-fredoka text-xl font-bold text-slate-800 truncate">Platform</h2>
+          </div>
+        </div>
+        <button type="button" onclick="closeDetails()" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div id="modal-status" class="mt-4"></div>
+
+      <p id="modal-description" class="text-[11px] text-slate-500 font-bold leading-relaxed mt-3"></p>
+
+      <div class="grid grid-cols-2 gap-2.5 mt-4">
+        <div class="mini-stat">
+          <p class="text-[8px] font-black uppercase tracking-wider text-slate-400">Type</p>
+          <p id="modal-type-stat" class="font-fredoka text-sm font-bold text-slate-800 mt-1">Project</p>
+        </div>
+        <div class="mini-stat">
+          <p class="text-[8px] font-black uppercase tracking-wider text-slate-400">Status</p>
+          <p id="modal-status-stat" class="font-fredoka text-sm font-bold text-slate-800 mt-1">Live</p>
+        </div>
+      </div>
+
+      <div id="modal-features-wrap" class="mt-4 hidden">
+        <p class="text-[8px] font-black uppercase tracking-wider text-slate-400 mb-2">Highlights</p>
+        <div id="modal-features" class="space-y-1.5"></div>
+      </div>
+
+      <div id="modal-link-wrap" class="mt-5">
+        <a id="modal-link" href="#" class="btn-3d btn-orange w-full py-3.5 rounded-2xl font-fredoka font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2">
+          Open Platform <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        </a>
+      </div>
+
+      <p class="text-center text-[8px] text-slate-400 font-bold mt-3">JNR Corporation • View only</p>
+    </div>
+  </div>
+
+  <script>
+    /*
+      ============================================================
+      JNR PLATFORMS — CODE ONLY
+      ------------------------------------------------------------
+      Visitors CANNOT add/edit platforms from the page.
+
+      To add a new JNR platform, only edit this array.
+      Copy one object, change its values, and save the HTML.
+
+      Available:
+        type   = project | platform | tool | community
+        status = live | beta | building | paused
+        accent = orange | blue | purple | green | rose | amber
+
+      Example:
+      {
+        id:"jnr-learn",
+        name:"JNR Learn",
+        type:"platform",
+        status:"building",
+        description:"Your description here.",
+        icon:"📚",
+        accent:"blue",
+        url:"https://example.com",
+        meta:"JNR Platform",
+        featured:false,
+        features:["Feature one","Feature two"]
+      }
+      ============================================================
+    */
+
+    const JNR_PLATFORMS = [
+      {
+        id:"playza",
+        name:"PlayZa",
+        type:"project",
+        status:"live",
+        description:"An interactive quiz, learning and gaming platform built as a JNR Corporation project.",
+        icon:"🦊",
+        accent:"orange",
+        url:"index.html",
+        meta:"JNR Project",
+        featured:true,
+        features:[
+          "Interactive quiz and learning experiences",
+          "Chapter-based content and practice",
+          "Playful game-style progression"
+        ]
+      }
+
+      // ADD FUTURE JNR PLATFORMS BELOW THIS LINE.
+      // Do not add them through the website UI.
+    ];
+
+    const ACCENTS = {
+      orange:{bg:"bg-orange-100",text:"text-orange-600"},
+      blue:{bg:"bg-blue-100",text:"text-blue-600"},
+      purple:{bg:"bg-purple-100",text:"text-purple-600"},
+      green:{bg:"bg-emerald-100",text:"text-emerald-600"},
+      rose:{bg:"bg-rose-100",text:"text-rose-600"},
+      amber:{bg:"bg-amber-100",text:"text-amber-600"}
+    };
+
+    const STATUS = {
+      live:{label:"Live",cls:"status-live"},
+      beta:{label:"Beta",cls:"status-beta"},
+      building:{label:"Building",cls:"status-building"},
+      paused:{label:"Paused",cls:"status-paused"}
+    };
+
+    let filter = "all";
+    let queryText = "";
+
+    const $ = id => document.getElementById(id);
+
+    function esc(v){
+      return String(v ?? "").replace(/[&<>"']/g,c=>({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[c]));
+    }
+
+    function typeLabel(type){
+      return ({
+        project:"Project",
+        platform:"Platform",
+        tool:"Tool",
+        community:"Community"
+      }[type] || "Project");
+    }
+
+    function statusInfo(status){
+      return STATUS[status] || STATUS.building;
+    }
+
+    function accentInfo(accent){
+      return ACCENTS[accent] || ACCENTS.blue;
+    }
+
+    function searchableText(p){
+      return `${p.name} ${p.type} ${p.status} ${p.description} ${p.meta || ""}`.toLowerCase();
+    }
+
+    function visiblePlatforms(){
+      return JNR_PLATFORMS.filter(p=>{
+        const filterOK = filter === "all" || p.type === filter;
+        return filterOK && searchableText(p).includes(queryText);
+      });
+    }
+
+    function platformCard(p){
+      const a = accentInfo(p.accent);
+      const s = statusInfo(p.status);
+
+      return `
+        <article class="project-card bg-white rounded-3xl border border-slate-200 p-4 game-card">
+          <div class="flex items-start gap-3">
+            <div class="platform-icon ${a.bg} ${a.text}">${esc(p.icon || "◈")}</div>
+
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <h3 class="font-fredoka text-base font-bold text-slate-800 truncate">${esc(p.name)}</h3>
+                    ${p.featured ? '<span class="status-pill bg-orange-50 text-orange-700"><i class="fa-solid fa-star"></i>Featured</span>' : ''}
+                  </div>
+                  <p class="text-[8px] text-slate-400 font-black uppercase tracking-wider mt-0.5">${esc(p.meta || `JNR ${typeLabel(p.type)}`)}</p>
+                </div>
+
+                <span class="status-pill ${s.cls} shrink-0">
+                  <span class="w-1.5 h-1.5 rounded-full bg-current"></span>${s.label}
+                </span>
+              </div>
+
+              <p class="text-[10px] text-slate-500 font-bold leading-relaxed mt-2">${esc(p.description)}</p>
+
+              <div class="flex items-center gap-2 mt-3">
+                <button type="button" onclick="openDetails('${esc(p.id)}')"
+                  class="btn-3d btn-blue flex-1 py-2.5 rounded-xl font-fredoka font-bold text-[9px] uppercase tracking-wide">
+                  View Details <i class="fa-solid fa-chevron-right ml-1"></i>
+                </button>
+                <a href="${esc(p.url || "#")}" ${/^https?:\/\//i.test(p.url || "") ? 'target="_blank" rel="noopener noreferrer"' : ""}
+                  class="w-11 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-xs active:scale-95 transition ${p.url ? "" : "pointer-events-none opacity-40"}"
+                  aria-label="Open ${esc(p.name)}">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function render(){
+      const all = JNR_PLATFORMS;
+      const visible = visiblePlatforms();
+
+      $("platform-grid").innerHTML = visible.map(platformCard).join("");
+      $("empty-state").classList.toggle("hidden", visible.length !== 0);
+      $("shown-count").textContent = `${visible.length} shown`;
+
+      $("platform-count").textContent = all.filter(p=>p.type==="platform").length;
+      $("project-count").textContent = all.filter(p=>p.type==="project").length;
+      $("live-count").textContent = all.filter(p=>p.status==="live").length;
+
+      const featured = all.find(p=>p.featured) || all[0];
+      renderFeatured(featured);
+    }
+
+    function renderFeatured(p){
+      const box = $("featured-card");
+      if(!p){
+        box.innerHTML = `
+          <div class="text-center py-4">
+            <p class="font-fredoka text-base font-bold text-slate-700">No featured project yet</p>
+          </div>
+        `;
+        return;
+      }
+
+      const a = accentInfo(p.accent);
+      const s = statusInfo(p.status);
+
+      box.innerHTML = `
+        <div class="flex items-start gap-3">
+          <div class="platform-icon ${a.bg} ${a.text}">${esc(p.icon || "◈")}</div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <p class="text-[8px] font-black uppercase tracking-widest text-slate-400">${esc(p.meta || "JNR Project")}</p>
+                <h3 class="font-fredoka text-xl font-bold text-slate-800 mt-0.5">${esc(p.name)}</h3>
+              </div>
+              <span class="status-pill ${s.cls}">${s.label}</span>
+            </div>
+            <p class="text-[10px] text-slate-500 font-bold leading-relaxed mt-2">${esc(p.description)}</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 mt-4">
+          <div class="bg-white/80 rounded-2xl p-2.5 border border-orange-100">
+            <i class="fa-solid fa-cubes-stacked text-orange-500 text-xs"></i>
+            <p class="font-fredoka text-[10px] font-bold text-slate-700 mt-1">JNR Project</p>
+          </div>
+          <div class="bg-white/80 rounded-2xl p-2.5 border border-orange-100">
+            <i class="fa-solid fa-bolt text-orange-500 text-xs"></i>
+            <p class="font-fredoka text-[10px] font-bold text-slate-700 mt-1">${s.label}</p>
+          </div>
+          <div class="bg-white/80 rounded-2xl p-2.5 border border-orange-100">
+            <i class="fa-solid fa-circle-info text-orange-500 text-xs"></i>
+            <p class="font-fredoka text-[10px] font-bold text-slate-700 mt-1">View Info</p>
+          </div>
+        </div>
+
+        <div class="flex gap-2 mt-4">
+          <button type="button" onclick="openDetails('${esc(p.id)}')" class="btn-3d btn-orange flex-1 py-3 rounded-2xl font-fredoka font-bold text-[10px] uppercase tracking-wide">
+            Explore ${esc(p.name)} <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      `;
+    }
+
+    function openDetails(id){
+      const p = JNR_PLATFORMS.find(x=>x.id===id);
+      if(!p) return;
+
+      const a = accentInfo(p.accent);
+      const s = statusInfo(p.status);
+
+      $("modal-icon").className = `platform-icon ${a.bg} ${a.text}`;
+      $("modal-icon").textContent = p.icon || "◈";
+      $("modal-name").textContent = p.name;
+      $("modal-type").textContent = typeLabel(p.type);
+      $("modal-description").textContent = p.description;
+      $("modal-type-stat").textContent = typeLabel(p.type);
+      $("modal-status-stat").textContent = s.label;
+      $("modal-status").innerHTML = `<span class="status-pill ${s.cls}"><span class="w-1.5 h-1.5 rounded-full bg-current"></span>${s.label}</span>`;
+
+      const features = Array.isArray(p.features) ? p.features : [];
+      $("modal-features-wrap").classList.toggle("hidden",features.length===0);
+      $("modal-features").innerHTML = features.map(f=>`
+        <div class="flex items-start gap-2 bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+          <i class="fa-solid fa-circle-check text-emerald-500 text-[9px] mt-0.5"></i>
+          <span class="text-[9px] text-slate-600 font-bold leading-relaxed">${esc(f)}</span>
+        </div>
+      `).join("");
+
+      const link = $("modal-link");
+      const wrap = $("modal-link-wrap");
+      if(p.url){
+        wrap.classList.remove("hidden");
+        link.href = p.url;
+        link.target = /^https?:\/\//i.test(p.url) ? "_blank" : "";
+        link.rel = /^https?:\/\//i.test(p.url) ? "noopener noreferrer" : "";
+      }else{
+        wrap.classList.add("hidden");
+      }
+
+      $("details-modal").classList.remove("hidden");
+      $("details-modal").classList.add("flex");
+    }
+    window.openDetails = openDetails;
+
+    function closeDetails(){
+      $("details-modal").classList.add("hidden");
+      $("details-modal").classList.remove("flex");
+    }
+    window.closeDetails = closeDetails;
+
+    $("details-modal").addEventListener("click",e=>{
+      if(e.target === $("details-modal")) closeDetails();
+    });
+
+    document.addEventListener("keydown",e=>{
+      if(e.key==="Escape") closeDetails();
+    });
+
+    document.querySelectorAll("[data-filter]").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        filter = btn.dataset.filter;
+        document.querySelectorAll("[data-filter]").forEach(b=>b.classList.toggle("active",b===btn));
+        render();
+      });
+    });
+
+    $("search").addEventListener("input",e=>{
+      queryText=e.target.value.trim().toLowerCase();
+      render();
+    });
+
+    function goBack(){
+      if(history.length > 1) history.back();
+      else location.href = "index.html";
+    }
+    window.goBack = goBack;
+
+    render();
+  </script>
+</body>
+</html>

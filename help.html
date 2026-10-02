@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#FFFFFF">
+  <title>PlayZa — Help & Feedback</title>
+
+  <script src="https://cdn.tailwindcss.com" referrerpolicy="no-referrer"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              orange:'#FF5B00','orange-dark':'#D94B00',
+              mint:'#58CC02','mint-dark':'#46A302',
+              blue:'#1CB0F6','blue-dark':'#1899D6',
+              purple:'#9333EA','purple-dark':'#7E22CE',
+              yellow:'#FFD000',rose:'#F43F5E',appbg:'#F4F7FB'
+            }
+          },
+          fontFamily: { fredoka:['Fredoka','sans-serif'], nunito:['Nunito','sans-serif'] }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{min-height:100%;margin:0}
+    body{font-family:'Nunito',sans-serif;background:#090d16;overflow-x:hidden}
+    button,input,textarea,select{font:inherit}
+    input,textarea,select{user-select:text!important;-webkit-user-select:text!important}
+    button{touch-action:manipulation}
+    .mobile-frame{
+      max-width:450px;width:100%;height:100dvh;max-height:940px;border-radius:36px;overflow:hidden;
+      position:relative;background:linear-gradient(180deg,#fbfdff 0%,#f4f7fb 100%);
+      box-shadow:0 30px 80px rgba(0,0,0,.70),0 0 0 12px #1e293b;
+    }
+    @media(max-width:640px){.mobile-frame{max-width:100%;height:100dvh;max-height:100dvh;border-radius:0;box-shadow:none}}
+    .no-scrollbar::-webkit-scrollbar{display:none}
+    .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+    .game-card{box-shadow:0 7px 0 rgba(15,23,42,.06),0 12px 28px rgba(15,23,42,.06)}
+    .soft-shadow{box-shadow:0 7px 0 rgba(15,23,42,.045),0 16px 34px rgba(15,23,42,.075)}
+    .btn-3d{position:relative;transition:transform .12s ease,box-shadow .12s ease,filter .12s ease;cursor:pointer}
+    .btn-3d:active{transform:translateY(4px)!important;box-shadow:none!important}
+    .btn-orange{background:linear-gradient(180deg,#FF7A18 0%,#E85C00 100%);box-shadow:0 5px 0 #B33E00,0 10px 22px rgba(255,91,0,.25);color:#fff}
+    .playza-input{width:100%;border:2px solid #E2E8F0;border-bottom:4px solid #CBD5E1;border-radius:16px;transition:.18s;background:#FAFAFA;min-height:50px}
+    .playza-input:focus{outline:none;border-color:#9333EA;border-bottom-color:#7E22CE;background:#fff;box-shadow:0 0 0 4px rgba(147,51,234,.12)}
+    .playza-input[readonly]{cursor:not-allowed}
+    textarea.playza-input{min-height:116px;resize:vertical}
+    .choice{border:2px solid #e2e8f0;background:#fff;border-bottom:4px solid #cbd5e1;border-radius:14px;padding:10px 11px;min-height:50px;font-size:10px;font-weight:900;text-align:left;transition:.16s}
+    .choice:hover{transform:translateY(-1px);border-color:#cbd5e1}
+    .choice.active{border-color:#9333ea;border-bottom-color:#7e22ce;background:#faf5ff;color:#7e22ce;transform:translateY(-1px);box-shadow:0 5px 12px rgba(147,51,234,.10)}
+    .hero{
+      background:
+        radial-gradient(circle at 92% 6%,rgba(255,208,0,.20),transparent 28%),
+        radial-gradient(circle at 4% 94%,rgba(28,176,246,.17),transparent 31%),
+        linear-gradient(135deg,#0F172A 0%,#4338CA 48%,#9333EA 100%);
+    }
+    .hero-glow{position:absolute;width:180px;height:180px;right:-45px;bottom:-70px;background:radial-gradient(circle,rgba(255,255,255,.17),transparent 65%);pointer-events:none}
+    .zippy-mascot{width:100%;height:100%;display:block}
+    .zippy-wrap{animation:zippyFloat 3s ease-in-out infinite;filter:drop-shadow(0 16px 20px rgba(30,41,59,.22))}
+    @keyframes zippyFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+    .tab{border:2px solid #E2E8F0;border-bottom-width:4px;background:#fff;color:#64748B;min-height:48px;border-radius:15px;font-weight:900;font-size:11px;transition:.15s}
+    .tab.active{border-color:#FF7A18;border-bottom-color:#B33E00;background:#FFF7ED;color:#E85C00;box-shadow:0 5px 12px rgba(255,91,0,.10)}
+    .progress-track{background:#eef2f7;border-radius:999px;overflow:hidden}
+    .progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#FF7A18,#A855F7,#3B82F6);transition:width .25s ease}
+    .toast-pop{animation:toastIn .3s cubic-bezier(.175,.885,.32,1.275) forwards}
+    @keyframes toastIn{0%{transform:translate(-50%,-24px) scale(.9);opacity:0}100%{transform:translate(-50%,0) scale(1);opacity:1}}
+    .spin{animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    .success-pulse{animation:successPulse .55s ease}@keyframes successPulse{50%{transform:scale(1.015)}}
+    .section-kicker{font-size:9px;letter-spacing:.13em;text-transform:uppercase;font-weight:900}
+    .required-star{color:#e11d48;font-weight:900}
+    .faq-item{transition:.16s}.faq-answer{max-height:0;overflow:hidden;transition:max-height .22s ease,opacity .22s ease;opacity:0}
+    .faq-item.open .faq-answer{max-height:180px;opacity:1}.faq-item.open .faq-chevron{transform:rotate(180deg)}
+    @media(prefers-reduced-motion:reduce){.zippy-wrap{animation:none}*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+
+<body class="h-full flex items-center justify-center p-0 sm:p-4">
+  <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] pointer-events-none w-[calc(100%-24px)] max-w-xs"></div>
+
+  <div class="mobile-frame flex flex-col">
+    <header class="bg-white/95 backdrop-blur-md px-4 py-3 flex items-center justify-between shadow-sm z-30 border-b border-slate-200 shrink-0">
+      <button type="button" onclick="window.location.href='index.html'" aria-label="Go back" class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center text-sm font-bold active:scale-95 transition">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <div class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-100 to-orange-100 border-2 border-brand-orange flex items-center justify-center overflow-hidden p-0.5">
+          <svg class="zippy-mascot" viewBox="0 0 200 200" aria-label="Zippy the PlayZa fox mascot" role="img">
+  <path d="M 45 85 C 45 25, 155 25, 155 85" stroke="#1CB0F6" stroke-width="12" stroke-linecap="round" fill="none"/>
+  <path d="M 45 85 C 45 25, 155 25, 155 85" stroke="#1899D6" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <path d="M 50 145 Q 100 185 150 145 L 165 190 Q 100 200 35 190 Z" fill="#8A2BE2"/>
+  <g class="fox-head">
+    <g class="fox-ear-left">
+      <polygon points="50,85 15,25 80,60" fill="#FF6B00" stroke="#D95B00" stroke-width="3" stroke-linejoin="round"/>
+      <polygon points="48,78 26,36 70,62" fill="#FFF2E6"/>
+    </g>
+    <g class="fox-ear-right">
+      <polygon points="150,85 185,25 120,60" fill="#FF6B00" stroke="#D95B00" stroke-width="3" stroke-linejoin="round"/>
+      <polygon points="152,78 174,36 130,62" fill="#FFF2E6"/>
+    </g>
+    <path d="M 40 100 C 40 45, 160 45, 160 100 C 160 145, 130 160, 100 160 C 70 160, 40 145, 40 100 Z" fill="#FF6B00"/>
+    <path d="M 42 108 Q 20 120, 60 142 C 80 152, 120 152, 140 142 Q 180 120, 158 108 C 145 130, 55 130, 42 108 Z" fill="#FFFFFF"/>
+    <rect x="30" y="70" width="18" height="32" rx="9" fill="#1CB0F6" stroke="#1899D6" stroke-width="3"/>
+    <rect x="152" y="70" width="18" height="32" rx="9" fill="#1CB0F6" stroke="#1899D6" stroke-width="3"/>
+    <circle cx="39" cy="86" r="4" fill="#FFFFFF"/><circle cx="161" cy="86" r="4" fill="#FFFFFF"/>
+    <circle cx="72" cy="92" r="16" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="2"/>
+    <circle cx="128" cy="92" r="16" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="2"/>
+    <g class="fox-pupil-left">
+      <circle cx="74" cy="92" r="8" fill="#3C3C3C"/><circle cx="71" cy="89" r="3" fill="#FFFFFF"/>
+    </g>
+    <g class="fox-pupil-right">
+      <circle cx="126" cy="92" r="8" fill="#3C3C3C"/><circle cx="123" cy="89" r="3" fill="#FFFFFF"/>
+    </g>
+    <ellipse cx="55" cy="115" rx="8" ry="4" fill="#FF9E9E" opacity=".7"/>
+    <ellipse cx="145" cy="115" rx="8" ry="4" fill="#FF9E9E" opacity=".7"/>
+    <path d="M 92 112 Q 100 108 108 112 Q 100 124 92 112 Z" fill="#2C2C2C"/>
+    <circle cx="98" cy="112" r="1.5" fill="#FFFFFF"/>
+    <path d="M 90 124 Q 100 130 100 125 Q 100 130 110 124" stroke="#3C3C3C" stroke-width="3" stroke-linecap="round" fill="none"/>
+  </g>
+</svg>
+        </div>
+        <div class="leading-tight">
+          <div class="flex items-center gap-1.5">
+            <span class="font-fredoka text-base font-bold text-slate-800">PlayZa</span>
+            <span class="bg-blue-100 text-brand-blue text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase">HELP</span>
+          </div>
+          <p class="text-[9px] text-slate-400 font-extrabold">Support Center</p>
+        </div>
+      </div>
+      <div class="w-10 h-10 rounded-2xl bg-blue-100 text-brand-blue flex items-center justify-center"><i class="fa-solid fa-headset text-sm"></i></div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4 pb-8">
+      <section class="hero rounded-3xl p-5 text-white relative overflow-hidden soft-shadow">
+        <div class="hero-glow"></div>
+        <div class="relative z-10 pr-24">
+          <div class="inline-flex items-center gap-1.5 bg-yellow-300 text-slate-950 text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider">
+            <i class="fa-solid fa-life-ring"></i> Help & feedback
+          </div>
+          <h1 class="font-fredoka text-[29px] font-bold leading-[1.05] mt-3">Need help?<br>Talk to PlayZa. 🦊</h1>
+          <p class="text-[11px] text-blue-100 font-bold leading-relaxed mt-2">Find a quick answer, report a problem, or send an idea directly to the PlayZa team.</p>
+        </div>
+        <div class="absolute right-3 bottom-2 w-24 h-24 zippy-wrap pointer-events-none"><svg class="zippy-mascot" viewBox="0 0 200 200" aria-label="Zippy the PlayZa fox mascot" role="img">
+  <path d="M 45 85 C 45 25, 155 25, 155 85" stroke="#1CB0F6" stroke-width="12" stroke-linecap="round" fill="none"/>
+  <path d="M 45 85 C 45 25, 155 25, 155 85" stroke="#1899D6" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <path d="M 50 145 Q 100 185 150 145 L 165 190 Q 100 200 35 190 Z" fill="#8A2BE2"/>
+  <g class="fox-head">
+    <g class="fox-ear-left">
+      <polygon points="50,85 15,25 80,60" fill="#FF6B00" stroke="#D95B00" stroke-width="3" stroke-linejoin="round"/>
+      <polygon points="48,78 26,36 70,62" fill="#FFF2E6"/>
+    </g>
+    <g class="fox-ear-right">
+      <polygon points="150,85 185,25 120,60" fill="#FF6B00" stroke="#D95B00" stroke-width="3" stroke-linejoin="round"/>
+      <polygon points="152,78 174,36 130,62" fill="#FFF2E6"/>
+    </g>
+    <path d="M 40 100 C 40 45, 160 45, 160 100 C 160 145, 130 160, 100 160 C 70 160, 40 145, 40 100 Z" fill="#FF6B00"/>
+    <path d="M 42 108 Q 20 120, 60 142 C 80 152, 120 152, 140 142 Q 180 120, 158 108 C 145 130, 55 130, 42 108 Z" fill="#FFFFFF"/>
+    <rect x="30" y="70" width="18" height="32" rx="9" fill="#1CB0F6" stroke="#1899D6" stroke-width="3"/>
+    <rect x="152" y="70" width="18" height="32" rx="9" fill="#1CB0F6" stroke="#1899D6" stroke-width="3"/>
+    <circle cx="39" cy="86" r="4" fill="#FFFFFF"/><circle cx="161" cy="86" r="4" fill="#FFFFFF"/>
+    <circle cx="72" cy="92" r="16" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="2"/>
+    <circle cx="128" cy="92" r="16" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="2"/>
+    <g class="fox-pupil-left">
+      <circle cx="74" cy="92" r="8" fill="#3C3C3C"/><circle cx="71" cy="89" r="3" fill="#FFFFFF"/>
+    </g>
+    <g class="fox-pupil-right">
+      <circle cx="126" cy="92" r="8" fill="#3C3C3C"/><circle cx="123" cy="89" r="3" fill="#FFFFFF"/>
+    </g>
+    <ellipse cx="55" cy="115" rx="8" ry="4" fill="#FF9E9E" opacity=".7"/>
+    <ellipse cx="145" cy="115" rx="8" ry="4" fill="#FF9E9E" opacity=".7"/>
+    <path d="M 92 112 Q 100 108 108 112 Q 100 124 92 112 Z" fill="#2C2C2C"/>
+    <circle cx="98" cy="112" r="1.5" fill="#FFFFFF"/>
+    <path d="M 90 124 Q 100 130 100 125 Q 100 130 110 124" stroke="#3C3C3C" stroke-width="3" stroke-linecap="round" fill="none"/>
+  </g>
+</svg></div>
+      </section>
+
+      <section class="grid grid-cols-3 gap-2">
+        <button type="button" onclick="scrollToSection('quick-help')" class="bg-white rounded-2xl border border-slate-200 p-3 game-card text-left">
+          <div class="w-8 h-8 rounded-xl bg-blue-100 text-brand-blue flex items-center justify-center"><i class="fa-solid fa-circle-question text-xs"></i></div>
+          <p class="font-fredoka text-[11px] font-bold text-slate-800 mt-2">Quick Help</p><p class="text-[9px] text-slate-500 font-bold mt-0.5">Common questions.</p>
+        </button>
+        <button type="button" onclick="setKind('Bug Report');scrollToSection('feedback-form')" class="bg-white rounded-2xl border border-slate-200 p-3 game-card text-left">
+          <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center"><i class="fa-solid fa-bug text-xs"></i></div>
+          <p class="font-fredoka text-[11px] font-bold text-slate-800 mt-2">Report Bug</p><p class="text-[9px] text-slate-500 font-bold mt-0.5">Tell us what broke.</p>
+        </button>
+        <button type="button" onclick="setKind('Feature Idea');scrollToSection('feedback-form')" class="bg-white rounded-2xl border border-slate-200 p-3 game-card text-left">
+          <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center"><i class="fa-solid fa-lightbulb text-xs"></i></div>
+          <p class="font-fredoka text-[11px] font-bold text-slate-800 mt-2">Share Idea</p><p class="text-[9px] text-slate-500 font-bold mt-0.5">Suggest an improvement.</p>
+        </button>
+      </section>
+
+      <section id="quick-help" class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 game-card">
+        <div class="mb-3">
+          <div class="section-kicker text-brand-blue">Quick help</div>
+          <h2 class="font-fredoka text-xl font-bold text-slate-800 mt-0.5">Common questions</h2>
+          <p class="text-[10px] text-slate-500 font-bold mt-1">Tap a question to open the answer.</p>
+        </div>
+
+        <div class="space-y-2">
+          <div class="faq-item border border-slate-200 rounded-2xl overflow-hidden">
+            <button type="button" onclick="toggleFaq(this)" class="w-full p-3 bg-white text-left flex items-center justify-between gap-3">
+              <span class="font-fredoka text-xs font-bold text-slate-800">Why can’t I submit a beta application?</span>
+              <i class="faq-chevron fa-solid fa-chevron-down text-[10px] text-slate-400 transition-transform"></i>
+            </button>
+            <div class="faq-answer px-3 pb-3 text-[10px] text-slate-500 font-bold leading-relaxed">Beta applications require a signed-in PlayZa Firebase account and all required fields. One application per account is also enforced.</div>
+          </div>
+          <div class="faq-item border border-slate-200 rounded-2xl overflow-hidden">
+            <button type="button" onclick="toggleFaq(this)" class="w-full p-3 bg-white text-left flex items-center justify-between gap-3">
+              <span class="font-fredoka text-xs font-bold text-slate-800">My progress looks different on another device.</span>
+              <i class="faq-chevron fa-solid fa-chevron-down text-[10px] text-slate-400 transition-transform"></i>
+            </button>
+            <div class="faq-answer px-3 pb-3 text-[10px] text-slate-500 font-bold leading-relaxed">Make sure you are signed in with the same PlayZa account. Some temporary data may remain local to the device.</div>
+          </div>
+          <div class="faq-item border border-slate-200 rounded-2xl overflow-hidden">
+            <button type="button" onclick="toggleFaq(this)" class="w-full p-3 bg-white text-left flex items-center justify-between gap-3">
+              <span class="font-fredoka text-xs font-bold text-slate-800">What should I include in a bug report?</span>
+              <i class="faq-chevron fa-solid fa-chevron-down text-[10px] text-slate-400 transition-transform"></i>
+            </button>
+            <div class="faq-answer px-3 pb-3 text-[10px] text-slate-500 font-bold leading-relaxed">Tell us what you expected, what happened, where it happened, and steps that reproduce it. Device/OS details are useful too.</div>
+          </div>
+          <div class="faq-item border border-slate-200 rounded-2xl overflow-hidden">
+            <button type="button" onclick="toggleFaq(this)" class="w-full p-3 bg-white text-left flex items-center justify-between gap-3">
+              <span class="font-fredoka text-xs font-bold text-slate-800">Can I send an idea instead of a bug report?</span>
+              <i class="faq-chevron fa-solid fa-chevron-down text-[10px] text-slate-400 transition-transform"></i>
+            </button>
+            <div class="faq-answer px-3 pb-3 text-[10px] text-slate-500 font-bold leading-relaxed">Yes. Choose Feature Idea or General Feedback and describe the change you would like to see.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="feedback-form" class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 game-card">
+        <div class="flex items-start justify-between gap-3 mb-4">
+          <div>
+            <div class="section-kicker text-brand-purple">Support request</div>
+            <h2 class="font-fredoka text-xl font-bold text-slate-800 mt-0.5">Send help or feedback</h2>
+            <p id="mode-help" class="text-[10px] text-slate-500 font-bold mt-1 leading-relaxed">Ask a question, report a problem, or share an idea with enough detail for the team to understand it.</p>
+          </div>
+          <div id="firebase-badge" class="shrink-0 bg-slate-100 text-slate-500 text-[9px] font-black px-2 py-1 rounded-lg uppercase"><i class="fa-solid fa-circle-notch spin mr-1"></i> Checking</div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 mb-4">
+          <button type="button" id="tab-help" class="tab active" onclick="setMode('help')"><i class="fa-solid fa-life-ring mr-1"></i> HELP</button>
+          <button type="button" id="tab-feedback" class="tab" onclick="setMode('feedback')"><i class="fa-solid fa-comment-dots mr-1"></i> FEEDBACK</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5 mb-4">
+          <button type="button" class="choice active" data-kind="General Help" onclick="setKind(this)"><i class="fa-solid fa-circle-question mr-2"></i>General Help</button>
+          <button type="button" class="choice" data-kind="Bug Report" onclick="setKind(this)"><i class="fa-solid fa-bug mr-2"></i>Bug Report</button>
+          <button type="button" class="choice" data-kind="Feature Idea" onclick="setKind(this)"><i class="fa-solid fa-lightbulb mr-2"></i>Feature Idea</button>
+          <button type="button" class="choice" data-kind="General Feedback" onclick="setKind(this)"><i class="fa-solid fa-message mr-2"></i>General Feedback</button>
+        </div>
+
+        <div class="mb-4">
+          <div class="flex items-center justify-between text-[9px] font-black text-slate-400 mb-1.5"><span>Request progress</span><span id="progress-value">0%</span></div>
+          <div class="progress-track h-2"><div id="progress-bar" class="progress-fill" style="width:0%"></div></div>
+        </div>
+
+        <form id="support-form" class="space-y-4" novalidate>
+          <div>
+            <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Your Name <span class="required-star">*</span></label>
+            <div class="relative"><i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input id="support-name" name="name" required maxlength="80" autocomplete="name" placeholder="Your name" class="playza-input pl-11 pr-4 py-3 text-xs font-bold text-slate-800 placeholder-slate-300">
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 tracking-wider">PlayZa Email</label>
+              <span id="support-email-status" class="text-[9px] font-black bg-slate-100 text-slate-500 px-2 py-1 rounded-lg">Checking…</span>
+            </div>
+            <div class="relative"><i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input id="support-email" name="email" type="email" readonly class="playza-input pl-11 pr-4 py-3 text-xs font-bold bg-slate-50 text-slate-700">
+            </div>
+            <p id="email-help" class="text-[9px] text-slate-400 font-bold mt-1">Signed-in account email is added automatically.</p>
+          </div>
+
+          <div>
+            <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Where does this relate to?</label>
+            <select id="support-area" name="area" class="playza-input px-4 py-3 text-xs font-bold bg-white">
+              <option value="">Select an area</option><option>Home / Dashboard</option><option>Quiz / Chapters</option><option>Battle / Game Mode</option>
+              <option>Profile / Account</option><option>Settings</option><option>Shop / Gems</option><option>Beta Program</option>
+              <option>Performance / Loading</option><option>Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Subject <span class="required-star">*</span></label>
+            <div class="relative"><i class="fa-solid fa-pen absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input id="support-subject" name="subject" required maxlength="140" placeholder="e.g. Quiz page freezes after submitting" class="playza-input pl-11 pr-4 py-3 text-xs font-bold">
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5"><label class="block font-fredoka text-xs uppercase font-bold text-slate-500 tracking-wider">Message <span class="required-star">*</span></label><span id="message-count" class="text-[9px] font-black text-slate-400">0/3000</span></div>
+            <textarea id="support-message" name="message" required minlength="20" maxlength="3000" placeholder="Explain the problem, ask your question, or describe your idea in detail..." class="playza-input px-4 py-3 text-xs font-bold leading-relaxed"></textarea>
+            <p class="text-[9px] text-slate-400 font-bold mt-1">Minimum 20 characters.</p>
+          </div>
+
+          <div>
+            <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Device / OS</label>
+            <select id="support-device" name="device" class="playza-input px-4 py-3 text-xs font-bold bg-white">
+              <option value="">Select device / OS</option><option>Android Mobile</option><option>iPhone / iOS</option><option>Windows PC</option>
+              <option>Linux PC</option><option>macOS</option><option>ChromeOS</option><option>Tablet</option><option>Multiple Devices</option>
+            </select>
+          </div>
+
+          <div id="bug-fields" class="hidden space-y-4">
+            <div>
+              <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Severity</label>
+              <select id="support-severity" name="severity" class="playza-input px-4 py-3 text-xs font-bold bg-white">
+                <option value="">Select severity</option>
+                <option>Low — cosmetic or small inconvenience</option><option>Medium — feature affected but workaround exists</option>
+                <option>High — important feature is difficult to use</option><option>Critical — major blocking problem</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Steps to Reproduce</label>
+              <textarea id="support-steps" name="steps_to_reproduce" maxlength="1800" rows="4" placeholder="1. Open...&#10;2. Tap...&#10;3. Notice..." class="playza-input px-4 py-3 text-xs font-bold leading-relaxed"></textarea>
+            </div>
+            <div>
+              <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Expected vs Actual</label>
+              <textarea id="support-expected" name="expected_vs_actual" maxlength="1600" rows="3" placeholder="Expected: ...&#10;Actual: ..." class="playza-input px-4 py-3 text-xs font-bold leading-relaxed"></textarea>
+            </div>
+          </div>
+
+          <div id="feedback-fields" class="hidden">
+            <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">What would make this better?</label>
+            <textarea id="support-improvement" name="improvement" maxlength="1600" rows="3" placeholder="Describe the improvement, preferred behavior, or feature idea..." class="playza-input px-4 py-3 text-xs font-bold leading-relaxed"></textarea>
+          </div>
+
+          <div>
+            <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Related Link (optional)</label>
+            <input id="support-link" name="related_link" type="url" maxlength="500" placeholder="https://..." class="playza-input px-4 py-3 text-xs font-bold">
+          </div>
+
+          <div class="rounded-2xl bg-gradient-to-r from-blue-50 via-white to-orange-50 border border-slate-200 p-3.5 flex gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-white border border-slate-200 text-brand-blue flex items-center justify-center shrink-0"><i class="fa-solid fa-shield-halved text-xs"></i></div>
+            <div><p class="text-[10px] font-black text-slate-700">Keep private information private</p><p class="text-[9px] text-slate-500 font-bold leading-relaxed mt-0.5">Never send passwords, recovery codes, private keys, API secrets or other credentials.</p></div>
+          </div>
+
+          <div id="application-status" class="hidden rounded-2xl p-3 text-xs font-extrabold"></div>
+
+          <button type="submit" id="btn-submit" class="w-full btn-3d btn-orange py-4 rounded-2xl font-fredoka font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i><span>Send to PlayZa Team</span>
+          </button>
+          <button type="button" id="clear-draft" class="w-full py-2 text-[10px] font-black text-slate-400 hover:text-rose-500 transition"><i class="fa-solid fa-trash-can mr-1"></i> Clear saved draft</button>
+        </form>
+      </section>
+
+      <section class="rounded-2xl bg-slate-900 p-4 text-white">
+        <div class="flex items-center justify-between gap-3">
+          <div><div class="section-kicker text-cyan-300">Support delivery</div>
+            <p class="font-fredoka text-sm font-bold mt-1">Messages go to jn.corporation@proton.me</p>
+            <p class="text-[9px] text-slate-300 font-bold leading-relaxed mt-1">The request is saved to Firebase first, then sent through FormSubmit.</p>
+          </div>
+          <div class="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-cyan-300 shrink-0"><i class="fa-solid fa-paper-plane text-sm"></i></div>
+        </div>
+      </section>
+
+      <div class="text-center px-2 pb-2"><p class="text-[9px] text-slate-400 font-bold">PlayZa Developer Lab • Help & Feedback</p></div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey:"AIzaSyC7bEYtEIk4DN3edQKievh-ek89tWS4awc",
+      authDomain:"playza-87102.firebaseapp.com",
+      projectId:"playza-87102",
+      storageBucket:"playza-87102.firebasestorage.app",
+      messagingSenderId:"695215345584",
+      appId:"1:695215345584:web:14fc00081f035046979075"
+    };
+
+    const FORM_ENDPOINT = "https://formsubmit.co/ajax/jn.corporation@proton.me";
+    const RECEIVER = "jn.corporation@proton.me";
+    const APP_VERSION = "1.0.0-help-feedback";
+    const DRAFT_KEY = "playza_help_feedback_draft_v1";
+
+    const app=initializeApp(firebaseConfig);
+    const auth=getAuth(app);
+    const db=getFirestore(app);
+
+    let currentUser=null, submitting=false, currentMode="help", currentKind="General Help";
+    const $=id=>document.getElementById(id);
+
+    function esc(value){
+      return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    }
+    function toast(message,type="info"){
+      const host=$("toast-container"), item=document.createElement("div");
+      const bg=type==="success"?"bg-emerald-600":type==="error"?"bg-rose-600":"bg-slate-900";
+      item.className=`toast-pop fixed left-1/2 ${bg} text-white px-4 py-3 rounded-2xl shadow-xl text-xs font-bold flex items-center gap-2`;
+      item.innerHTML=`<i class="fa-solid ${type==="success"?"fa-circle-check":type==="error"?"fa-circle-exclamation":"fa-circle-info"}"></i><span>${esc(message)}</span>`;
+      host.appendChild(item);setTimeout(()=>item.remove(),3600);
+    }
+    function setStatus(type,message){
+      const box=$("application-status");
+      const styles={success:"bg-emerald-50 text-emerald-700 border border-emerald-200",error:"bg-rose-50 text-rose-700 border border-rose-200",info:"bg-indigo-50 text-indigo-700 border border-indigo-200"};
+      box.className=`rounded-2xl p-3 text-xs font-extrabold ${styles[type]||styles.info}`;
+      box.innerHTML=`<i class="fa-solid ${type==="success"?"fa-circle-check":type==="error"?"fa-circle-exclamation":"fa-circle-info"} mr-1"></i>${esc(message)}`;
+    }
+    function setBusy(on){
+      const b=$("btn-submit");b.disabled=on;b.classList.toggle("opacity-70",on);
+      b.innerHTML=on?'<i class="fa-solid fa-spinner spin"></i><span>Sending…</span>':'<i class="fa-solid fa-paper-plane"></i><span>Send to PlayZa Team</span>';
+    }
+    function setMode(mode){
+      currentMode=mode==="feedback"?"feedback":"help";
+      $("tab-help").classList.toggle("active",currentMode==="help");
+      $("tab-feedback").classList.toggle("active",currentMode==="feedback");
+      $("mode-help").textContent=currentMode==="feedback"
+        ?"Share an idea, suggestion or general product feedback with the PlayZa team."
+        :"Ask a question or report an issue. Give enough detail for the team to understand it.";
+      $("feedback-fields").classList.toggle("hidden",currentMode!=="feedback");
+      updateProgress();
+    }
+    window.setMode=setMode;
+
+    function setKind(buttonOrKind){
+      const kind=typeof buttonOrKind==="string"?buttonOrKind:buttonOrKind?.dataset.kind;
+      currentKind=kind||"General Help";
+      document.querySelectorAll("[data-kind]").forEach(btn=>btn.classList.toggle("active",btn.dataset.kind===currentKind));
+      const isBug=currentKind==="Bug Report";
+      const isFeedback=currentKind==="Feature Idea"||currentKind==="General Feedback";
+      $("bug-fields").classList.toggle("hidden",!isBug);
+      if(isBug)setMode("help");
+      else if(isFeedback)setMode("feedback");
+      updateProgress();
+    }
+    window.setKind=setKind;
+
+    function toggleFaq(button){button.closest(".faq-item").classList.toggle("open")}
+    window.toggleFaq=toggleFaq;
+    function scrollToSection(id){document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"})}
+    window.scrollToSection=scrollToSection;
+
+    function updateProgress(){
+      const required=[
+        $("support-name").value.trim().length>=2,
+        $("support-subject").value.trim().length>=3,
+        $("support-message").value.trim().length>=20
+      ];
+      const done=required.filter(Boolean).length,pct=Math.round(done/required.length*100);
+      $("progress-bar").style.width=`${pct}%`; $("progress-value").textContent=`${pct}%`; $("message-count").textContent=`${$("support-message").value.length}/3000`;
+    }
+    function saveDraft(){
+      const d={
+        name:$("support-name").value,area:$("support-area").value,subject:$("support-subject").value,
+        message:$("support-message").value,device:$("support-device").value,severity:$("support-severity").value,
+        steps:$("support-steps").value,expected:$("support-expected").value,improvement:$("support-improvement").value,
+        link:$("support-link").value,mode:currentMode,kind:currentKind,savedAt:Date.now()
+      };
+      try{localStorage.setItem(DRAFT_KEY,JSON.stringify(d))}catch(_){}
+    }
+    function restoreDraft(){
+      try{
+        const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");if(!d)return;
+        $("support-name").value=d.name||"";$("support-area").value=d.area||"";$("support-subject").value=d.subject||"";
+        $("support-message").value=d.message||"";$("support-device").value=d.device||"";
+        $("support-severity").value=d.severity||"";$("support-steps").value=d.steps||"";
+        $("support-expected").value=d.expected||"";$("support-improvement").value=d.improvement||"";
+        $("support-link").value=d.link||"";setMode(d.mode||"help");setKind(d.kind||"General Help");updateProgress();
+        toast("Your saved help/feedback draft was restored.","info");
+      }catch(_){try{localStorage.removeItem(DRAFT_KEY)}catch(__){}}
+    }
+    function applyAuthState(user){
+      currentUser=user||null;
+      const badge=$("firebase-badge"), emailBadge=$("support-email-status");
+      if(user?.uid&&user?.email){
+        $("support-email").value=user.email;
+        badge.className="shrink-0 bg-emerald-50 text-emerald-700 text-[9px] font-black px-2 py-1 rounded-lg uppercase";
+        badge.innerHTML='<i class="fa-solid fa-circle-check mr-1"></i> Verified';
+        emailBadge.className="text-[9px] font-black bg-emerald-50 text-emerald-700 px-2 py-1 rounded-lg";
+        emailBadge.textContent="Firebase verified";
+        $("email-help").textContent="Your signed-in PlayZa account email is added automatically.";
+      }else{
+        badge.className="shrink-0 bg-slate-100 text-slate-500 text-[9px] font-black px-2 py-1 rounded-lg uppercase";
+        badge.innerHTML='<i class="fa-solid fa-user mr-1"></i> Optional';
+        emailBadge.className="text-[9px] font-black bg-slate-100 text-slate-500 px-2 py-1 rounded-lg";
+        emailBadge.textContent="Optional";
+        $("email-help").textContent="You can still send feedback while signed out.";
+      }
+    }
+    function validate(){
+      const errors=[],name=$("support-name").value.trim(),subject=$("support-subject").value.trim(),message=$("support-message").value.trim(),link=$("support-link").value.trim();
+      if(name.length<2)errors.push("Enter your name.");
+      if(subject.length<3)errors.push("Enter a short subject.");
+      if(message.length<20)errors.push("Message must be at least 20 characters.");
+      if(link&&!/^https?:\/\/.+/i.test(link))errors.push("Related link must start with http:// or https://.");
+      if(currentKind==="Bug Report"&&!$("support-severity").value)errors.push("Select the bug severity.");
+      return errors;
+    }
+    function buildData(){
+      return {
+        schemaVersion:1,app:"PlayZa",appVersion:APP_VERSION,uid:currentUser?.uid||"",email:currentUser?.email||"",
+        name:$("support-name").value.trim(),mode:currentMode,kind:currentKind,area:$("support-area").value,
+        subject:$("support-subject").value.trim(),message:$("support-message").value.trim(),device:$("support-device").value,
+        severity:$("support-severity").value,stepsToReproduce:$("support-steps").value.trim(),
+        expectedVsActual:$("support-expected").value.trim(),improvement:$("support-improvement").value.trim(),
+        relatedLink:$("support-link").value.trim(),source:"help_feedback.html",recipient:RECEIVER,submittedAt:new Date().toISOString()
+      };
+    }
+    async function sendWithFormSubmit(data){
+      const payload={
+        name:data.name,email:data.email||"Not signed in",uid:data.uid||"Guest / unavailable",mode:data.mode,kind:data.kind,
+        area:data.area||"Not specified",subject:data.subject,message:data.message,device:data.device||"Not specified",
+        severity:data.severity||"Not specified",steps_to_reproduce:data.stepsToReproduce||"Not provided",
+        expected_vs_actual:data.expectedVsActual||"Not provided",improvement:data.improvement||"Not provided",
+        related_link:data.relatedLink||"Not provided",submitted_at:data.submittedAt,app_version:APP_VERSION,
+        _subject:`PlayZa ${data.kind} — ${data.subject}`,_template:"table",_url:location.href,_honey:""
+      };
+      const response=await fetch(FORM_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(payload)});
+      const raw=await response.text();let result=null;try{result=JSON.parse(raw)}catch(_){}
+      if(!response.ok||(result&&result.success===false))throw new Error(result?.message||raw||`FormSubmit returned HTTP ${response.status}`);
+      return result||{success:true};
+    }
+    function resetForm(){
+      const email=currentUser?.email||"";
+      $("support-form").reset();$("support-email").value=email;
+      document.querySelectorAll("[data-kind]").forEach(b=>b.classList.remove("active"));
+      document.querySelector('[data-kind="General Help"]')?.classList.add("active");
+      currentKind="General Help";setMode("help");$("message-count").textContent="0/3000";updateProgress();
+    }
+
+    $("support-form").addEventListener("input",()=>{saveDraft();updateProgress()});
+    $("support-form").addEventListener("change",()=>{saveDraft();updateProgress()});
+    $("clear-draft").addEventListener("click",()=>{try{localStorage.removeItem(DRAFT_KEY)}catch(_){};resetForm();$("support-name").value="";toast("Saved draft cleared.","success")});
+
+    $("support-form").addEventListener("submit",async event=>{
+      event.preventDefault();if(submitting)return;
+      const errors=validate();if(errors.length){setStatus("error",errors[0]);toast(errors[0],"error");return}
+      const data=buildData();submitting=true;setBusy(true);setStatus("info","Saving your request and preparing the support email…");
+      try{
+        const ref=await addDoc(collection(db,"help_feedback"),{...data,createdAt:serverTimestamp()});data.requestId=ref.id;
+        let mailSent=false;
+        try{
+          setStatus("info","Request saved. Sending it to the PlayZa team…");await sendWithFormSubmit(data);mailSent=true;
+          await addDoc(collection(db,"help_feedback_mail_log"),{requestId:ref.id,uid:data.uid||null,to:RECEIVER,delivery:"formsubmit",status:"sent",createdAt:serverTimestamp()});
+        }catch(mailError){
+          console.error("FormSubmit delivery error:",mailError);
+          await addDoc(collection(db,"help_feedback_mail_log"),{requestId:ref.id,uid:data.uid||null,to:RECEIVER,delivery:"formsubmit",status:"delivery_failed",error:String(mailError?.message||mailError).slice(0,500),createdAt:serverTimestamp()}).catch(()=>{});
+        }
+        try{localStorage.removeItem(DRAFT_KEY)}catch(_){}
+        if(mailSent){setStatus("success","Sent successfully. Your help request / feedback was saved and emailed to the PlayZa team.");toast("Message sent to PlayZa! 🦊","success")}
+        else{setStatus("success","Your message was saved safely, but email delivery is temporarily unavailable. The request remains stored for review.");toast("Message saved to Firebase.","success")}
+        $("application-status").classList.add("success-pulse");resetForm();
+      }catch(error){
+        console.error(error);setStatus("error","We could not save your request. Please check your connection and try again.");toast("Could not send the message.","error");
+      }finally{submitting=false;setBusy(false);updateProgress()}
+    });
+
+    window.goBack=()=>history.length>1?history.back():location.href="index.html";
+    setMode("help");setKind("General Help");restoreDraft();onAuthStateChanged(auth,applyAuthState);updateProgress();
+  </script>
+</body>
+</html>

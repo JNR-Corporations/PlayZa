@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="referrer" content="no-referrer" />
-  <title>PlayZa - Beta Tester Application</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#FFFFFF">
+  <title>PlayZa — Join Beta</title>
+
   <script src="https://cdn.tailwindcss.com" referrerpolicy="no-referrer"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer" />
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <meta name="theme-color" content="#FFFFFF">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer">
 
   <script>
     tailwind.config = {
@@ -19,483 +20,782 @@
         extend: {
           colors: {
             brand: {
-              orange:'#FF5B00','orange-dark':'#D94B00',mint:'#58CC02','mint-dark':'#46A302',
-              blue:'#1CB0F6','blue-dark':'#1899D6',purple:'#9333EA','purple-dark':'#7E22CE',
-              yellow:'#FFD000',rose:'#F43F5E','rose-dark':'#E11D48',appbg:'#F4F7FB'
+              orange:'#FF5B00', 'orange-dark':'#D94B00',
+              mint:'#58CC02', 'mint-dark':'#46A302',
+              blue:'#1CB0F6', 'blue-dark':'#1899D6',
+              purple:'#9333EA', 'purple-dark':'#7E22CE',
+              yellow:'#FFD000', rose:'#F43F5E', appbg:'#F4F7FB'
             }
           },
-          fontFamily:{fredoka:['Fredoka','sans-serif'],nunito:['Nunito','sans-serif']}
+          fontFamily: {
+            fredoka:['Fredoka','sans-serif'],
+            nunito:['Nunito','sans-serif']
+          }
         }
       }
     }
   </script>
 
   <style>
-    *{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-    body{font-family:'Nunito',sans-serif;background:#090d16}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{min-height:100%;margin:0}
+    body{font-family:'Nunito',sans-serif;background:#090d16;overflow-x:hidden}
+    button,input,textarea,select{font:inherit}
     input,textarea,select{user-select:text!important;-webkit-user-select:text!important}
-    .btn-3d{position:relative;transition:all .08s ease;cursor:pointer}
+    button{touch-action:manipulation}
+
+    .mobile-frame{
+      max-width:450px;width:100%;height:100dvh;max-height:940px;border-radius:36px;overflow:hidden;
+      position:relative;background:linear-gradient(180deg,#fbfdff 0%,#f4f7fb 100%);
+      box-shadow:0 30px 80px rgba(0,0,0,.70),0 0 0 12px #1e293b;
+    }
+    @media(max-width:640px){.mobile-frame{max-width:100%;height:100dvh;max-height:100dvh;border-radius:0;box-shadow:none}}
+    .no-scrollbar::-webkit-scrollbar{display:none}
+    .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+
+    .game-card{box-shadow:0 7px 0 rgba(15,23,42,.06),0 12px 28px rgba(15,23,42,.06)}
+    .soft-shadow{box-shadow:0 7px 0 rgba(15,23,42,.045),0 16px 34px rgba(15,23,42,.075)}
+
+    .btn-3d{position:relative;transition:transform .12s ease,box-shadow .12s ease,filter .12s ease;cursor:pointer;will-change:transform}
     .btn-3d:active{transform:translateY(4px)!important;box-shadow:none!important}
-    .btn-mint{background:linear-gradient(180deg,#58CC02,#46A302);box-shadow:0 5px 0 #368200,0 8px 18px #58cc0266;color:#fff}
-    .btn-purple{background:linear-gradient(180deg,#A855F7,#8B5CF6);box-shadow:0 5px 0 #6D28D9,0 8px 18px #a855f766;color:#fff}
-    .mobile-frame{max-width:450px;width:100%;height:100vh;max-height:940px;border-radius:36px;overflow:hidden;box-shadow:0 30px 80px #000b,0 0 0 12px #1e293b;position:relative}
-    @media(max-width:640px){.mobile-frame{max-width:100%;height:100vh;max-height:100vh;border-radius:0;box-shadow:none}}
-    .no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
-    .playza-input{border:2px solid #E2E8F0;border-bottom:4px solid #CBD5E1;border-radius:16px;transition:.2s;background:#FAFAFA}
-    .playza-input:focus{outline:none;border-color:#9333EA;border-bottom-color:#7E22CE;background:#fff;box-shadow:0 0 0 4px #9333ea1f}
-    .chip{border:2px solid #e2e8f0;background:#fff;border-bottom:4px solid #cbd5e1;border-radius:14px;padding:9px 10px;font-size:10px;font-weight:900;transition:.15s}
-    .chip.active{border-color:#9333ea;border-bottom-color:#7e22ce;background:#faf5ff;color:#7e22ce;transform:translateY(-1px)}
-    .field-error{border-color:#fb7185!important;border-bottom-color:#e11d48!important;background:#fff1f2!important}
-    .toast-pop{animation:toastIn .35s cubic-bezier(.175,.885,.32,1.275) forwards}
-    @keyframes toastIn{0%{transform:translateY(-30px) scale(.85);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
-    .progress-bar{transition:width .25s ease}
-    .spin{animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
-    .success-pulse{animation:successPulse .55s ease}@keyframes successPulse{50%{transform:scale(1.03)}}
+    .btn-purple{background:linear-gradient(180deg,#A855F7 0%,#8B5CF6 100%);box-shadow:0 5px 0 #6D28D9,0 10px 22px rgba(168,85,247,.28);color:#fff}
+
+    .playza-input{
+      width:100%;border:2px solid #E2E8F0;border-bottom:4px solid #CBD5E1;border-radius:16px;
+      transition:.18s;background:#FAFAFA;min-height:50px
+    }
+    .playza-input:focus{outline:none;border-color:#9333EA;border-bottom-color:#7E22CE;background:#fff;box-shadow:0 0 0 4px rgba(147,51,234,.12)}
+    .playza-input[readonly]{cursor:not-allowed}
+    textarea.playza-input{min-height:120px;resize:vertical}
+
+    .chip{
+      border:2px solid #e2e8f0;background:#fff;border-bottom:4px solid #cbd5e1;border-radius:14px;
+      padding:10px 11px;font-size:10px;font-weight:900;text-align:left;transition:.16s;min-height:48px
+    }
+    .chip:hover{transform:translateY(-1px);border-color:#cbd5e1}
+    .chip.active{
+      border-color:#9333ea;border-bottom-color:#7e22ce;background:#faf5ff;color:#7e22ce;
+      transform:translateY(-1px);box-shadow:0 5px 12px rgba(147,51,234,.10)
+    }
+
+    .hero-grid{
+      background:
+        radial-gradient(circle at 90% 0%,rgba(255,255,255,.18),transparent 32%),
+        radial-gradient(circle at 10% 100%,rgba(255,208,0,.13),transparent 35%),
+        linear-gradient(135deg,#7E22CE 0%,#4F46E5 48%,#0F172A 100%);
+    }
+    .hero-glow{position:absolute;inset:auto -36px -54px auto;width:180px;height:180px;background:radial-gradient(circle,rgba(255,208,0,.25),transparent 65%);pointer-events:none}
+
+    .zippy-mascot{width:100%;height:100%;display:block}
+    .zippy-wrap{animation:zippyFloat 3s ease-in-out infinite;filter:drop-shadow(0 16px 20px rgba(30,41,59,.22))}
+    .fox-head{transform-origin:100px 115px;animation:foxBob 3s ease-in-out infinite}
+    .fox-pupil-left,.fox-pupil-right{animation:foxLook 4s ease-in-out infinite}
+    @keyframes zippyFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+    @keyframes foxBob{0%,100%{transform:rotate(0deg)}50%{transform:rotate(1deg)}}
+    @keyframes foxLook{0%,36%,100%{transform:translate(0,0)}42%,62%{transform:translate(2px,1px)}70%{transform:translate(-1px,0)}}
+
+    .progress-track{background:#eef2f7;border-radius:999px;overflow:hidden}
+    .progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#FF7A18,#A855F7,#3B82F6);transition:width .25s ease}
+    .toast-pop{animation:toastIn .3s cubic-bezier(.175,.885,.32,1.275) forwards}
+    @keyframes toastIn{0%{transform:translate(-50%,-24px) scale(.9);opacity:0}100%{transform:translate(-50%,0) scale(1);opacity:1}}
+    .spin{animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .success-pulse{animation:successPulse .55s ease}
+    @keyframes successPulse{50%{transform:scale(1.015)}}
+    .section-kicker{font-size:9px;letter-spacing:.13em;text-transform:uppercase;font-weight:900}
+    .required-star{color:#e11d48;font-weight:900}
+    @media(prefers-reduced-motion:reduce){
+      .zippy-wrap,.fox-head,.fox-pupil-left,.fox-pupil-right{animation:none}
+      *,*::before,*::after{scroll-behavior:auto!important;transition:none!important}
+    }
   </style>
 </head>
 
-<body class="h-full flex items-center justify-center p-0 sm:p-4 bg-slate-950">
-<div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center pointer-events-none space-y-2 w-11/12 max-w-xs"></div>
+<body class="h-full flex items-center justify-center p-0 sm:p-4">
+  <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] pointer-events-none w-[calc(100%-24px)] max-w-xs"></div>
 
-<div class="mobile-frame bg-[#F4F7FB] flex flex-col relative w-full h-full text-slate-800">
-  <div class="bg-white/95 backdrop-blur-md px-4 py-3.5 flex items-center justify-between shadow-sm z-20 border-b border-slate-200">
-    <button onclick="goBack()" class="w-9 h-9 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-sm transition font-bold active:scale-95">
-      <i class="fa-solid fa-chevron-left"></i>
-    </button>
-    <div class="text-center">
-      <h1 class="font-fredoka text-base font-bold text-slate-800 flex items-center justify-center gap-1.5">
-        <span>Beta Tester Program</span>
-        <span class="bg-purple-100 text-purple-700 text-[10px] font-black px-2 py-0.5 rounded-md uppercase">V.I.P</span>
-      </h1>
-      <p class="text-[10px] text-slate-400 font-bold">PlayZa Early Access Lab</p>
-    </div>
-    <div class="w-9 h-9 rounded-2xl bg-violet-100 text-violet-600 flex items-center justify-center text-base"><i class="fa-solid fa-vial"></i></div>
+  <div class="mobile-frame flex flex-col">
+    <header class="bg-white/95 backdrop-blur-md px-4 py-3 flex items-center justify-between shadow-sm z-30 border-b border-slate-200 shrink-0">
+      <button type="button" onclick="window.location.href='index.html'" aria-label="Go back"
+        class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center text-sm font-bold active:scale-95 transition">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <div class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-100 to-orange-100 border-2 border-brand-orange flex items-center justify-center overflow-hidden p-0.5">
+          
+<svg class="zippy-mascot" viewBox="0 0 200 200" aria-label="Zippy the PlayZa fox mascot" role="img">
+  <path d="M 45 85 C 45 25, 155 25, 155 85" stroke="#1CB0F6" stroke-width="12" stroke-linecap="round" fill="none"/>
+  <path d="M 45 85 C 45 25, 155 25, 155 85" stroke="#1899D6" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <path d="M 50 145 Q 100 185 150 145 L 165 190 Q 100 200 35 190 Z" fill="#8A2BE2"/>
+  <g class="fox-head">
+    <g class="fox-ear-left">
+      <polygon points="50,85 15,25 80,60" fill="#FF6B00" stroke="#D95B00" stroke-width="3" stroke-linejoin="round"/>
+      <polygon points="48,78 26,36 70,62" fill="#FFF2E6"/>
+    </g>
+    <g class="fox-ear-right">
+      <polygon points="150,85 185,25 120,60" fill="#FF6B00" stroke="#D95B00" stroke-width="3" stroke-linejoin="round"/>
+      <polygon points="152,78 174,36 130,62" fill="#FFF2E6"/>
+    </g>
+    <path d="M 40 100 C 40 45, 160 45, 160 100 C 160 145, 130 160, 100 160 C 70 160, 40 145, 40 100 Z" fill="#FF6B00"/>
+    <path d="M 42 108 Q 20 120, 60 142 C 80 152, 120 152, 140 142 Q 180 120, 158 108 C 145 130, 55 130, 42 108 Z" fill="#FFFFFF"/>
+    <rect x="30" y="70" width="18" height="32" rx="9" fill="#1CB0F6" stroke="#1899D6" stroke-width="3"/>
+    <rect x="152" y="70" width="18" height="32" rx="9" fill="#1CB0F6" stroke="#1899D6" stroke-width="3"/>
+    <circle cx="39" cy="86" r="4" fill="#FFFFFF"/><circle cx="161" cy="86" r="4" fill="#FFFFFF"/>
+    <circle cx="72" cy="92" r="16" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="2"/>
+    <circle cx="128" cy="92" r="16" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="2"/>
+    <g class="fox-pupil-left">
+      <circle cx="74" cy="92" r="8" fill="#3C3C3C"/><circle cx="71" cy="89" r="3" fill="#FFFFFF"/>
+    </g>
+    <g class="fox-pupil-right">
+      <circle cx="126" cy="92" r="8" fill="#3C3C3C"/><circle cx="123" cy="89" r="3" fill="#FFFFFF"/>
+    </g>
+    <ellipse cx="55" cy="115" rx="8" ry="4" fill="#FF9E9E" opacity=".7"/>
+    <ellipse cx="145" cy="115" rx="8" ry="4" fill="#FF9E9E" opacity=".7"/>
+    <path d="M 92 112 Q 100 108 108 112 Q 100 124 92 112 Z" fill="#2C2C2C"/>
+    <circle cx="98" cy="112" r="1.5" fill="#FFFFFF"/>
+    <path d="M 90 124 Q 100 130 100 125 Q 100 130 110 124" stroke="#3C3C3C" stroke-width="3" stroke-linecap="round" fill="none"/>
+  </g>
+</svg>
+
+        </div>
+        <div class="leading-tight">
+          <div class="flex items-center gap-1.5">
+            <span class="font-fredoka text-base font-bold text-slate-800">PlayZa</span>
+            <span class="bg-orange-100 text-brand-orange text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase">BETA</span>
+          </div>
+          <p class="text-[9px] text-slate-400 font-extrabold">Early Access</p>
+        </div>
+      </div>
+
+      <div class="w-10 h-10 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center">
+        <i class="fa-solid fa-flask-vial text-sm"></i>
+      </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4 pb-8">
+      <section class="hero-grid rounded-3xl p-5 text-white relative overflow-hidden soft-shadow">
+        <div class="hero-glow"></div>
+        <div class="relative z-10 pr-24">
+          <div class="inline-flex items-center gap-1.5 bg-yellow-300 text-slate-950 text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider">
+            <i class="fa-solid fa-bolt"></i> Beta access
+          </div>
+          <h1 class="font-fredoka text-[29px] font-bold leading-[1.05] mt-3">Join the<br>PlayZa Beta 🦊</h1>
+          <p class="text-[11px] text-purple-100 font-bold leading-relaxed mt-2">
+            Get early access, test new experiences, report bugs and help shape the next PlayZa release.
+          </p>
+        </div>
+        <div class="absolute right-3 bottom-2 w-24 h-24 zippy-wrap pointer-events-none">
+<svg class="zippy-mascot" viewBox="0 0 200 200" aria-label="Zippy the PlayZa fox mascot" role="img">
+  <path d="M 45 85 C 45 25, 155 25, 155 85" stroke="#1CB0F6" stroke-width="12" stroke-linecap="round" fill="none"/>
+  <path d="M 45 85 C 45 25, 155 25, 155 85" stroke="#1899D6" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <path d="M 50 145 Q 100 185 150 145 L 165 190 Q 100 200 35 190 Z" fill="#8A2BE2"/>
+  <g class="fox-head">
+    <g class="fox-ear-left">
+      <polygon points="50,85 15,25 80,60" fill="#FF6B00" stroke="#D95B00" stroke-width="3" stroke-linejoin="round"/>
+      <polygon points="48,78 26,36 70,62" fill="#FFF2E6"/>
+    </g>
+    <g class="fox-ear-right">
+      <polygon points="150,85 185,25 120,60" fill="#FF6B00" stroke="#D95B00" stroke-width="3" stroke-linejoin="round"/>
+      <polygon points="152,78 174,36 130,62" fill="#FFF2E6"/>
+    </g>
+    <path d="M 40 100 C 40 45, 160 45, 160 100 C 160 145, 130 160, 100 160 C 70 160, 40 145, 40 100 Z" fill="#FF6B00"/>
+    <path d="M 42 108 Q 20 120, 60 142 C 80 152, 120 152, 140 142 Q 180 120, 158 108 C 145 130, 55 130, 42 108 Z" fill="#FFFFFF"/>
+    <rect x="30" y="70" width="18" height="32" rx="9" fill="#1CB0F6" stroke="#1899D6" stroke-width="3"/>
+    <rect x="152" y="70" width="18" height="32" rx="9" fill="#1CB0F6" stroke="#1899D6" stroke-width="3"/>
+    <circle cx="39" cy="86" r="4" fill="#FFFFFF"/><circle cx="161" cy="86" r="4" fill="#FFFFFF"/>
+    <circle cx="72" cy="92" r="16" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="2"/>
+    <circle cx="128" cy="92" r="16" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="2"/>
+    <g class="fox-pupil-left">
+      <circle cx="74" cy="92" r="8" fill="#3C3C3C"/><circle cx="71" cy="89" r="3" fill="#FFFFFF"/>
+    </g>
+    <g class="fox-pupil-right">
+      <circle cx="126" cy="92" r="8" fill="#3C3C3C"/><circle cx="123" cy="89" r="3" fill="#FFFFFF"/>
+    </g>
+    <ellipse cx="55" cy="115" rx="8" ry="4" fill="#FF9E9E" opacity=".7"/>
+    <ellipse cx="145" cy="115" rx="8" ry="4" fill="#FF9E9E" opacity=".7"/>
+    <path d="M 92 112 Q 100 108 108 112 Q 100 124 92 112 Z" fill="#2C2C2C"/>
+    <circle cx="98" cy="112" r="1.5" fill="#FFFFFF"/>
+    <path d="M 90 124 Q 100 130 100 125 Q 100 130 110 124" stroke="#3C3C3C" stroke-width="3" stroke-linecap="round" fill="none"/>
+  </g>
+</svg>
+</div>
+      </section>
+
+      <section class="grid grid-cols-3 gap-2">
+        <div class="bg-white rounded-2xl border border-slate-200 p-3 game-card">
+          <div class="w-8 h-8 rounded-xl bg-orange-100 text-brand-orange flex items-center justify-center"><i class="fa-solid fa-unlock-keyhole text-xs"></i></div>
+          <p class="font-fredoka text-[11px] font-bold text-slate-800 mt-2">Early Access</p>
+          <p class="text-[9px] text-slate-500 font-bold mt-0.5">Try selected features first.</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-3 game-card">
+          <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-bug text-xs"></i></div>
+          <p class="font-fredoka text-[11px] font-bold text-slate-800 mt-2">Bug Hunt</p>
+          <p class="text-[9px] text-slate-500 font-bold mt-0.5">Catch issues before release.</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-3 game-card">
+          <div class="w-8 h-8 rounded-xl bg-blue-100 text-brand-blue flex items-center justify-center"><i class="fa-solid fa-comments text-xs"></i></div>
+          <p class="font-fredoka text-[11px] font-bold text-slate-800 mt-2">Give Feedback</p>
+          <p class="text-[9px] text-slate-500 font-bold mt-0.5">Tell us what to improve.</p>
+        </div>
+      </section>
+
+      <section class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 game-card">
+        <div class="flex items-start justify-between gap-3 mb-4">
+          <div>
+            <div class="section-kicker text-brand-purple">Beta application</div>
+            <h2 class="font-fredoka text-xl font-bold text-slate-800 mt-0.5">Tell us about you</h2>
+            <p class="text-[10px] text-slate-500 font-bold mt-1 leading-relaxed">
+              This page is only for joining the PlayZa Beta program. Fill the form honestly so your application can be reviewed.
+            </p>
+          </div>
+          <div id="firebase-badge" class="shrink-0 bg-slate-100 text-slate-500 text-[9px] font-black px-2 py-1 rounded-lg uppercase">
+            <i class="fa-solid fa-circle-notch spin mr-1"></i> Checking
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <div class="flex items-center justify-between text-[9px] font-black text-slate-400 mb-1.5">
+            <span>Application progress</span><span id="progress-value">0%</span>
+          </div>
+          <div class="progress-track h-2"><div id="progress-bar" class="progress-fill" style="width:0%"></div></div>
+        </div>
+
+        <form id="beta-application-form" class="space-y-4" novalidate>
+          <input type="hidden" name="uid" id="beta-uid">
+          <input type="hidden" name="app" value="PlayZa">
+          <input type="hidden" name="app_version" value="2.0.0-beta">
+          <input type="hidden" name="_subject" value="PlayZa Beta Application">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_url" id="form-url">
+          <input type="text" name="_honey" tabindex="-1" autocomplete="off" class="hidden">
+
+          <div>
+            <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Full Name <span class="required-star">*</span></label>
+            <div class="relative">
+              <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input id="beta-fullname" name="name" required maxlength="80" autocomplete="name" placeholder="Your full name"
+                class="playza-input pl-11 pr-4 py-3 text-xs font-bold text-slate-800 placeholder-slate-300">
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 tracking-wider">Firebase Email <span class="required-star">*</span></label>
+              <span id="firebase-email-status" class="text-[9px] font-black bg-slate-100 text-slate-500 px-2 py-1 rounded-lg">Checking…</span>
+            </div>
+            <div class="relative">
+              <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input id="beta-email" name="email" type="email" readonly required class="playza-input pl-11 pr-4 py-3 text-xs font-bold bg-slate-50 text-slate-700">
+            </div>
+            <p id="email-help" class="text-[9px] text-slate-400 font-bold mt-1">Your signed-in PlayZa account email is used automatically.</p>
+          </div>
+
+          <div>
+            <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Primary Testing Device <span class="required-star">*</span></label>
+            <div class="relative">
+              <i class="fa-solid fa-mobile-screen-button absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <select id="beta-device" name="device" required class="playza-input pl-11 pr-4 py-3 text-xs font-bold bg-white">
+                <option value="">Select device / OS</option>
+                <option>Android Mobile</option><option>iPhone / iOS</option><option>Windows PC</option><option>Linux PC</option>
+                <option>macOS</option><option>ChromeOS</option><option>Tablet</option><option>Multiple Devices</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 tracking-wider">What can you contribute? <span class="required-star">*</span></label>
+              <span id="cap-count" class="text-[9px] font-black text-slate-400">0 selected</span>
+            </div>
+            <div id="capability-grid" class="grid grid-cols-2 gap-2"></div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 tracking-wider">Your Experience <span class="required-star">*</span></label>
+              <span id="desc-count" class="text-[9px] font-black text-slate-400">0/2500</span>
+            </div>
+            <textarea id="beta-capabilities-desc" name="capabilities_description" required minlength="40" maxlength="2500"
+              placeholder="Tell us what you can contribute: testing, bug reproduction, UI/UX feedback, development, content, performance testing..."
+              class="playza-input px-4 py-3 text-xs font-bold leading-relaxed"></textarea>
+            <p class="text-[9px] text-slate-400 font-bold mt-1">Minimum 40 characters.</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Primary Role</label>
+              <select id="beta-role" name="role" class="playza-input px-3 py-3 text-xs font-bold bg-white">
+                <option value="">Select one</option><option>Student / Learner</option><option>Developer</option><option>UI/UX Designer</option>
+                <option>Tester / QA</option><option>Content Creator</option><option>Teacher / Mentor</option><option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Experience Level</label>
+              <select id="beta-experience" name="experience" class="playza-input px-3 py-3 text-xs font-bold bg-white">
+                <option value="">Select one</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Professional</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 tracking-wider">Testing Areas</label>
+              <span id="test-count" class="text-[9px] font-black text-slate-400">0 selected</span>
+            </div>
+            <div id="testing-grid" class="grid grid-cols-2 gap-2"></div>
+          </div>
+
+          <div>
+            <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Tools / Technologies</label>
+            <div class="relative">
+              <i class="fa-solid fa-screwdriver-wrench absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input id="beta-tools" name="tools" maxlength="1000" placeholder="Firebase, Git, Android, Figma..."
+                class="playza-input pl-11 pr-4 py-3 text-xs font-bold">
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Testing Availability</label>
+            <select id="beta-availability" name="availability" class="playza-input px-4 py-3 text-xs font-bold bg-white">
+              <option value="">Select one</option><option>Occasionally</option><option>A few times a week</option><option>Most days</option><option>Flexible</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Why do you want to join? <span class="required-star">*</span></label>
+            <textarea id="beta-why" name="why_join" required minlength="20" maxlength="1800"
+              placeholder="What interests you about PlayZa and what kind of feedback would you provide?"
+              class="playza-input px-4 py-3 text-xs font-bold leading-relaxed"></textarea>
+          </div>
+
+          <div>
+            <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Portfolio / GitHub / Project Link</label>
+            <input id="beta-portfolio" name="portfolio" type="url" maxlength="500" placeholder="https://github.com/yourusername"
+              class="playza-input px-4 py-3 text-xs font-bold">
+          </div>
+
+          <div>
+            <label class="block font-fredoka text-xs uppercase font-bold text-slate-500 mb-1.5 tracking-wider">Anything Else?</label>
+            <textarea id="beta-extra" name="extra" maxlength="1800" rows="3"
+              placeholder="Ideas, previous testing experience, special skills, or anything useful for the review..."
+              class="playza-input px-4 py-3 text-xs font-bold leading-relaxed"></textarea>
+          </div>
+
+          <div class="rounded-2xl bg-gradient-to-r from-amber-50 via-white to-purple-50 border border-slate-200 p-3.5 flex gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-white border border-slate-200 text-brand-orange flex items-center justify-center shrink-0"><i class="fa-solid fa-shield-halved text-xs"></i></div>
+            <div>
+              <p class="text-[10px] font-black text-slate-700">Keep credentials private</p>
+              <p class="text-[9px] text-slate-500 font-bold leading-relaxed mt-0.5">Never enter a password, private key, recovery code, API secret or other credential.</p>
+            </div>
+          </div>
+
+          <div id="application-status" class="hidden rounded-2xl p-3 text-xs font-extrabold"></div>
+
+          <button type="submit" id="btn-submit-beta"
+            class="w-full btn-3d btn-purple py-4 rounded-2xl font-fredoka font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i><span>Join PlayZa Beta</span>
+          </button>
+
+          <button type="button" id="clear-draft" class="w-full py-2 text-[10px] font-black text-slate-400 hover:text-rose-500 transition">
+            <i class="fa-solid fa-trash-can mr-1"></i> Clear saved draft
+          </button>
+        </form>
+      </section>
+
+      <section class="rounded-2xl bg-slate-900 p-4 text-white">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <div class="section-kicker text-cyan-300">Delivery</div>
+            <p class="font-fredoka text-sm font-bold mt-1">Beta requests go to jn.corporation@proton.me</p>
+            <p class="text-[9px] text-slate-300 font-bold leading-relaxed mt-1">
+              Your application is first saved to Firebase and then sent through FormSubmit for email delivery.
+            </p>
+          </div>
+          <div class="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-cyan-300 shrink-0"><i class="fa-solid fa-paper-plane text-sm"></i></div>
+        </div>
+      </section>
+
+      <div class="text-center px-2 pb-2">
+        <p class="text-[9px] text-slate-400 font-bold">PlayZa Developer Lab • Beta Application</p>
+      </div>
+    </main>
   </div>
 
-  <main class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-5 pb-12">
-    <section class="bg-gradient-to-br from-purple-700 via-indigo-700 to-slate-900 rounded-3xl p-5 text-white shadow-xl relative overflow-hidden border border-purple-500/30">
-      <div class="relative z-10 space-y-2.5">
-        <div class="inline-flex items-center gap-1.5 bg-yellow-400 text-slate-950 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
-          <i class="fa-solid fa-flask-vial"></i> Exclusive Access
-        </div>
-        <h2 class="font-fredoka text-2xl font-bold leading-tight">Shape the Future of PlayZa! 🚀</h2>
-        <p class="text-xs text-purple-100 font-semibold leading-relaxed">
-          PlayZa Beta Testers get early access to unreleased quiz modes, experimental features,
-          special tester recognition, and a direct channel for useful product feedback.
-        </p>
-      </div>
-      <div class="absolute -right-4 -bottom-6 text-8xl opacity-15 text-yellow-300 pointer-events-none">🧪</div>
-    </section>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, query, where, limit, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    <section class="space-y-3">
-      <h3 class="font-fredoka text-base font-bold text-slate-800 flex items-center gap-2">
-        <i class="fa-solid fa-award text-brand-purple"></i> Beta Tester Perks & Responsibilities
-      </h3>
-      <div class="grid grid-cols-2 gap-2.5">
-        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs"><div class="w-8 h-8 rounded-xl bg-purple-100 text-brand-purple flex items-center justify-center">⚡</div><h4 class="font-bold text-xs mt-1">Early Features</h4><p class="text-[10px] text-slate-500 font-semibold">Try selected unreleased features before wider rollout.</p></div>
-        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs"><div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">🏅</div><h4 class="font-bold text-xs mt-1">Tester Recognition</h4><p class="text-[10px] text-slate-500 font-semibold">Eligible testers may receive special profile recognition.</p></div>
-        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs"><div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">🐞</div><h4 class="font-bold text-xs mt-1">Bug Hunting</h4><p class="text-[10px] text-slate-500 font-semibold">Report reproducible UI, logic and stability problems.</p></div>
-        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs"><div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">💬</div><h4 class="font-bold text-xs mt-1">Useful Feedback</h4><p class="text-[10px] text-slate-500 font-semibold">Explain what happened and how the experience could improve.</p></div>
-      </div>
-    </section>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC7bEYtEIk4DN3edQKievh-ek89tWS4awc",
+      authDomain: "playza-87102.firebaseapp.com",
+      projectId: "playza-87102",
+      storageBucket: "playza-87102.firebasestorage.app",
+      messagingSenderId: "695215345584",
+      appId: "1:695215345584:web:14fc00081f035046979075"
+    };
 
-    <section class="bg-white rounded-3xl p-5 border border-slate-200 shadow-md">
-      <div class="border-b border-slate-100 pb-3 mb-4">
-        <div class="flex items-center justify-between gap-2">
-          <h3 class="font-fredoka text-lg font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-paper-plane text-brand-purple"></i> Beta Application</h3>
-          <span id="required-count" class="text-[9px] font-extrabold text-red-500 uppercase bg-red-50 px-2 py-1 rounded-md">Required</span>
-        </div>
-        <p class="text-[11px] text-slate-500 font-semibold mt-1">Your Firebase identity is linked to this application. Required fields must be complete before submission.</p>
-      </div>
+    const FORM_ENDPOINT = "https://formsubmit.co/ajax/jn.corporation@proton.me";
+    const RECEIVER = "jn.corporation@proton.me";
+    const APP_VERSION = "2.0.0-beta";
+    const DRAFT_KEY = "playza_beta_application_draft_v3";
 
-      <div class="mb-4">
-        <div class="flex justify-between text-[9px] font-black text-slate-400 mb-1"><span id="progress-label">Application progress</span><span id="progress-value">0%</span></div>
-        <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div id="progress-bar" class="progress-bar h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full" style="width:0%"></div></div>
-      </div>
+    const CAPABILITIES = [
+      "UI/UX Testing","Bug Hunting","Quiz Content Creation","Game Balance & Logic",
+      "Web Development","Android Testing","Performance Testing","Accessibility Testing",
+      "Security / Privacy Review","Feature Ideas","Documentation / Writing","Other"
+    ];
 
-      <form id="beta-application-form" class="space-y-4" novalidate>
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Full Name <span class="text-red-500">*</span></label>
-          <input id="beta-fullname" required maxlength="80" autocomplete="name" placeholder="Enter your full name" class="w-full px-4 py-3 playza-input text-xs font-bold">
-          <p id="name-error" class="hidden text-[9px] text-rose-600 font-bold mt-1"></p>
-        </div>
+    const TESTING_AREAS = [
+      "New Features","UI / UX","Bug Reproduction","Performance / Stability",
+      "Accessibility","Quiz / Content","Mobile / Responsive","General Feedback"
+    ];
 
-        <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide">Firebase Email <span class="text-red-500">*</span></label>
-            <span id="firebase-email-status" class="text-[9px] font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-md"><i class="fa-solid fa-circle-notch spin"></i> Checking…</span>
-          </div>
-          <input id="beta-email" type="email" readonly required class="w-full px-4 py-3 playza-input text-xs font-bold bg-slate-50">
-          <p id="email-help" class="text-[9px] text-slate-400 font-bold mt-1">Email is taken from the active Firebase Authentication session.</p>
-        </div>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Primary Testing Device <span class="text-red-500">*</span></label>
-          <select id="beta-device" required class="w-full px-4 py-3 playza-input text-xs font-bold bg-white">
-            <option value="">Select your device / OS</option>
-            <option>Android Mobile</option><option>iPhone / iOS</option><option>Windows PC</option><option>Linux PC</option><option>macOS</option><option>ChromeOS</option><option>Tablet</option><option>Multiple Devices</option>
-          </select>
-        </div>
+    let currentUser = null;
+    let duplicateChecked = false;
+    let duplicateExists = false;
+    let submitting = false;
 
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-2">Capabilities <span class="text-red-500">*</span></label>
-          <div id="capability-grid" class="grid grid-cols-2 gap-2"></div>
-          <p id="capability-error" class="hidden text-[9px] text-rose-600 font-bold mt-1">Select at least one capability.</p>
-        </div>
+    const $ = (id) => document.getElementById(id);
 
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Describe Your Capabilities & Experience <span class="text-red-500">*</span></label>
-          <textarea id="beta-capabilities-desc" required minlength="40" maxlength="2500" rows="5" placeholder="Tell us what you can actually contribute: testing, bug reproduction, UI/UX feedback, development, content, performance testing, etc." class="w-full px-4 py-3 playza-input text-xs font-bold leading-relaxed"></textarea>
-          <div class="flex justify-between mt-1"><span id="desc-help" class="text-[9px] text-slate-400 font-bold">Minimum 40 characters</span><span id="desc-count" class="text-[9px] text-slate-400 font-bold">0/2500</span></div>
-        </div>
+    function esc(v) {
+      return String(v ?? "").replace(/[&<>"']/g, (c) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[c]));
+    }
 
-        <div class="grid grid-cols-1 gap-4">
-          <div>
-            <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Primary Role</label>
-            <select id="beta-role" class="w-full px-4 py-3 playza-input text-xs font-bold bg-white">
-              <option value="">Select one</option><option>Student / Learner</option><option>Developer</option><option>UI/UX Designer</option><option>Tester / QA</option><option>Content Creator</option><option>Teacher / Mentor</option><option>Other</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Experience Level</label>
-            <select id="beta-experience" class="w-full px-4 py-3 playza-input text-xs font-bold bg-white">
-              <option value="">Select one</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Professional</option>
-            </select>
-          </div>
-        </div>
+    function toast(message, type = "info") {
+      const host = $("toast-container");
+      const item = document.createElement("div");
+      const bg = type === "success" ? "bg-emerald-600" : type === "error" ? "bg-rose-600" : "bg-slate-900";
+      item.className = `toast-pop fixed left-1/2 ${bg} text-white px-4 py-3 rounded-2xl shadow-xl text-xs font-bold flex items-center gap-2 pointer-events-auto`;
+      item.innerHTML = `<i class="fa-solid ${type === "success" ? "fa-circle-check" : type === "error" ? "fa-circle-exclamation" : "fa-circle-info"}"></i><span>${esc(message)}</span>`;
+      host.appendChild(item);
+      setTimeout(() => item.remove(), 3600);
+    }
 
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Testing Areas</label>
-          <div id="testing-grid" class="grid grid-cols-2 gap-2"></div>
-        </div>
+    function setStatus(type, message) {
+      const box = $("application-status");
+      const styles = {
+        success:"bg-emerald-50 text-emerald-700 border border-emerald-200",
+        error:"bg-rose-50 text-rose-700 border border-rose-200",
+        info:"bg-indigo-50 text-indigo-700 border border-indigo-200"
+      };
+      box.className = `rounded-2xl p-3 text-xs font-extrabold ${styles[type] || styles.info}`;
+      box.innerHTML = `<i class="fa-solid ${type === "success" ? "fa-circle-check" : type === "error" ? "fa-circle-exclamation" : "fa-circle-info"} mr-1"></i>${esc(message)}`;
+    }
 
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Tools / Technologies</label>
-          <input id="beta-tools" maxlength="1000" placeholder="HTML, CSS, JavaScript, Firebase, Git, Android, Figma…" class="w-full px-4 py-3 playza-input text-xs font-bold">
-        </div>
+    function setBusy(on) {
+      const button = $("btn-submit-beta");
+      button.disabled = on;
+      button.classList.toggle("opacity-70", on);
+      button.innerHTML = on
+        ? '<i class="fa-solid fa-spinner spin"></i><span>Submitting…</span>'
+        : '<i class="fa-solid fa-paper-plane"></i><span>Join PlayZa Beta</span>';
+    }
 
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Testing Availability</label>
-          <select id="beta-availability" class="w-full px-4 py-3 playza-input text-xs font-bold bg-white">
-            <option value="">Select one</option><option>Occasionally</option><option>A few times a week</option><option>Most days</option><option>Flexible</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Why do you want to join? <span class="text-red-500">*</span></label>
-          <textarea id="beta-why" required minlength="20" maxlength="1800" rows="4" placeholder="What interests you about PlayZa and what kind of feedback would you provide?" class="w-full px-4 py-3 playza-input text-xs font-bold leading-relaxed"></textarea>
-        </div>
-
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Portfolio / GitHub / Project Link</label>
-          <input id="beta-portfolio" type="url" maxlength="500" placeholder="https://github.com/yourusername" class="w-full px-4 py-3 playza-input text-xs font-bold">
-        </div>
-
-        <div>
-          <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide mb-1.5">Anything Else?</label>
-          <textarea id="beta-extra" maxlength="1800" rows="3" placeholder="Ideas, previous testing experience, special skills, or anything useful for the review…" class="w-full px-4 py-3 playza-input text-xs font-bold leading-relaxed"></textarea>
-        </div>
-
-        <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-3 text-[9px] text-indigo-800 font-bold leading-relaxed flex gap-2">
-          <i class="fa-solid fa-shield-halved mt-0.5"></i>
-          <span>Your Firebase UID is used to associate the request with your account. Never enter a password, private key, recovery code, API secret, or other credential in this form.</span>
-        </div>
-
-        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-[9px] text-slate-600 font-bold leading-relaxed">
-          <i class="fa-solid fa-circle-info text-purple-600 mr-1"></i>
-          One active application is allowed per Firebase account. If a previous application is already under review, this page will not create another duplicate request.
-        </div>
-
-        <div id="application-status" class="hidden rounded-2xl p-3 text-xs font-extrabold"></div>
-
-        <button type="submit" id="btn-submit-beta" class="w-full btn-3d btn-purple py-3.5 rounded-2xl font-fredoka font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2">
-          <i class="fa-solid fa-paper-plane"></i><span>Submit Beta Application</span>
+    function renderChoices() {
+      $("capability-grid").innerHTML = CAPABILITIES.map((label) => `
+        <button type="button" class="chip flex items-center gap-2" data-cap="${esc(label)}">
+          <i class="fa-regular fa-square text-slate-400"></i><span>${esc(label)}</span>
         </button>
+      `).join("");
 
-        <button type="button" id="clear-draft" class="w-full py-2 text-[10px] font-black text-slate-400 hover:text-rose-500 transition">
-          <i class="fa-solid fa-trash-can mr-1"></i> Clear saved draft
+      $("testing-grid").innerHTML = TESTING_AREAS.map((label) => `
+        <button type="button" class="chip flex items-center gap-2" data-test="${esc(label)}">
+          <i class="fa-regular fa-square text-slate-400"></i><span>${esc(label)}</span>
         </button>
-      </form>
-    </section>
+      `).join("");
 
-    <div class="text-center text-[10px] text-slate-400 font-semibold">
-      Application recipient: <span class="text-slate-600 font-bold">jn.corporation@proton.me</span> • PlayZa Developer Lab
-    </div>
-  </main>
-</div>
+      document.querySelectorAll("[data-cap]").forEach((button) => button.addEventListener("click", () => toggleChoice(button)));
+      document.querySelectorAll("[data-test]").forEach((button) => button.addEventListener("click", () => toggleChoice(button)));
+    }
 
-<script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import {getAuth,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import {getFirestore,collection,query,where,limit,getDocs,addDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    function toggleChoice(button) {
+      button.classList.toggle("active");
+      const icon = button.querySelector("i");
+      icon.className = button.classList.contains("active")
+        ? "fa-solid fa-square-check text-brand-purple"
+        : "fa-regular fa-square text-slate-400";
+      updateProgress();
+    }
 
-const firebaseConfig={
- apiKey:"AIzaSyC7bEYtEIk4DN3edQKievh-ek89tWS4awc",
- authDomain:"playza-87102.firebaseapp.com",
- projectId:"playza-87102",
- storageBucket:"playza-87102.firebasestorage.app",
- messagingSenderId:"695215345584",
- appId:"1:695215345584:web:14fc00081f035046979075"
-};
+    function selected(selector) {
+      return [...document.querySelectorAll(`${selector}.active`)].map((node) => node.dataset.cap || node.dataset.test);
+    }
 
-/*
-  EMAIL DELIVERY
-  EmailJS is intentionally used only as a client-side delivery adapter.
-  Firebase Firestore stores the application record.
-  Configure these three values before production use.
-*/
-const EMAILJS_PUBLIC_KEY="G1CXA21If83KVos0S";
-const EMAILJS_SERVICE_ID="play-za-jnr";
-const EMAILJS_TEMPLATE_ID="template_87s6g9c";
-const RECEIVER="jn.corporation@proton.me";
-const APP_VERSION="1.0.0-beta";
-const DRAFT_KEY="playza_beta_application_draft_v2";
+    function updateProgress() {
+      const required = [
+        $("beta-fullname").value.trim(),
+        $("beta-email").value.trim(),
+        $("beta-device").value,
+        selected("[data-cap]").length > 0,
+        $("beta-capabilities-desc").value.trim().length >= 40,
+        $("beta-why").value.trim().length >= 20
+      ];
+      const done = required.filter(Boolean).length;
+      const pct = Math.round((done / required.length) * 100);
+      $("progress-bar").style.width = `${pct}%`;
+      $("progress-value").textContent = `${pct}%`;
+      $("cap-count").textContent = `${selected("[data-cap]").length} selected`;
+      $("test-count").textContent = `${selected("[data-test]").length} selected`;
+      $("desc-count").textContent = `${$("beta-capabilities-desc").value.length}/2500`;
+    }
 
-const CAPABILITIES=[
- "UI/UX Testing","Bug Hunting","Quiz Content Creation","Game Balance & Logic",
- "Web Development","Android Testing","Performance Testing","Accessibility Testing",
- "Security / Privacy Review","Feature Ideas","Documentation / Writing","Other"
-];
-const TESTING_AREAS=[
- "New Features","UI / UX","Bug Reproduction","Performance / Stability",
- "Accessibility","Quiz / Content","Mobile / Responsive","General Feedback"
-];
+    function saveDraft() {
+      const data = {
+        name:$("beta-fullname").value,device:$("beta-device").value,caps:selected("[data-cap]"),
+        desc:$("beta-capabilities-desc").value,role:$("beta-role").value,experience:$("beta-experience").value,
+        tests:selected("[data-test]"),tools:$("beta-tools").value,availability:$("beta-availability").value,
+        why:$("beta-why").value,portfolio:$("beta-portfolio").value,extra:$("beta-extra").value,savedAt:Date.now()
+      };
+      try { localStorage.setItem(DRAFT_KEY, JSON.stringify(data)); } catch (_) {}
+    }
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-let currentUser=null;
-let duplicateChecked=false;
-let duplicateExists=false;
-let submitting=false;
+    function loadDraft() {
+      try {
+        const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+        if (!draft) return;
+        $("beta-fullname").value = draft.name || "";
+        $("beta-device").value = draft.device || "";
+        $("beta-capabilities-desc").value = draft.desc || "";
+        $("beta-role").value = draft.role || "";
+        $("beta-experience").value = draft.experience || "";
+        $("beta-tools").value = draft.tools || "";
+        $("beta-availability").value = draft.availability || "";
+        $("beta-why").value = draft.why || "";
+        $("beta-portfolio").value = draft.portfolio || "";
+        $("beta-extra").value = draft.extra || "";
+        document.querySelectorAll("[data-cap]").forEach((button) => {
+          if ((draft.caps || []).includes(button.dataset.cap)) toggleChoice(button);
+        });
+        document.querySelectorAll("[data-test]").forEach((button) => {
+          if ((draft.tests || []).includes(button.dataset.test)) toggleChoice(button);
+        });
+        updateProgress();
+        toast("Your saved beta draft was restored.","info");
+      } catch (_) {
+        try { localStorage.removeItem(DRAFT_KEY); } catch (_) {}
+      }
+    }
 
-const $=id=>document.getElementById(id);
+    async function checkDuplicate(uid) {
+      duplicateChecked = false;
+      duplicateExists = false;
+      try {
+        const q = query(collection(db,"beta_applications"),where("uid","==",uid),limit(1));
+        const snap = await getDocs(q);
+        duplicateExists = !snap.empty;
+      } catch (error) {
+        console.warn("Duplicate check unavailable:", error);
+      }
+      duplicateChecked = true;
+    }
 
-function esc(v){
- return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function toast(msg,type="info"){
- const c=$("toast-container"),d=document.createElement("div");
- const cls=type==="success"?"bg-emerald-600":type==="error"?"bg-rose-600":"bg-slate-900";
- d.className=`toast-pop ${cls} text-white px-4 py-3 rounded-2xl shadow-xl text-xs font-bold flex items-center gap-2`;
- d.innerHTML=`<i class="fa-solid ${type==="success"?"fa-circle-check":type==="error"?"fa-circle-exclamation":"fa-circle-info"}"></i><span>${esc(msg)}</span>`;
- c.appendChild(d);setTimeout(()=>d.remove(),3500);
-}
-function setStatus(type,msg){
- const e=$("application-status");
- const map={success:"bg-emerald-50 text-emerald-700 border border-emerald-200",error:"bg-rose-50 text-rose-700 border border-rose-200",info:"bg-indigo-50 text-indigo-700 border border-indigo-200"};
- e.className=`rounded-2xl p-3 text-xs font-extrabold ${map[type]||map.info}`;
- e.innerHTML=`<i class="fa-solid ${type==="success"?"fa-circle-check":type==="error"?"fa-circle-exclamation":"fa-circle-info"} mr-1"></i>${esc(msg)}`;
-}
-function setBusy(on){
- const b=$("btn-submit-beta");b.disabled=on;
- b.innerHTML=on?'<i class="fa-solid fa-spinner spin"></i><span>Submitting…</span>':'<i class="fa-solid fa-paper-plane"></i><span>Submit Beta Application</span>';
-}
-function renderChoices(){
- $("capability-grid").innerHTML=CAPABILITIES.map((x,i)=>`
-  <button type="button" class="chip text-left flex items-center gap-2" data-cap="${esc(x)}">
-   <i class="fa-regular fa-square"></i><span>${esc(x)}</span>
-  </button>`).join("");
- $("testing-grid").innerHTML=TESTING_AREAS.map(x=>`
-  <button type="button" class="chip text-left flex items-center gap-2" data-test="${esc(x)}">
-   <i class="fa-regular fa-square"></i><span>${esc(x)}</span>
-  </button>`).join("");
- document.querySelectorAll("[data-cap]").forEach(b=>b.onclick=()=>toggleChoice(b,"cap"));
- document.querySelectorAll("[data-test]").forEach(b=>b.onclick=()=>toggleChoice(b,"test"));
-}
-function toggleChoice(b,type){
- b.classList.toggle("active");
- const icon=b.querySelector("i");
- if(b.classList.contains("active")){icon.className="fa-solid fa-square-check";icon.style.color="#9333ea"}
- else{icon.className="fa-regular fa-square";icon.style.color=""}
- updateProgress();
-}
-function selected(selector){
- return [...document.querySelectorAll(selector+".active")].map(x=>x.dataset.cap||x.dataset.test);
-}
-function updateProgress(){
- const required=[
-  $("beta-fullname").value.trim(),
-  $("beta-email").value.trim(),
-  $("beta-device").value,
-  selected("[data-cap]").length,
-  $("beta-capabilities-desc").value.trim().length>=40,
-  $("beta-why").value.trim().length>=20
- ];
- const done=required.filter(Boolean).length, pct=Math.round(done/required.length*100);
- $("progress-bar").style.width=pct+"%";$("progress-value").textContent=pct+"%";
- $("required-count").textContent=`${done}/${required.length} required`;
-}
-function saveDraft(){
- const data={
-  name:$("beta-fullname").value,device:$("beta-device").value,
-  caps:selected("[data-cap]"),desc:$("beta-capabilities-desc").value,
-  role:$("beta-role").value,experience:$("beta-experience").value,
-  tests:selected("[data-test]"),tools:$("beta-tools").value,
-  availability:$("beta-availability").value,why:$("beta-why").value,
-  portfolio:$("beta-portfolio").value,extra:$("beta-extra").value,
-  savedAt:Date.now()
- };
- localStorage.setItem(DRAFT_KEY,JSON.stringify(data));
-}
-function loadDraft(){
- try{
-  const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");if(!d)return;
-  $("beta-fullname").value=d.name||"";$("beta-device").value=d.device||"";
-  $("beta-capabilities-desc").value=d.desc||"";$("beta-role").value=d.role||"";
-  $("beta-experience").value=d.experience||"";$("beta-tools").value=d.tools||"";
-  $("beta-availability").value=d.availability||"";$("beta-why").value=d.why||"";
-  $("beta-portfolio").value=d.portfolio||"";$("beta-extra").value=d.extra||"";
-  document.querySelectorAll("[data-cap]").forEach(b=>{if((d.caps||[]).includes(b.dataset.cap))toggleChoice(b,"cap")});
-  document.querySelectorAll("[data-test]").forEach(b=>{if((d.tests||[]).includes(b.dataset.test))toggleChoice(b,"test")});
-  if(Object.values(d).some(v=>v))toast("Your saved draft was restored.","info");
- }catch(e){localStorage.removeItem(DRAFT_KEY)}
-}
-async function checkDuplicate(uid){
- duplicateChecked=false;duplicateExists=false;
- try{
-  const q=query(collection(db,"beta_applications"),where("uid","==",uid),limit(1));
-  const snap=await getDocs(q);
-  duplicateExists=!snap.empty;
- }catch(e){
-  console.warn("Duplicate check unavailable:",e);
- }
- duplicateChecked=true;
-}
-async function fetchIdentity(user){
- currentUser=user||null;
- const s=$("firebase-email-status");
- if(user?.email){
-  $("beta-email").value=user.email;
-  s.innerHTML='<i class="fa-solid fa-circle-check"></i> Firebase verified';
-  s.className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md";
-  await checkDuplicate(user.uid);
-  if(duplicateExists){
-   setStatus("info","An existing beta application is already associated with this Firebase account. Please do not submit a duplicate application.");
-   $("btn-submit-beta").disabled=true;
-   $("btn-submit-beta").classList.add("opacity-50");
-  }
- }else{
-  s.innerHTML='<i class="fa-solid fa-user-slash"></i> Sign in required';
-  s.className="text-[9px] font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded-md";
-  $("email-help").textContent="Open this page after signing in to PlayZa.";
- }
- updateProgress();
-}
-function validate(){
- const errors=[];
- const name=$("beta-fullname").value.trim();
- const desc=$("beta-capabilities-desc").value.trim();
- const why=$("beta-why").value.trim();
- if(!name||name.length<2)errors.push("Enter a valid name.");
- if(!currentUser?.uid||!currentUser?.email)errors.push("A signed-in Firebase account is required.");
- if(!$("beta-device").value)errors.push("Select your primary testing device.");
- if(!selected("[data-cap]").length)errors.push("Select at least one capability.");
- if(desc.length<40)errors.push("Capability description must be at least 40 characters.");
- if(why.length<20)errors.push("Please explain why you want to join in at least 20 characters.");
- const portfolio=$("beta-portfolio").value.trim();
- if(portfolio && !/^https?:\/\/.+/i.test(portfolio))errors.push("Portfolio link must start with http:// or https://.");
- if(duplicateExists)errors.push("A beta application already exists for this Firebase account.");
- return errors;
-}
-async function sendEmail(data){
- if(EMAILJS_PUBLIC_KEY.startsWith("YOUR_"))throw new Error("EMAIL_NOT_CONFIGURED");
- emailjs.init({publicKey:EMAILJS_PUBLIC_KEY});
- return emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{
-  to_email:RECEIVER,from_name:data.name,from_email:data.email,
-  uid:data.uid,role:data.role||"Not specified",experience:data.experience||"Not specified",
-  device:data.device,capabilities:data.capabilities.join(", "),description:data.description,
-  testing_areas:data.testingAreas.join(", ")||"Not specified",tools:data.tools||"Not specified",
-  availability:data.availability||"Not specified",portfolio:data.portfolio||"Not provided",
-  why:data.why,extra:data.extra||"None",submitted_at:data.submittedAt,app_version:APP_VERSION
- });
-}
+    function applyAuthState(user) {
+      currentUser = user || null;
+      const badge = $("firebase-badge");
+      const emailBadge = $("firebase-email-status");
 
-$("beta-application-form").addEventListener("input",()=>{saveDraft();updateProgress()});
-$("beta-application-form").addEventListener("change",()=>{saveDraft();updateProgress()});
-$("beta-capabilities-desc").addEventListener("input",()=>{$("desc-count").textContent=$("beta-capabilities-desc").value.length+"/2500"});
+      if (user?.uid && user?.email) {
+        $("beta-email").value = user.email;
+        $("beta-uid").value = user.uid;
+        badge.className = "shrink-0 bg-emerald-50 text-emerald-700 text-[9px] font-black px-2 py-1 rounded-lg uppercase";
+        badge.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i> Verified';
+        emailBadge.className = "text-[9px] font-black bg-emerald-50 text-emerald-700 px-2 py-1 rounded-lg";
+        emailBadge.textContent = "Firebase verified";
+        $("email-help").textContent = "Your signed-in PlayZa account email is used automatically.";
 
-$("clear-draft").onclick=()=>{
- localStorage.removeItem(DRAFT_KEY);
- document.querySelectorAll("#beta-application-form input,#beta-application-form textarea,#beta-application-form select").forEach(e=>{if(e.id!=="beta-email")e.value=""});
- document.querySelectorAll(".chip.active").forEach(b=>toggleChoice(b,b.dataset.cap?"cap":"test"));
- $("desc-count").textContent="0/2500";updateProgress();toast("Saved draft cleared.","success");
-};
+        $("btn-submit-beta").disabled = false;
+        $("btn-submit-beta").classList.remove("opacity-50");
 
-$("beta-application-form").addEventListener("submit",async e=>{
- e.preventDefault();
- if(submitting)return;
- const errors=validate();
- if(errors.length){setStatus("error",errors[0]);toast(errors[0],"error");return}
- if(!duplicateChecked && currentUser?.uid)await checkDuplicate(currentUser.uid);
- if(duplicateExists){setStatus("info","A previous application already exists for this account.");return}
+        checkDuplicate(user.uid).then(() => {
+          if (duplicateExists) {
+            setStatus("info","An application already exists for this Firebase account. Duplicate submissions are blocked.");
+            $("btn-submit-beta").disabled = true;
+            $("btn-submit-beta").classList.add("opacity-50");
+          }
+        });
+      } else {
+        badge.className = "shrink-0 bg-rose-50 text-rose-700 text-[9px] font-black px-2 py-1 rounded-lg uppercase";
+        badge.innerHTML = '<i class="fa-solid fa-user-slash mr-1"></i> Sign in required';
+        emailBadge.className = "text-[9px] font-black bg-rose-50 text-rose-700 px-2 py-1 rounded-lg";
+        emailBadge.textContent = "Sign in required";
+        $("email-help").textContent = "Open this page after signing in to your PlayZa account.";
+        setStatus("info","Please sign in to PlayZa before submitting a beta application.");
+        $("btn-submit-beta").disabled = true;
+        $("btn-submit-beta").classList.add("opacity-50");
+      }
+      updateProgress();
+    }
 
- const data={
-  schemaVersion:2,app:"PlayZa",appVersion:APP_VERSION,
-  uid:currentUser.uid,email:currentUser.email,
-  name:$("beta-fullname").value.trim(),
-  device:$("beta-device").value,
-  capabilities:selected("[data-cap]"),
-  description:$("beta-capabilities-desc").value.trim(),
-  role:$("beta-role").value,experience:$("beta-experience").value,
-  testingAreas:selected("[data-test]"),tools:$("beta-tools").value.trim(),
-  availability:$("beta-availability").value,
-  why:$("beta-why").value.trim(),portfolio:$("beta-portfolio").value.trim(),
-  extra:$("beta-extra").value.trim(),
-  status:"pending",reviewStatus:"new",
-  source:"beta_user.html",recipient:RECEIVER,
-  submittedAt:new Date().toISOString()
- };
+    function validate() {
+      const errors = [];
+      const name = $("beta-fullname").value.trim();
+      const desc = $("beta-capabilities-desc").value.trim();
+      const why = $("beta-why").value.trim();
+      const portfolio = $("beta-portfolio").value.trim();
 
- submitting=true;setBusy(true);setStatus("info","Validating your Firebase identity and saving the application…");
- try{
-  const ref=await addDoc(collection(db,"beta_applications"),{...data,createdAt:serverTimestamp()});
-  data.applicationId=ref.id;
+      if (!currentUser?.uid || !currentUser?.email) errors.push("A signed-in Firebase account is required.");
+      if (name.length < 2) errors.push("Enter your full name.");
+      if (!$("beta-device").value) errors.push("Select your primary testing device.");
+      if (!selected("[data-cap]").length) errors.push("Select at least one capability.");
+      if (desc.length < 40) errors.push("Experience description must be at least 40 characters.");
+      if (why.length < 20) errors.push("Please explain why you want to join in at least 20 characters.");
+      if (portfolio && !/^https?:\/\/.+/i.test(portfolio)) errors.push("Portfolio link must start with http:// or https://.");
+      if (duplicateExists) errors.push("A beta application already exists for this Firebase account.");
+      return errors;
+    }
 
-  // Email delivery is deliberately after Firestore persistence.
-  // If delivery fails, the application remains safely stored for manual review.
-  try{
-   await sendEmail(data);
-   await addDoc(collection(db,"beta_mail_log"),{
-    applicationId:ref.id,uid:data.uid,to:RECEIVER,delivery:"emailjs",status:"sent",
-    createdAt:serverTimestamp()
-   });
-  }catch(mailErr){
-   console.warn("Email delivery failed:",mailErr);
-   await addDoc(collection(db,"beta_mail_log"),{
-    applicationId:ref.id,uid:data.uid,to:RECEIVER,delivery:"emailjs",status:"delivery_failed",
-    error:String(mailErr?.message||mailErr).slice(0,300),createdAt:serverTimestamp()
-   }).catch(()=>{});
-   setStatus("success","Application saved successfully. Email delivery is not configured or temporarily unavailable, but your application is safely stored for review.");
-   toast("Application saved to Firebase.","success");
-   localStorage.removeItem(DRAFT_KEY);submitting=false;setBusy(false);return;
-  }
+    function buildApplicationData() {
+      return {
+        schemaVersion:3,app:"PlayZa",appVersion:APP_VERSION,uid:currentUser.uid,email:currentUser.email,
+        name:$("beta-fullname").value.trim(),device:$("beta-device").value,
+        capabilities:selected("[data-cap]"),capabilitiesDescription:$("beta-capabilities-desc").value.trim(),
+        role:$("beta-role").value,experience:$("beta-experience").value,testingAreas:selected("[data-test]"),
+        tools:$("beta-tools").value.trim(),availability:$("beta-availability").value,
+        why:$("beta-why").value.trim(),portfolio:$("beta-portfolio").value.trim(),extra:$("beta-extra").value.trim(),
+        status:"pending",reviewStatus:"new",source:"beta_user_redesigned.html",recipient:RECEIVER,
+        submittedAt:new Date().toISOString()
+      };
+    }
 
-  localStorage.removeItem(DRAFT_KEY);
-  setStatus("success","Application submitted successfully. Your request has been saved and the notification email was sent.");
-  toast("Beta application submitted!","success");
-  $("beta-application-form").reset();
-  document.querySelectorAll(".chip.active").forEach(b=>toggleChoice(b,b.dataset.cap?"cap":"test"));
-  $("beta-email").value=currentUser.email;$("desc-count").textContent="0/2500";
-  $("application-status").classList.add("success-pulse");
-  duplicateExists=true;
-  $("btn-submit-beta").disabled=true;
- }catch(err){
-  console.error(err);
-  setStatus("error","We could not save the application. Nothing was submitted as complete. Please check your connection and try again.");
-  toast("Submission failed. Please try again.","error");
- }finally{
-  submitting=false;
-  if(!duplicateExists)setBusy(false);
-  updateProgress();
- }
-});
+    async function sendWithFormSubmit(data) {
+      const payload = {
+        name:data.name,email:data.email,uid:data.uid,device:data.device,
+        capabilities:data.capabilities.join(", "),capabilities_description:data.capabilitiesDescription,
+        role:data.role || "Not specified",experience:data.experience || "Not specified",
+        testing_areas:data.testingAreas.join(", ") || "Not specified",tools:data.tools || "Not specified",
+        availability:data.availability || "Not specified",why_join:data.why,
+        portfolio:data.portfolio || "Not provided",extra:data.extra || "None",
+        application_id:data.applicationId || "Not assigned",submitted_at:data.submittedAt,app_version:APP_VERSION,
+        _subject:"PlayZa Beta Application",_template:"table",_url:location.href,_honey:""
+      };
 
-window.goBack=()=>history.length>1?history.back():location.href="index.html";
+      const response = await fetch(FORM_ENDPOINT,{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Accept":"application/json"},
+        body:JSON.stringify(payload)
+      });
 
-renderChoices();
-loadDraft();
-onAuthStateChanged(auth,fetchIdentity);
-</script>
+      const raw = await response.text();
+      let result = null;
+      try { result = JSON.parse(raw); } catch (_) {}
+      if (!response.ok || (result && result.success === false)) {
+        throw new Error(result?.message || raw || `FormSubmit returned HTTP ${response.status}`);
+      }
+      return result || {success:true};
+    }
+
+    function resetFormAfterSubmit() {
+      $("beta-application-form").reset();
+      $("beta-email").value = currentUser?.email || "";
+      $("beta-uid").value = currentUser?.uid || "";
+      document.querySelectorAll(".chip.active").forEach((button) => {
+        button.classList.remove("active");
+        button.querySelector("i").className = "fa-regular fa-square text-slate-400";
+      });
+      $("form-url").value = location.href;
+      updateProgress();
+    }
+
+    $("beta-application-form").addEventListener("input", () => { saveDraft(); updateProgress(); });
+    $("beta-application-form").addEventListener("change", () => { saveDraft(); updateProgress(); });
+
+    $("clear-draft").addEventListener("click", () => {
+      try { localStorage.removeItem(DRAFT_KEY); } catch (_) {}
+      ["beta-fullname","beta-device","beta-capabilities-desc","beta-role","beta-experience","beta-tools","beta-availability","beta-why","beta-portfolio","beta-extra"]
+        .forEach((id) => $(id).value = "");
+      document.querySelectorAll(".chip.active").forEach((button) => {
+        button.classList.remove("active");
+        button.querySelector("i").className = "fa-regular fa-square text-slate-400";
+      });
+      $("beta-email").value = currentUser?.email || "";
+      $("beta-uid").value = currentUser?.uid || "";
+      updateProgress();
+      toast("Saved draft cleared.","success");
+    });
+
+    $("beta-application-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (submitting) return;
+
+      const errors = validate();
+      if (errors.length) {
+        setStatus("error",errors[0]);
+        toast(errors[0],"error");
+        return;
+      }
+
+      if (!duplicateChecked && currentUser?.uid) await checkDuplicate(currentUser.uid);
+      if (duplicateExists) {
+        setStatus("info","A previous beta application already exists for this account.");
+        return;
+      }
+
+      const data = buildApplicationData();
+      submitting = true;
+      setBusy(true);
+      setStatus("info","Saving your beta application…");
+
+      try {
+        const ref = await addDoc(collection(db,"beta_applications"),{...data,createdAt:serverTimestamp()});
+        data.applicationId = ref.id;
+
+        let mailSent = false;
+        try {
+          setStatus("info","Application saved. Sending the beta request email…");
+          await sendWithFormSubmit(data);
+          mailSent = true;
+
+          await addDoc(collection(db,"beta_mail_log"),{
+            applicationId:ref.id,uid:data.uid,to:RECEIVER,delivery:"formsubmit",status:"sent",createdAt:serverTimestamp()
+          });
+        } catch (mailError) {
+          console.error("FormSubmit delivery error:",mailError);
+          await addDoc(collection(db,"beta_mail_log"),{
+            applicationId:ref.id,uid:data.uid,to:RECEIVER,delivery:"formsubmit",status:"delivery_failed",
+            error:String(mailError?.message || mailError).slice(0,500),createdAt:serverTimestamp()
+          }).catch(() => {});
+        }
+
+        try { localStorage.removeItem(DRAFT_KEY); } catch (_) {}
+
+        if (mailSent) {
+          setStatus("success","Beta application submitted successfully. Your request was saved and the notification email was sent.");
+          toast("You're in the beta review queue! 🦊","success");
+        } else {
+          setStatus("success","Your beta application was saved safely. Email delivery is temporarily unavailable, so the request remains stored for review.");
+          toast("Application saved to Firebase.","success");
+        }
+
+        $("application-status").classList.add("success-pulse");
+        resetFormAfterSubmit();
+        duplicateExists = true;
+        $("btn-submit-beta").disabled = true;
+        $("btn-submit-beta").classList.add("opacity-50");
+      } catch (error) {
+        console.error(error);
+        setStatus("error","We could not save the application. Please check your connection and try again.");
+        toast("Submission failed. Please try again.","error");
+      } finally {
+        submitting = false;
+        if (!duplicateExists) setBusy(false);
+        updateProgress();
+      }
+    });
+
+    window.goBack = () => { if (history.length > 1) history.back(); else location.href = "index.html"; };
+
+    $("form-url").value = location.href;
+    renderChoices();
+    loadDraft();
+    onAuthStateChanged(auth,applyAuthState);
+  </script>
 </body>
 </html>

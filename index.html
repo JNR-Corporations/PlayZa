@@ -1215,35 +1215,94 @@
           <input id="data-import-input" type="file" accept="application/json,.json" class="hidden" onchange="handleImportData(event)">
         </div>
 
-          <button onclick="window.location.href='beta_user.html'" class="w-full text-left bg-gradient-to-r from-violet-50 to-indigo-50 rounded-2xl p-4 border border-violet-200 shadow-xs hover:shadow-md hover:border-violet-300 transition-all flex items-center justify-between gap-3">
+          <button onclick="openHTMLFullscreen('beta_user.html')" class="w-full text-left bg-gradient-to-r from-violet-50 to-indigo-50 rounded-2xl p-4 border border-violet-200 shadow-xs hover:shadow-md hover:border-violet-300 transition-all flex items-center justify-between gap-3">
 
-  <div class="flex items-center gap-3">
-    <div class="w-11 h-11 rounded-2xl bg-violet-100 text-violet-600 flex items-center justify-center text-lg">
-      <i class="fa-solid fa-flask-vial"></i>
-    </div>
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-violet-100 text-violet-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-flask-vial"></i>
+            </div>
 
-    <div>
-      <h4 class="font-fredoka text-sm font-bold text-slate-800">
-        Request for Beta
-      </h4>
-      <p class="text-[11px] text-slate-400 font-semibold">
-        Apply for early access to upcoming PlayZa features
-      </p>
-    </div>
-  </div>
+            <div>
+              <h4 class="font-fredoka text-sm font-bold text-slate-800">
+                Request for Beta
+              </h4>
+              <p class="text-[11px] text-slate-400 font-semibold">
+                Apply for early access to upcoming PlayZa features
+              </p>
+            </div>
+          </div>
 
-  <div class="text-violet-400">
-    <i class="fa-solid fa-chevron-right"></i>
-  </div>
+          <div class="text-violet-400">
+            <i class="fa-solid fa-chevron-right"></i>
+          </div>
 
-</button>
+        </button>
+
+                <!-- Invite a Friend -->
+       <button onclick="openInviteFriend()" class="w-full text-left bg-white rounded-2xl p-4 border border-slate-200 shadow-xs hover:shadow-md transition-all flex items-center justify-between gap-3 active:scale-[0.99]" > <div class="flex items-center gap-3"> <div class="w-11 h-11 rounded-2xl bg-violet-100 text-violet-600 flex items-center justify-center text-lg"> <i class="fa-solid fa-user-plus"></i> </div> <div> <h4 class="font-fredoka text-sm font-bold text-slate-800"> Invite a Friend </h4> <p class="text-[11px] text-slate-400 font-semibold"> Share PlayZa with your friends </p> </div> </div> <div class="text-slate-400"> <i class="fa-solid fa-chevron-right"></i> </div> </button>
+
+
+        <!-- Help & Feedback -->
+        <button onclick="openHTMLFullscreen('help.html')" class="w-full text-left bg-white rounded-2xl p-4 border border-slate-200 shadow-xs hover:shadow-md transition-all flex items-center justify-between gap-3 active:scale-[0.99]">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+
+                <div>
+                    <h4 class="font-fredoka text-sm font-bold text-slate-800">Help & Feedback</h4>
+                    <p class="text-[11px] text-slate-400 font-semibold">
+                        Get help or tell us what you think
+                    </p>
+                </div>
+            </div>
+
+            <div class="text-slate-400">
+                <i class="fa-solid fa-chevron-right"></i>
+            </div>
+        </button>
+
+
+        <!-- Other Platforms -->
+        <button onclick="openHTMLFullscreen('plateform.html')" class="w-full text-left bg-white rounded-2xl p-4 border border-slate-200 shadow-xs hover:shadow-md transition-all flex items-center justify-between gap-3 active:scale-[0.99]">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+
+                <div>
+                    <h4 class="font-fredoka text-sm font-bold text-slate-800">Other Platforms</h4>
+                    <p class="text-[11px] text-slate-400 font-semibold">
+                        Explore PlayZa across other platforms
+                    </p>
+                </div>
+            </div>
+
+            <div class="text-slate-400">
+                <i class="fa-solid fa-chevron-right"></i>
+            </div>
+        </button>
+
+
+        
         <!-- ABOUT / VERSION / LICENSE (ADDITIVE) -->
         <button onclick="openAboutApp()" class="w-full text-left bg-white rounded-2xl p-4 border border-slate-200 shadow-xs hover:shadow-md transition-all flex items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <div class="w-11 h-11 rounded-2xl bg-blue-100 text-brand-blue flex items-center justify-center text-lg"><i class="fa-solid fa-circle-info"></i></div>
             <div>
               <h4 class="font-fredoka text-sm font-bold text-slate-800">About PlayZa</h4>
-              <p class="text-[11px] text-slate-400 font-semibold">Version, license, privacy & build details</p>
+              <p class="text-[11px] text-slate-400 font-semibold">Version, license & privacy</p>
+            </div>
+          </div>
+          <div class="text-slate-400"><i class="fa-solid fa-chevron-right"></i></div>
+        </button>
+
+        <button onclick="openAboutApp()" class="w-full text-left bg-white rounded-2xl p-4 border border-slate-200 shadow-xs hover:shadow-md transition-all flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-blue-100 text-brand-blue flex items-center justify-center text-lg"><i class="fa-solid fa-circle-info"></i></div>
+            <div>
+              <h4 class="font-fredoka text-sm font-bold text-slate-800">More About PlayZa</h4>
+              <p class="text-[11px] text-slate-400 font-semibold">Version, license, privacy,developer & build details</p>
             </div>
           </div>
           <div class="text-slate-400"><i class="fa-solid fa-chevron-right"></i></div>
@@ -1769,6 +1828,436 @@
     </nav>
 
   </div>
+
+
+<!-- =========================
+     PLAYZA ANDROID-STYLE SHARE SHEET
+========================= -->
+
+<div id="inviteFriendModal"
+     class="fixed inset-0 z-[9999] hidden"
+     aria-hidden="true">
+
+  <!-- Backdrop -->
+  <div id="inviteFriendBackdrop"
+       onclick="closeInviteFriend()"
+       class="absolute inset-0 bg-slate-950/55 backdrop-blur-[5px] opacity-0 transition-opacity duration-300"></div>
+
+  <!-- Share Sheet -->
+  <div id="inviteFriendSheet"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="inviteShareTitle"
+       class="absolute bottom-0 left-0 right-0 mx-auto w-full max-w-[450px] bg-[#f8fafc] rounded-t-[28px] shadow-[0_-18px_60px_rgba(15,23,42,.22)] translate-y-full transition-transform duration-300 ease-out overflow-hidden">
+
+    <!-- Android-style handle -->
+    <div class="flex justify-center pt-3 pb-1">
+      <div class="w-10 h-1.5 rounded-full bg-slate-300"></div>
+    </div>
+
+    <!-- Header -->
+    <div class="px-5 pt-2 pb-4 flex items-center justify-between">
+      <div>
+        <h3 id="inviteShareTitle" class="font-fredoka text-lg font-bold text-slate-900">
+          Share with
+        </h3>
+        <p class="text-[11px] text-slate-500 font-semibold mt-0.5">
+          Invite your friends to join PlayZa
+        </p>
+      </div>
+
+      <button onclick="closeInviteFriend()"
+              class="w-9 h-9 rounded-full bg-slate-200/80 text-slate-600 flex items-center justify-center active:scale-90 transition"
+              aria-label="Close share panel">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
+    </div>
+
+    <!-- Preview -->
+    <div class="px-4">
+      <div class="bg-white rounded-2xl border border-slate-200 p-3 flex items-center gap-3 shadow-sm">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 to-amber-400 text-white flex items-center justify-center text-lg shadow-sm">
+          <i class="fa-solid fa-gamepad"></i>
+        </div>
+
+        <div class="min-w-0 flex-1">
+          <p class="font-fredoka text-sm font-bold text-slate-800">
+            Join me on PlayZa!
+          </p>
+          <p id="inviteShareLink"
+             class="text-[10px] text-slate-400 font-semibold truncate">
+            PlayZa
+          </p>
+        </div>
+
+        <span class="text-[9px] font-black uppercase tracking-wide text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-full">
+          Invite
+        </span>
+      </div>
+    </div>
+
+    <!-- App Share Grid -->
+    <div class="px-4 pt-5">
+      <div class="grid grid-cols-4 gap-y-5 gap-x-2">
+
+        <!-- WhatsApp -->
+        <button onclick="shareToWhatsApp()" class="share-app-item group">
+          <div class="share-app-icon bg-[#25D366] text-white">
+            <i class="fa-brands fa-whatsapp"></i>
+          </div>
+          <span>WhatsApp</span>
+        </button>
+
+        <!-- Facebook -->
+        <button onclick="shareToFacebook()" class="share-app-item group">
+          <div class="share-app-icon bg-[#1877F2] text-white">
+            <i class="fa-brands fa-facebook-f"></i>
+          </div>
+          <span>Facebook</span>
+        </button>
+
+        <!-- Telegram -->
+        <button onclick="shareToTelegram()" class="share-app-item group">
+          <div class="share-app-icon bg-[#229ED9] text-white">
+            <i class="fa-brands fa-telegram"></i>
+          </div>
+          <span>Telegram</span>
+        </button>
+
+        <!-- Messages -->
+        <button onclick="shareToMessages()" class="share-app-item group">
+          <div class="share-app-icon bg-blue-500 text-white">
+            <i class="fa-solid fa-message"></i>
+          </div>
+          <span>Messages</span>
+        </button>
+
+        <!-- X -->
+        <button onclick="shareToX()" class="share-app-item group">
+          <div class="share-app-icon bg-black text-white">
+            <i class="fa-brands fa-x-twitter"></i>
+          </div>
+          <span>X</span>
+        </button>
+
+        <!-- Email -->
+        <button onclick="shareToEmail()" class="share-app-item group">
+          <div class="share-app-icon bg-slate-700 text-white">
+            <i class="fa-solid fa-envelope"></i>
+          </div>
+          <span>Email</span>
+        </button>
+
+        <!-- Copy -->
+        <button onclick="copyInviteLink()" class="share-app-item group">
+          <div id="copyInviteIcon" class="share-app-icon bg-slate-100 text-slate-700 border border-slate-200">
+            <i class="fa-solid fa-link"></i>
+          </div>
+          <span id="copyInviteLabel">Copy link</span>
+        </button>
+
+        <!-- More / Android system share -->
+        <button onclick="openSystemShare()" class="share-app-item group">
+          <div class="share-app-icon bg-white text-slate-700 border border-slate-200 shadow-sm">
+            <i class="fa-solid fa-ellipsis"></i>
+          </div>
+          <span>More</span>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="px-5 pt-5">
+      <div class="border-t border-slate-200"></div>
+    </div>
+
+    <!-- System share option -->
+    <div class="px-4 pt-3">
+      <button onclick="openSystemShare()"
+              class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3.5 flex items-center gap-3 active:scale-[0.985] transition shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center">
+          <i class="fa-solid fa-share-nodes"></i>
+        </div>
+
+        <div class="flex-1 text-left">
+          <p class="font-fredoka text-sm font-bold text-slate-800">
+            More sharing options
+          </p>
+          <p class="text-[10px] text-slate-400 font-semibold">
+            Open your device's available sharing apps
+          </p>
+        </div>
+
+        <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+      </button>
+    </div>
+
+    <!-- Cancel -->
+    <div class="px-4 pt-3 pb-[max(14px,env(safe-area-inset-bottom))]">
+      <button onclick="closeInviteFriend()"
+              class="w-full py-3.5 rounded-2xl bg-slate-200/80 text-slate-700 font-fredoka font-bold text-sm active:scale-[0.985] transition">
+        Cancel
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* PlayZa Android-style share sheet */
+  .share-app-item{
+    min-height:72px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    gap:7px;
+    color:#475569;
+    font-family:'Nunito',sans-serif;
+    font-size:10px;
+    font-weight:800;
+    transition:transform .14s ease;
+  }
+
+  .share-app-item:active{
+    transform:scale(.88);
+  }
+
+  .share-app-icon{
+    width:52px;
+    height:52px;
+    border-radius:17px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:23px;
+    box-shadow:0 5px 12px rgba(15,23,42,.10);
+    transition:transform .14s ease,box-shadow .14s ease;
+  }
+
+  .share-app-item:hover .share-app-icon{
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(15,23,42,.14);
+  }
+
+  @media(max-width:360px){
+    .share-app-icon{
+      width:48px;
+      height:48px;
+      font-size:21px;
+    }
+  }
+</style>
+
+  <script>
+    /*
+     * ==========================================
+     * PLAYZA INVITE / SHARE CONFIG
+     * ==========================================
+     *
+     * Change this to your real PlayZa URL.
+     * If left as an empty string, the current page URL is used.
+     */
+    const PLAYZA_INVITE_LINK = "https://your-playza-link.com";
+
+    function getPlayZaInviteLink(){
+      return PLAYZA_INVITE_LINK && PLAYZA_INVITE_LINK !== "https://your-playza-link.com"
+        ? PLAYZA_INVITE_LINK
+        : window.location.href.split('#')[0];
+    }
+
+    function getPlayZaShareData(){
+      const url = getPlayZaInviteLink();
+
+      return {
+        title: "Join PlayZa",
+        text: "I'm using PlayZa — join me and start your journey!",
+        url
+      };
+    }
+
+    window.openInviteFriend = function(){
+      const modal = document.getElementById("inviteFriendModal");
+      const backdrop = document.getElementById("inviteFriendBackdrop");
+      const sheet = document.getElementById("inviteFriendSheet");
+      const link = document.getElementById("inviteShareLink");
+
+      if(!modal || !backdrop || !sheet) return;
+
+      if(link) link.textContent = getPlayZaInviteLink();
+
+      modal.classList.remove("hidden");
+      modal.setAttribute("aria-hidden","false");
+      document.body.style.overflow = "hidden";
+
+      requestAnimationFrame(() => {
+        backdrop.classList.remove("opacity-0");
+        sheet.classList.remove("translate-y-full");
+      });
+
+      if(typeof playSound === "function"){
+        try { playSound("click"); } catch(_) {}
+      }
+    };
+
+    window.closeInviteFriend = function(){
+      const modal = document.getElementById("inviteFriendModal");
+      const backdrop = document.getElementById("inviteFriendBackdrop");
+      const sheet = document.getElementById("inviteFriendSheet");
+
+      if(!modal || !backdrop || !sheet) return;
+
+      backdrop.classList.add("opacity-0");
+      sheet.classList.add("translate-y-full");
+      modal.setAttribute("aria-hidden","true");
+
+      setTimeout(() => {
+        modal.classList.add("hidden");
+        document.body.style.overflow = "";
+      }, 300);
+    };
+
+    function openExternalShare(url){
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+
+    window.shareToWhatsApp = function(){
+      const d = getPlayZaShareData();
+      openExternalShare(
+        "https://wa.me/?text=" +
+        encodeURIComponent(d.text + "\n" + d.url)
+      );
+    };
+
+    window.shareToFacebook = function(){
+      const d = getPlayZaShareData();
+      openExternalShare(
+        "https://www.facebook.com/sharer/sharer.php?u=" +
+        encodeURIComponent(d.url)
+      );
+    };
+
+    window.shareToTelegram = function(){
+      const d = getPlayZaShareData();
+      openExternalShare(
+        "https://t.me/share/url?url=" +
+        encodeURIComponent(d.url) +
+        "&text=" +
+        encodeURIComponent(d.text)
+      );
+    };
+
+    window.shareToX = function(){
+      const d = getPlayZaShareData();
+      openExternalShare(
+        "https://twitter.com/intent/tweet?text=" +
+        encodeURIComponent(d.text) +
+        "&url=" +
+        encodeURIComponent(d.url)
+      );
+    };
+
+    window.shareToMessages = function(){
+      const d = getPlayZaShareData();
+      const body = encodeURIComponent(d.text + "\n" + d.url);
+
+      /*
+       * SMS is handled by the device when supported.
+       * The fallback keeps the invite link copied.
+       */
+      try {
+        window.location.href = "sms:?body=" + body;
+      } catch(_) {
+        copyInviteLink();
+      }
+    };
+
+    window.shareToEmail = function(){
+      const d = getPlayZaShareData();
+
+      window.location.href =
+        "mailto:?subject=" +
+        encodeURIComponent("Join me on PlayZa") +
+        "&body=" +
+        encodeURIComponent(d.text + "\n\n" + d.url);
+    };
+
+    window.copyInviteLink = async function(){
+      const url = getPlayZaInviteLink();
+      const label = document.getElementById("copyInviteLabel");
+      const icon = document.getElementById("copyInviteIcon");
+
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch(_) {
+        const textarea = document.createElement("textarea");
+        textarea.value = url;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+          document.execCommand("copy");
+        } catch(__) {}
+
+        textarea.remove();
+      }
+
+      if(label) label.textContent = "Copied!";
+      if(icon){
+        icon.className =
+          "share-app-icon bg-emerald-100 text-emerald-600 border border-emerald-200";
+        icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+      }
+
+      if(typeof showToast === "function"){
+        showToast("PlayZa invite link copied!", "🔗");
+      }
+
+      setTimeout(() => {
+        if(label) label.textContent = "Copy link";
+        if(icon){
+          icon.className =
+            "share-app-icon bg-slate-100 text-slate-700 border border-slate-200";
+          icon.innerHTML = '<i class="fa-solid fa-link"></i>';
+        }
+      }, 1800);
+    };
+
+    window.openSystemShare = async function(){
+      const d = getPlayZaShareData();
+
+      if(navigator.share){
+        try {
+          await navigator.share(d);
+          return;
+        } catch(error){
+          if(error?.name === "AbortError") return;
+        }
+      }
+
+      /*
+       * Desktop/browser fallback:
+       * keep the custom PlayZa panel open and copy the URL.
+       */
+      await copyInviteLink();
+
+      if(typeof showToast === "function"){
+        showToast("System sharing is unavailable here. Link copied instead.", "ℹ️");
+      }
+    };
+
+    document.addEventListener("keydown", function(event){
+      if(
+        event.key === "Escape" &&
+        !document.getElementById("inviteFriendModal")?.classList.contains("hidden")
+      ){
+        closeInviteFriend();
+      }
+    });
+  </script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -5080,6 +5569,6 @@ window.addEventListener("popstate", () => {
     }
 });
 </script>
-
+<script src="share.js"></script>
 </body>
 </html>
