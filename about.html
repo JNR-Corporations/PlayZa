@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>PlayZa • Information Hub</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root{
+      --orange:#ff7a18; --blue:#22aef3; --green:#55c80a; --purple:#9a55e8;
+      --yellow:#f5bd00; --rose:#ef476f;
+      --ink:#172033; --muted:#718096; --bg:#f5f7fb; --line:#e6ebf2;
+      --shadow:0 8px 24px rgba(25,35,55,.075);
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html{scroll-behavior:smooth;background:var(--bg)}
+    body{
+      margin:0;min-height:100vh;font-family:'Nunito',sans-serif;color:var(--ink);
+      background:
+        radial-gradient(circle at 0 0,rgba(255,122,24,.10),transparent 25rem),
+        radial-gradient(circle at 100% 10%,rgba(34,174,243,.10),transparent 24rem),
+        #f5f7fb;
+    }
+    button{font:inherit;border:0}
+    button:focus-visible{outline:3px solid rgba(34,174,243,.25);outline-offset:3px}
+    .app{width:100%;max-width:460px;min-height:100vh;margin:auto;background:rgba(249,251,254,.94);overflow:hidden}
+    @media(min-width:640px){
+      body{padding:18px}
+      .app{min-height:calc(100vh - 36px);border-radius:34px;box-shadow:0 28px 70px rgba(15,23,42,.14);border:1px solid #fff}
+    }
+    .content{padding:18px 15px 34px}
+
+    /* HERO */
+    .hero{
+      position:relative;overflow:hidden;margin-bottom:22px;padding:20px;
+      border-radius:27px;background:#fff;border:1px solid #e9edf3;
+      box-shadow:0 10px 28px rgba(15,23,42,.08);
+    }
+    .hero:before{
+      content:"";position:absolute;left:0;top:0;bottom:0;width:6px;
+      background:linear-gradient(180deg,var(--orange),#ffc400);
+    }
+    .hero:after{
+      content:"";position:absolute;width:115px;height:115px;border-radius:50%;
+      right:-48px;top:-55px;background:rgba(255,122,24,.09);
+      box-shadow:-28px 55px 0 rgba(34,174,243,.055);
+    }
+    .hero-content{position:relative;z-index:2;padding-left:5px}
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
+      background:#fff3e8;color:#e7650a;border:1px solid #ffd9ba;
+      font-size:9px;font-weight:900;letter-spacing:.06em;text-transform:uppercase
+    }
+    h1,h2,h3{font-family:'Fredoka',sans-serif}
+    .hero h1{font-size:27px;line-height:1.05;margin:12px 0 6px}
+    .hero p{font-size:11px;line-height:1.55;font-weight:700;color:#718096;margin:0;max-width:330px}
+
+    .section-label{display:flex;align-items:center;justify-content:space-between;margin:0 3px 10px}
+    .section-label h2{font-size:16px;margin:0}
+    .section-label span{font-size:9px;font-weight:900;color:#9aa5b5;text-transform:uppercase;letter-spacing:.08em}
+
+    /* TREE */
+    .tree{position:relative;padding-left:17px}
+    .tree:before{
+      content:"";position:absolute;left:7px;top:17px;bottom:24px;width:2px;
+      background:linear-gradient(180deg,#dbe2eb,#eef2f6);
+      border-radius:4px;
+    }
+    .tree-node{position:relative;margin-bottom:13px}
+    .tree-node:before{
+      content:"";position:absolute;left:-10px;top:28px;width:10px;height:2px;
+      background:#dbe2eb;border-radius:4px;
+    }
+    .tree-dot{
+      position:absolute;left:-15px;top:22px;width:10px;height:10px;border-radius:50%;
+      background:#fff;border:3px solid var(--node-color);z-index:3;
+      box-shadow:0 0 0 3px #f5f7fb;
+    }
+
+    /* WHITE MAIN CARDS */
+    .info-button{
+      --node-color:var(--orange);
+      width:100%;display:flex;align-items:center;gap:12px;padding:12px 13px;
+      border-radius:21px;background:#fff;color:var(--ink);cursor:pointer;text-align:left;
+      position:relative;border:1px solid #e3e8ef;
+      border-left:5px solid var(--node-color);
+      box-shadow:0 5px 0 #e8edf3,0 9px 20px rgba(15,23,42,.055);
+      transition:.18s ease;
+    }
+    .info-button:hover{transform:translateY(-1px);box-shadow:0 6px 0 #e8edf3,0 12px 22px rgba(15,23,42,.075)}
+    .info-button:active{transform:translateY(2px);box-shadow:0 2px 0 #e8edf3,0 5px 13px rgba(15,23,42,.06)}
+    .btn-orange{--node-color:var(--orange)}
+    .btn-blue{--node-color:var(--blue)}
+    .btn-green{--node-color:var(--green)}
+    .btn-purple{--node-color:var(--purple)}
+    .btn-yellow{--node-color:var(--yellow)}
+    .btn-rose{--node-color:var(--rose)}
+
+    .icon{
+      width:42px;height:42px;flex:0 0 42px;border-radius:15px;display:flex;
+      align-items:center;justify-content:center;font-size:17px;
+      background:var(--icon-bg);color:var(--node-color);border:1px solid var(--icon-border);
+    }
+    .btn-orange .icon{--icon-bg:#fff2e8;--icon-border:#ffd9bb}
+    .btn-blue .icon{--icon-bg:#eaf8ff;--icon-border:#c9edff}
+    .btn-green .icon{--icon-bg:#effbe7;--icon-border:#d4f3bf}
+    .btn-purple .icon{--icon-bg:#f5edff;--icon-border:#e6d2ff}
+    .btn-yellow .icon{--icon-bg:#fff9df;--icon-border:#f7e9a9}
+    .btn-rose .icon{--icon-bg:#fff0f3;--icon-border:#ffd1da}
+
+    .button-copy{min-width:0;flex:1}
+    .button-copy strong{display:block;font-family:'Fredoka',sans-serif;font-size:14px;line-height:1.1}
+    .button-copy small{display:block;font-size:9.5px;font-weight:700;color:#8994a4;margin-top:4px}
+    .chevron{font-size:10px;color:#a1acba;transition:transform .25s ease}
+    .info-button.open .chevron{transform:rotate(180deg);color:var(--node-color)}
+
+    /* EXPANDED COLORED BRANCH */
+    .panel{
+      max-height:0;overflow:hidden;opacity:0;transform:translateY(-5px);
+      transition:max-height .42s cubic-bezier(.4,0,.2,1),opacity .24s ease,transform .28s ease;
+    }
+    .panel.open{max-height:1800px;opacity:1;transform:translateY(0)}
+    .panel-inner{
+      position:relative;margin:9px 5px 4px 14px;padding:16px 14px 15px;
+      background:linear-gradient(145deg,var(--panel-tint),#fff 65%);
+      border:1px solid var(--panel-border);border-left:3px solid var(--node-color);
+      border-radius:6px 20px 20px 20px;box-shadow:0 7px 18px rgba(15,23,42,.055);
+    }
+    .panel-inner:before{
+      content:"";position:absolute;left:-12px;top:23px;width:10px;height:2px;
+      background:var(--panel-border)
+    }
+    .btn-orange + .panel .panel-inner{--node-color:var(--orange);--panel-tint:#fff8f1;--panel-border:#ffdcbf}
+    .btn-blue + .panel .panel-inner{--node-color:var(--blue);--panel-tint:#f2fbff;--panel-border:#cfeeff}
+    .btn-green + .panel .panel-inner{--node-color:var(--green);--panel-tint:#f4fced;--panel-border:#d9f2c8}
+    .btn-purple + .panel .panel-inner{--node-color:var(--purple);--panel-tint:#faf5ff;--panel-border:#eadbff}
+    .btn-yellow + .panel .panel-inner{--node-color:var(--yellow);--panel-tint:#fffdf0;--panel-border:#f4e8b2}
+    .btn-rose + .panel .panel-inner{--node-color:var(--rose);--panel-tint:#fff5f7;--panel-border:#ffd9e0}
+
+    .panel-inner p,.panel-inner li{color:#5f6d80;font-size:10.5px;line-height:1.7;font-weight:650}
+    .panel-inner p{margin:0 0 10px}.panel-inner p:last-child{margin-bottom:0}
+    .panel-inner ul{padding-left:18px;margin:7px 0 0}.panel-inner li{margin:5px 0}
+    .mini-title{font-family:'Fredoka',sans-serif;font-size:14px;color:#273247;margin:0 0 7px}
+
+    /* CHILD CARDS */
+    .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+    .tag{
+      padding:6px 9px;border-radius:10px;background:#fff;border:1px solid #e5eaf0;
+      box-shadow:0 2px 6px rgba(15,23,42,.035);font-size:8.5px;font-weight:900;color:#66758a
+    }
+    .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .stat{
+      padding:10px;border-radius:14px;background:rgba(255,255,255,.86);
+      border:1px solid rgba(219,226,235,.9);box-shadow:0 3px 9px rgba(15,23,42,.035)
+    }
+    .stat strong{display:block;font-family:'Fredoka',sans-serif;font-size:17px}
+    .stat span{display:block;color:#9aa5b5;font-size:8.5px;font-weight:800;margin-top:2px}
+
+    /* DEVELOPERS */
+    .developer-grid{display:flex;flex-direction:column;gap:10px}
+    .developer-card{
+      padding:12px;border-radius:18px;background:#fff;border:1px solid #e2e8f0;
+      box-shadow:0 4px 13px rgba(15,23,42,.05)
+    }
+    .developer-top{display:flex;align-items:center;gap:11px}
+    .dev-image{
+      width:54px;height:54px;border-radius:50%;object-fit:cover;flex:0 0 54px;
+      border:3px solid #fff;box-shadow:0 0 0 2px #dfe6ef,0 5px 12px rgba(15,23,42,.1);
+      background:#e2e8f0
+    }
+    .developer-card h3{font-size:15px;margin:0}
+    .role{font-size:8.5px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:#f07818;margin-top:3px}
+    .dev-bio{margin:9px 0 0!important;font-size:9.5px!important}
+    .dev-facts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
+    .fact{padding:7px 8px;border-radius:11px;background:#f8fafc;border:1px solid #edf1f5}
+    .fact b{display:block;font-size:7.5px;color:#a0aabb;text-transform:uppercase}
+    .fact span{display:block;font-size:8.5px;font-weight:800;color:#334155;margin-top:2px}
+
+    .license-box{
+      border-radius:16px;padding:13px;background:#fff;border:1px solid #f1d29d;
+      box-shadow:inset 4px 0 0 #f5bd00,0 4px 12px rgba(15,23,42,.04)
+    }
+    .license-name{font-family:'Fredoka',sans-serif;font-size:15px;color:#9a6a00;margin-bottom:6px}
+    .code-like{background:#202b3e;color:#dce6f2;border-radius:13px;padding:11px;font:700 8.5px/1.7 monospace;overflow:auto}
+    .divider{height:1px;background:#e7ecf2;margin:13px 0}
+    .timeline{display:flex;flex-direction:column;gap:9px}
+    .timeline-item{display:flex;gap:9px}
+    .dot{width:23px;height:23px;flex:0 0 23px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7.5px;font-weight:900;color:#fff}
+    .timeline-item b{font-size:10.5px;color:#334155}
+    .timeline-item p{font-size:9px!important;margin:2px 0 0!important}
+
+    .footer-note{
+      margin:20px 2px 0;padding:13px;border-radius:17px;text-align:center;color:#9aa5b5;
+      font-size:8.5px;font-weight:800;background:#fff;border:1px solid #e6ebf1;box-shadow:0 4px 13px rgba(15,23,42,.035)
+    }
+  </style>
+</head>
+
+<body>
+<div class="app">
+  <main class="content">
+
+    <section class="hero">
+      <div class="hero-content">
+        <span class="eyebrow"><i class="fa-solid fa-circle-info"></i> PlayZa Information Hub</span>
+        <h1>Everything about PlayZa</h1>
+        <p>A clean expandable information page — app details, developers, license, privacy, technology, roadmap and more.</p>
+      </div>
+    </section>
+
+    <div class="section-label">
+      <h2>Explore</h2>
+      <span>Tap to expand</span>
+    </div>
+
+    <div id="accordion-root" class="tree"></div>
+
+    <div class="footer-note">
+      PlayZa • Information & Credits<br>
+      <span style="font-weight:700">Content is managed from the JavaScript data section.</span>
+    </div>
+  </main>
+</div>
+
+<script>
+/*
+  ============================================================
+  PLAYZA INFORMATION PAGE — DATA ONLY
+  ============================================================
+  Yahan se almost pura page manage hoga.
+  Naya button add karne ke liye informationSections me object add karo.
+  Developer images ke URL bhi isi JS me change karo.
+*/
+
+const PLAYZA_DATA = {
+  app: {
+    name: "PlayZa",
+    version: "1.0.0",
+    build: "Production Mobile",
+    channel: "Stable",
+    tagline: "Ultimate Quiz & Battle Platform",
+    description:
+      "PlayZa is a playful learning and quiz experience built around quizzes, progression, rewards, challenges and a colorful tactile mobile UI."
+  },
+
+  developers: [
+    {
+      name: "Developer One",
+      role: "Founder • Lead Developer",
+      image: "https://i.pravatar.cc/160?img=12",
+      bio: "Primary product development, architecture, UI systems and core application experience.",
+      facts: [
+        ["Focus", "Product & Engineering"],
+        ["Contribution", "Core Development"],
+        ["Area", "Application Logic"],
+        ["Role", "Lead"]
+      ]
+    },
+    {
+      name: "Developer Two",
+      role: "Co-Developer • Creative",
+      image: "https://i.pravatar.cc/160?img=47",
+      bio: "Creative direction, interface polish, interaction design and supporting development work.",
+      facts: [
+        ["Focus", "Design & Development"],
+        ["Contribution", "UI / UX"],
+        ["Area", "Creative Systems"],
+        ["Role", "Co-Developer"]
+      ]
+    }
+  ],
+
+  license: {
+    name: "PlayZa App License 1.0",
+    text:
+      "© PlayZa. All rights reserved. Original PlayZa UI, logic and assets are intended for authorized use. Third-party libraries and services remain subject to their respective licenses."
+  },
+
+  privacy: {
+    mode: "Local-first",
+    summary:
+      "Gameplay data stays on-device by default. Cloud sync runs only after account sign-in. No advertising or analytics storage is added by the app logic."
+  },
+
+  technology: [
+    "HTML5 / CSS3",
+    "JavaScript",
+    "Firebase Authentication",
+    "Cloud Firestore",
+    "Local Storage",
+    "Font Awesome",
+    "Google Fonts",
+    "Responsive mobile-first UI"
+  ],
+
+  informationSections: [
+    {
+      id: "about",
+      title: "About PlayZa",
+      subtitle: "Identity, purpose & product overview",
+      icon: "fa-solid fa-gamepad",
+      color: "orange",
+      className: "btn-orange",
+      type: "about"
+    },
+    {
+      id: "developers",
+      title: "About Developers",
+      subtitle: "Meet the two people behind the project",
+      icon: "fa-solid fa-users",
+      color: "blue",
+      className: "btn-blue",
+      type: "developers"
+    },
+    {
+      id: "features",
+      title: "Features & Experience",
+      subtitle: "What the platform includes",
+      icon: "fa-solid fa-sparkles",
+      color: "purple",
+      className: "btn-purple",
+      type: "features"
+    },
+    {
+      id: "technology",
+      title: "Technology Stack",
+      subtitle: "Tools and systems used by PlayZa",
+      icon: "fa-solid fa-code",
+      color: "green",
+      className: "btn-green",
+      type: "technology"
+    },
+    {
+      id: "privacy",
+      title: "Privacy & Data",
+      subtitle: "How app data is handled",
+      icon: "fa-solid fa-shield-halved",
+      color: "blue",
+      className: "btn-blue",
+      type: "privacy"
+    },
+    {
+      id: "license",
+      title: "License",
+      subtitle: "Usage, ownership & third-party notice",
+      icon: "fa-solid fa-scale-balanced",
+      color: "yellow",
+      className: "btn-yellow",
+      type: "license"
+    },
+    {
+      id: "version",
+      title: "Version & Build",
+      subtitle: "Current release information",
+      icon: "fa-solid fa-code-branch",
+      color: "orange",
+      className: "btn-orange",
+      type: "version"
+    },
+    {
+      id: "roadmap",
+      title: "Project Roadmap",
+      subtitle: "A visual look at development stages",
+      icon: "fa-solid fa-route",
+      color: "rose",
+      className: "btn-rose",
+      type: "roadmap"
+    },
+    {
+      id: "credits",
+      title: "Credits & Thanks",
+      subtitle: "Libraries, services and contributors",
+      icon: "fa-solid fa-heart",
+      color: "rose",
+      className: "btn-rose",
+      type: "credits"
+    },
+    {
+      id: "design",
+      title: "Design Philosophy",
+      subtitle: "Why the UI looks and feels this way",
+      icon: "fa-solid fa-palette",
+      color: "purple",
+      className: "btn-purple",
+      type: "design"
+    },
+    {
+      id: "security",
+      title: "Security Notes",
+      subtitle: "Important application-side principles",
+      icon: "fa-solid fa-lock",
+      color: "green",
+      className: "btn-green",
+      type: "security"
+    },
+    {
+      id: "contact",
+      title: "Project Contact",
+      subtitle: "A simple place for future links and channels",
+      icon: "fa-solid fa-paper-plane",
+      color: "blue",
+      className: "btn-blue",
+      type: "contact"
+    }
+  ]
+};
+
+const escapeHTML = (value) =>
+  String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+  }[c]));
+
+function developerMarkup() {
+  return `
+    <div class="developer-grid">
+      ${PLAYZA_DATA.developers.map(dev => `
+        <article class="developer-card">
+          <div class="developer-top">
+            <img class="dev-image" src="${escapeHTML(dev.image)}" alt="${escapeHTML(dev.name)}">
+            <div>
+              <h3>${escapeHTML(dev.name)}</h3>
+              <div class="role">${escapeHTML(dev.role)}</div>
+            </div>
+          </div>
+          <p class="dev-bio">${escapeHTML(dev.bio)}</p>
+          <div class="dev-facts">
+            ${dev.facts.map(([label,value]) => `
+              <div class="fact">
+                <b>${escapeHTML(label)}</b>
+                <span>${escapeHTML(value)}</span>
+              </div>
+            `).join("")}
+          </div>
+        </article>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderContent(type) {
+  const a = PLAYZA_DATA.app;
+
+  switch(type) {
+    case "about":
+      return `
+        <h3 class="mini-title">${escapeHTML(a.name)} — ${escapeHTML(a.tagline)}</h3>
+        <p>${escapeHTML(a.description)}</p>
+        <div class="stat-grid">
+          <div class="stat"><strong>${escapeHTML(a.version)}</strong><span>Current Version</span></div>
+          <div class="stat"><strong>${escapeHTML(a.channel)}</strong><span>Release Channel</span></div>
+          <div class="stat"><strong>Mobile</strong><span>Primary Experience</span></div>
+          <div class="stat"><strong>Quiz</strong><span>Core Experience</span></div>
+        </div>
+        <div class="tag-row">
+          <span class="tag">Learning</span><span class="tag">Quiz</span><span class="tag">Rewards</span>
+          <span class="tag">Progression</span><span class="tag">Battle</span><span class="tag">Mobile UI</span>
+        </div>
+      `;
+
+    case "developers":
+      return `
+        <h3 class="mini-title">The people behind PlayZa</h3>
+        <p>Developer information is intentionally managed from JavaScript so names, images, roles and details can be changed without rebuilding the UI structure.</p>
+        ${developerMarkup()}
+      `;
+
+    case "features":
+      return `
+        <h3 class="mini-title">Core Experience</h3>
+        <ul>
+          <li>Subject-based quiz experiences with expandable learning flows.</li>
+          <li>Progression through XP, levels, streaks and achievements.</li>
+          <li>Reward-oriented systems including gems and daily activities.</li>
+          <li>Challenge and battle-style experiences.</li>
+          <li>Responsive mobile-first cards and tactile 3D buttons.</li>
+          <li>Expandable information architecture for future modules.</li>
+        </ul>
+        <div class="tag-row">
+          <span class="tag">Quizzes</span><span class="tag">XP</span><span class="tag">Gems</span>
+          <span class="tag">Streaks</span><span class="tag">Badges</span><span class="tag">Challenges</span>
+        </div>
+      `;
+
+    case "technology":
+      return `
+        <h3 class="mini-title">Technology used</h3>
+        <p>The exact stack can be maintained here from the data object above.</p>
+        <ul>${PLAYZA_DATA.technology.map(x => `<li>${escapeHTML(x)}</li>`).join("")}</ul>
+        <div class="code-like">
+          const stack = PLAYZA_DATA.technology;<br>
+          // Add or remove technologies here.
+        </div>
+      `;
+
+    case "privacy":
+      return `
+        <h3 class="mini-title">${escapeHTML(PLAYZA_DATA.privacy.mode)}</h3>
+        <p>${escapeHTML(PLAYZA_DATA.privacy.summary)}</p>
+        <div class="divider"></div>
+        <ul>
+          <li>Local state is designed to remain available on the device by default.</li>
+          <li>Account-based cloud synchronization is separated from guest/local use.</li>
+          <li>This page does not invent additional privacy promises beyond the supplied app information.</li>
+        </ul>
+      `;
+
+    case "license":
+      return `
+        <div class="license-box">
+          <div class="license-name">${escapeHTML(PLAYZA_DATA.license.name)}</div>
+          <p>${escapeHTML(PLAYZA_DATA.license.text)}</p>
+        </div>
+        <div class="divider"></div>
+        <h3 class="mini-title">Important</h3>
+        <p>Third-party libraries, fonts, icons and external services can have their own terms. Their respective licenses remain applicable.</p>
+      `;
+
+    case "version":
+      return `
+        <h3 class="mini-title">Release information</h3>
+        <div class="stat-grid">
+          <div class="stat"><strong>${escapeHTML(a.version)}</strong><span>Version</span></div>
+          <div class="stat"><strong>${escapeHTML(a.build)}</strong><span>Build</span></div>
+          <div class="stat"><strong>${escapeHTML(a.channel)}</strong><span>Channel</span></div>
+          <div class="stat"><strong>Stable</strong><span>Release State</span></div>
+        </div>
+        <p style="margin-top:10px">Keep these values in the <b>PLAYZA_DATA.app</b> object whenever a new release is published.</p>
+      `;
+
+    case "roadmap":
+      return `
+        <h3 class="mini-title">Development journey</h3>
+        <div class="timeline">
+          <div class="timeline-item"><span class="dot" style="background:#ff6b00">01</span><div><b>Foundation</b><p>Core app structure, navigation and reusable UI systems.</p></div></div>
+          <div class="timeline-item"><span class="dot" style="background:#1cb0f6">02</span><div><b>Learning Experience</b><p>Quiz flows, subjects, questions and progress systems.</p></div></div>
+          <div class="timeline-item"><span class="dot" style="background:#58cc02">03</span><div><b>Progression</b><p>XP, levels, streaks, rewards and achievements.</p></div></div>
+          <div class="timeline-item"><span class="dot" style="background:#9333ea">04</span><div><b>Advanced Experience</b><p>Challenges, battles, richer interactions and polish.</p></div></div>
+          <div class="timeline-item"><span class="dot" style="background:#f43f5e">05</span><div><b>Continuous Updates</b><p>New content, refinements and additional platform capabilities.</p></div></div>
+        </div>
+      `;
+
+    case "credits":
+      return `
+        <h3 class="mini-title">Credits</h3>
+        <ul>
+          <li>PlayZa product, UI and application logic.</li>
+          <li>Google Fonts — typography resources used by the interface.</li>
+          <li>Font Awesome — interface icons.</li>
+          <li>Firebase — authentication and cloud-related services where enabled.</li>
+          <li>Other third-party resources remain subject to their own licenses.</li>
+        </ul>
+      `;
+
+    case "design":
+      return `
+        <h3 class="mini-title">Playful, tactile & readable</h3>
+        <p>The visual language follows the same family as the supplied PlayZa UI: Fredoka/Nunito typography, soft surfaces, bright orange/blue/green/purple accents, rounded cards and tactile 3D buttons.</p>
+        <div class="tag-row">
+          <span class="tag">Rounded 20–30px</span><span class="tag">Soft Shadows</span>
+          <span class="tag">Tactile Buttons</span><span class="tag">Bright Accents</span>
+          <span class="tag">Mobile First</span><span class="tag">Expandable UI</span>
+        </div>
+      `;
+
+    case "security":
+      return `
+        <h3 class="mini-title">Application-side principles</h3>
+        <ul>
+          <li>Do not place real secrets, private keys or privileged credentials in client-side JavaScript.</li>
+          <li>Validate sensitive operations on trusted backend/security rules where required.</li>
+          <li>Keep public configuration separate from actual secret credentials.</li>
+          <li>Review authentication, database rules and third-party service permissions before production deployment.</li>
+        </ul>
+        <p>This section is informational and should be kept aligned with the actual security configuration of the project.</p>
+      `;
+
+    case "contact":
+      return `
+        <h3 class="mini-title">Future-ready contact area</h3>
+        <p>This button is intentionally data/UI ready. You can later add official website, email, GitHub, social links or support channels without changing the accordion engine.</p>
+        <div class="tag-row">
+          <span class="tag">Website</span><span class="tag">Email</span><span class="tag">GitHub</span><span class="tag">Support</span>
+        </div>
+      `;
+
+    default:
+      return `<p>Content coming soon.</p>`;
+  }
+}
+
+function renderSections() {
+  const root = document.getElementById("accordion-root");
+  root.innerHTML = PLAYZA_DATA.informationSections.map(item => `
+    <div class="accordion-item tree-node" data-id="${escapeHTML(item.id)}" style="--node-color:var(--${escapeHTML(item.color)})">
+      <span class="tree-dot"></span>
+      <button class="info-button ${escapeHTML(item.className)}" type="button" aria-expanded="false">
+        <span class="icon ${escapeHTML(item.color)}"><i class="${escapeHTML(item.icon)}"></i></span>
+        <span class="button-copy">
+          <strong>${escapeHTML(item.title)}</strong>
+          <small>${escapeHTML(item.subtitle)}</small>
+        </span>
+        <i class="chevron fa-solid fa-chevron-down"></i>
+      </button>
+      <div class="panel" aria-hidden="true">
+        <div class="panel-inner">${renderContent(item.type)}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function setupAccordion() {
+  document.querySelectorAll(".info-button").forEach(button => {
+    button.addEventListener("click", () => {
+      const item = button.closest(".accordion-item");
+      const panel = item.querySelector(".panel");
+      const isOpen = panel.classList.contains("open");
+
+      // Multiple buttons can remain expanded.
+      panel.classList.toggle("open", !isOpen);
+      button.classList.toggle("open", !isOpen);
+      button.setAttribute("aria-expanded", String(!isOpen));
+      panel.setAttribute("aria-hidden", String(isOpen));
+    });
+  });
+}
+
+renderSections();
+setupAccordion();
+</script>
+</body>
+</html>
