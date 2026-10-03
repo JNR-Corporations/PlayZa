@@ -2,26 +2,333 @@
 <html lang="en" class="h-full bg-slate-950">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="referrer" content="no-referrer" />
-  <meta name="color-scheme" content="light" />
-  <title>PlayZa - Ultimate Quiz & Battle Platform Pro</title>
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com" referrerpolicy="no-referrer"></script>
-  <!-- Google Fonts: Nunito & Fredoka -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" referrerpolicy="no-referrer">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin referrerpolicy="no-referrer">
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" referrerpolicy="no-referrer">
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer" />
-  <!-- 1. Web Manifest link karne ke liye -->
-    <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#FFFFFF">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="application-name" content="PlayZa">
+  <!-- ================================
+       BASIC SEO
+  ================================= -->
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <meta name="color-scheme" content="light" />
+
+  <title>
+    PlayZa — Quiz, Battles, Learning & Rewards | JNR CORPORATIONS
+  </title>
+
+  <meta
+    name="description"
+    content="PlayZa by JNR CORPORATIONS is a privacy-focused quiz and learning platform by developer Yogendra Verma. Play quizzes, challenge yourself with battles, earn XP and rewards, track progress and learn across multiple subjects."
+  />
+
+  <meta
+    name="keywords"
+    content="PlayZa, PlayZa quiz, PlayZa app, quiz platform, online quiz, quiz game, learning game, educational game, quiz battles, quiz competition, XP quiz, rewards quiz, learning platform, student quiz app, JNR CORPORATIONS, JNR Corporations PlayZa, Yogendra Verma, educational quiz app, Android quiz app, PWA quiz app"
+  />
+
+  <meta name="author" content="Yogendra Verma" />
+
+  <meta
+    name="creator"
+    content="Yogendra Verma — JNR CORPORATIONS"
+  />
+
+  <meta
+    name="publisher"
+    content="JNR CORPORATIONS"
+  />
+
+  <meta
+    name="application-name"
+    content="PlayZa"
+  />
+
+  <meta
+    name="robots"
+    content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+  />
+
+  <meta
+    name="googlebot"
+    content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+  />
+
+  <!-- ================================
+       CANONICAL
+  ================================= -->
+
+  <link
+    rel="canonical"
+    href="https://play-za.vercel.app/"
+  />
+
+  <!-- ================================
+       BRAND / ICONS
+  ================================= -->
+
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="./icon-192.png"
+  />
+
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="512x512"
+    href="./icon-512.png"
+  />
+
+  <link
+    rel="apple-touch-icon"
+    sizes="192x192"
+    href="./icon-192.png"
+  />
+
+  <link
+    rel="apple-touch-icon"
+    sizes="512x512"
+    href="./icon-512.png"
+  />
+
+  <link
+    rel="manifest"
+    href="./manifest.json"
+  />
+
+  <!-- ================================
+       THEME / PWA
+  ================================= -->
+
+  <meta name="theme-color" content="#FFFFFF" />
+
+  <meta
+    name="mobile-web-app-capable"
+    content="yes"
+  />
+
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  />
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  />
+
+  <meta
+    name="apple-mobile-web-app-title"
+    content="PlayZa"
+  />
+
+  <!-- ================================
+       OPEN GRAPH — GOOGLE / SOCIAL
+  ================================= -->
+
+  <meta
+    property="og:type"
+    content="website"
+  />
+
+  <meta
+    property="og:site_name"
+    content="PlayZa"
+  />
+
+  <meta
+    property="og:title"
+    content="PlayZa — Quiz, Battles, Learning & Rewards"
+  />
+
+  <meta
+    property="og:description"
+    content="Play, learn and win with PlayZa — a privacy-focused quiz and learning platform by JNR CORPORATIONS and developer Yogendra Verma."
+  />
+
+  <meta
+    property="og:url"
+    content="https://play-za.vercel.app/"
+  />
+
+  <meta
+    property="og:image"
+    content="https://play-za.vercel.app/icon-512.png"
+  />
+
+  <meta
+    property="og:image:alt"
+    content="PlayZa — Quiz and Learning Platform"
+  />
+
+  <meta
+    property="og:image:type"
+    content="image/png"
+  />
+
+  <meta
+    property="og:image:width"
+    content="512"
+  />
+
+  <meta
+    property="og:image:height"
+    content="512"
+  />
+
+  <meta
+    property="og:locale"
+    content="en_IN"
+  />
+
+  <!-- ================================
+       TWITTER / X
+  ================================= -->
+
+  <meta
+    name="twitter:card"
+    content="summary"
+  />
+
+  <meta
+    name="twitter:title"
+    content="PlayZa — Quiz, Battles, Learning & Rewards"
+  />
+
+  <meta
+    name="twitter:description"
+    content="Play quizzes, learn, battle and earn rewards with PlayZa by JNR CORPORATIONS."
+  />
+
+  <meta
+    name="twitter:image"
+    content="https://play-za.vercel.app/icon-512.png"
+  />
+
+  <meta
+    name="twitter:image:alt"
+    content="PlayZa logo"
+  />
+
+  <!-- ================================
+       TAILWIND CSS
+  ================================= -->
+
+  <script
+    src="https://cdn.tailwindcss.com"
+    referrerpolicy="no-referrer"
+  ></script>
+
+  <!-- ================================
+       GOOGLE FONTS
+  ================================= -->
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+    referrerpolicy="no-referrer"
+  />
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+    referrerpolicy="no-referrer"
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap"
+    rel="stylesheet"
+    referrerpolicy="no-referrer"
+  />
+
+  <!-- ================================
+       FONT AWESOME
+  ================================= -->
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    referrerpolicy="no-referrer"
+  />
+
+  <!-- ================================
+       STRUCTURED DATA — PLAYZA
+  ================================= -->
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://play-za.vercel.app/#website",
+        "url": "https://play-za.vercel.app/",
+        "name": "PlayZa",
+        "description": "Privacy-focused quiz and learning platform with quizzes, battles, rewards, avatars and progress tracking.",
+        "publisher": {
+          "@id": "https://play-za.vercel.app/#organization"
+        },
+        "inLanguage": "en-IN"
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://play-za.vercel.app/#organization",
+        "name": "JNR CORPORATIONS",
+        "url": "https://play-za.vercel.app/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://play-za.vercel.app/icon-512.png",
+          "width": 512,
+          "height": 512
+        },
+        "founder": {
+          "@type": "Person",
+          "name": "Yogendra Verma"
+        }
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://play-za.vercel.app/#app",
+        "name": "PlayZa",
+        "url": "https://play-za.vercel.app/",
+        "description": "PlayZa is a privacy-focused quiz and learning game featuring quizzes, battles, rewards, avatars and progress tracking.",
+        "applicationCategory": [
+          "EducationalApplication",
+          "GameApplication"
+        ],
+        "operatingSystem": "Android, Web",
+        "browserRequirements": "Requires a modern web browser",
+        "author": {
+          "@type": "Person",
+          "name": "Yogendra Verma"
+        },
+        "creator": {
+          "@type": "Organization",
+          "name": "JNR CORPORATIONS"
+        },
+        "image": "https://play-za.vercel.app/icon-512.png",
+        "inLanguage": "en-IN"
+      },
+      {
+        "@type": "Person",
+        "@id": "https://play-za.vercel.app/#developer",
+        "name": "Yogendra Verma",
+        "jobTitle": "Developer",
+        "worksFor": {
+          "@type": "Organization",
+          "name": "JNR CORPORATIONS"
+        }
+      }
+    ]
+  }
+  </script>
+
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" referrerpolicy="no-referrer"></script>
 
